@@ -14,8 +14,8 @@ app.get('/hello/:name', (c) => {
 // Create a new snippet
 app.post('/snippets', async (c) => {
   const {
-    title,
     encrypted_content,
+    title,
     language,
     max_views,
   } = await c.req.json();
@@ -26,8 +26,8 @@ app.post('/snippets', async (c) => {
     .from('snippets')
     .insert(
       {
-        title,
         encrypted_content,
+        title,
         language,
         max_views,
       },
