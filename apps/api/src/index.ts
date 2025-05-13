@@ -2,8 +2,13 @@ import type { CloudflareBindings } from '@/types/hono-bindings';
 
 import { getSupabaseClient } from '@/utils/supabase-client';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
+
+app.use('*', cors({
+  origin: 'http://localhost:3000', // Frontend URL
+}));
 
 app.get('/hello/:name', (c) => {
   const name = c.req.param('name');
@@ -17,6 +22,7 @@ app.post('/snippets', async (c) => {
     encrypted_content,
     title,
     language,
+    name,
     max_views,
   } = await c.req.json();
 
@@ -29,6 +35,7 @@ app.post('/snippets', async (c) => {
         encrypted_content,
         title,
         language,
+        name,
         max_views,
       },
     )
