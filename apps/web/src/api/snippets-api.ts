@@ -1,15 +1,13 @@
+import type {
+  CreateSnippetPayload,
+  SnippetResponse,
+} from '@snippet-share/types';
+
 const API_URL = 'http://localhost:8787';
 
-export interface Snippet {
-  encrypted_content: string;
-  title: string | null;
-  language: string;
-  name: string | null;
-  max_views: number | null;
-  expires_at: string | null;
-}
-
-export async function createSnippet(snippet: Snippet) {
+export async function createSnippet(
+  snippet: CreateSnippetPayload,
+): Promise<SnippetResponse> {
   const response = await fetch(`${API_URL}/snippets`, {
     method: 'POST',
     body: JSON.stringify(snippet),
@@ -22,5 +20,5 @@ export async function createSnippet(snippet: Snippet) {
     throw new Error('Failed to create snippet');
   }
 
-  return response.json();
+  return response.json() as Promise<SnippetResponse>;
 }

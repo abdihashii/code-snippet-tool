@@ -1,9 +1,12 @@
-import type { CloudflareBindings } from '@/types/hono-bindings';
+import type { CreateSnippetPayload } from '@snippet-share/types';
 
-import { getSupabaseClient } from '@/utils/supabase-client';
 import { addDays, addHours } from 'date-fns';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+
+import type { CloudflareBindings } from '@/types/hono-bindings';
+
+import { getSupabaseClient } from '@/utils/supabase-client';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -26,7 +29,7 @@ app.post('/snippets', async (c) => {
     name,
     max_views,
     expires_at, // This will be a string like '1h', '24h', '7d', or null
-  } = await c.req.json();
+  } = await c.req.json<CreateSnippetPayload>();
 
   let expires_at_timestamp: string | null = null;
 

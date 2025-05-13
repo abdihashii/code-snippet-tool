@@ -1,15 +1,22 @@
+import type { Language } from '@snippet-share/types';
 import type React from 'react';
 
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { Shield } from 'lucide-react';
 import { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { createSnippet } from '@/api/snippets-api';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 interface SnippetFormProps {
   onSnippetCreated: (link: string) => void;
@@ -18,7 +25,7 @@ interface SnippetFormProps {
 export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
-  const [language, setLanguage] = useState('plaintext');
+  const [language, setLanguage] = useState<Language>('PLAINTEXT');
   const [uploaderInfo, setUploaderInfo] = useState('');
   const [expiresAfter, setExpiresAfter] = useState('24h');
   const [maxViews, setMaxViews] = useState('unlimited');
@@ -53,17 +60,17 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
       const snippet = await createSnippet({
         encrypted_content: code,
         // title is optional, make it null if empty
-        title: title === '' ? null : title, 
+        title: title === '' ? null : title,
         language,
         // name is optional, make it null if empty
-      name: uploaderInfo === '' ? null : uploaderInfo,
-      // expires_at is optional, make it null if never
-      expires_at: expiresAfter === 'never' ? null : expiresAfter,
-      // max_views is optional, make it null if unlimited
-        max_views: maxViews === 'unlimited' ? null : parseInt(maxViews),
+        name: uploaderInfo === '' ? null : uploaderInfo,
+        // expires_at is optional, make it null if never
+        expires_at: expiresAfter === 'never' ? null : expiresAfter,
+        // max_views is optional, make it null if unlimited
+        max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
 
-      onSnippetCreated(snippet.link);
+      onSnippetCreated(snippet.id);
     } catch (error) {
       console.error('Error creating snippet:', error);
     } finally {
@@ -98,8 +105,15 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="language">Language (for syntax highlighting)</Label>
-                <Select value={language} onValueChange={setLanguage}>
+                <Label
+                  htmlFor="language"
+                >
+                  Language (for syntax highlighting)
+                </Label>
+                <Select
+                  value={language}
+                  onValueChange={(value) => setLanguage(value as Language)}
+                >
                   <SelectTrigger id="language" className="w-full">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
@@ -121,7 +135,11 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="uploader-info">Your Name/Note (Optional, shown to recipient)</Label>
+              <Label
+                htmlFor="uploader-info"
+              >
+                Your Name/Note (Optional, shown to recipient)
+              </Label>
               <Input
                 id="uploader-info"
                 placeholder="John Doe"
@@ -131,7 +149,11 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
             </div>
 
             <div className="mb-4">
-              <h3 className="text-sm font-medium mb-3 text-slate-700">Link Settings</h3>
+              <h3
+                className="text-sm font-medium mb-3 text-slate-700"
+              >
+                Link Settings
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="expires-after">Expires After</Label>
@@ -156,7 +178,11 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="unlimited">Unlimited</SelectItem>
-                      <SelectItem value="1">1 View (Burn after reading)</SelectItem>
+                      <SelectItem
+                        value="1"
+                      >
+                        1 View (Burn after reading)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -173,7 +199,9 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
             disabled={!code.trim() || isSubmitting}
           >
             <Shield className="mr-2 h-4 w-4" />
-            {isSubmitting ? 'Creating Secure Snippet...' : 'Create Secure Snippet'}
+            {isSubmitting
+              ? 'Creating Secure Snippet...'
+              : 'Create Secure Snippet'}
           </Button>
         </CardFooter>
       </form>
