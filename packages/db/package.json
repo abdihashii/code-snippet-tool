@@ -1,0 +1,16 @@
+{
+  "name": "@snippet-share/db",
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.10.0",
+  "description": "Database for snippet-share",
+  "author": "Abdirahman Haji",
+  "license": "MIT",
+  "keywords": [],
+  "scripts": {
+    "start": "supabase start",
+    "stop": "supabase stop"
+  },
+  "devDependencies": {
+    "supabase": "^2.22.12"
+  }
+}
