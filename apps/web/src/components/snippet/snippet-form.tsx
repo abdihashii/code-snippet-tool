@@ -9,6 +9,7 @@ import { Shield } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { createSnippet } from '@/api/snippets-api';
 
 interface SnippetFormProps {
   onSnippetCreated: (link: string) => void;
@@ -23,24 +24,51 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const [maxViews, setMaxViews] = useState('unlimited');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (!code.trim()) return;
+
+  //   setIsSubmitting(true);
+
+  //   // In a real app, this would be an API call to create the snippet
+  //   // For demo purposes, we'll simulate an API call with a timeout
+  //   setTimeout(() => {
+  //     // Generate a fake unique link
+  //     const snippetId = Math.random().toString(36).substring(2, 10);
+  //     const secretKey = Math.random().toString(36).substring(2, 15);
+  //     const link = `https://secure-snippet.example/s/${snippetId}/${secretKey}`;
+
+  //     onSnippetCreated(link);
+  //     setIsSubmitting(false);
+  //   }, 800);
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!code.trim()) return;
-
     setIsSubmitting(true);
 
-    // In a real app, this would be an API call to create the snippet
-    // For demo purposes, we'll simulate an API call with a timeout
-    setTimeout(() => {
-      // Generate a fake unique link
-      const snippetId = Math.random().toString(36).substring(2, 10);
-      const secretKey = Math.random().toString(36).substring(2, 15);
-      const link = `https://secure-snippet.example/s/${snippetId}/${secretKey}`;
+    try {
+      const snippet = await createSnippet({
+        encrypted_content: code,
+        // title is optional, make it null if empty
+        title: title === '' ? null : title, 
+        language,
+        // name is optional, make it null if empty
+      name: uploaderInfo === '' ? null : uploaderInfo,
+      // expires_at is optional, make it null if never
+      expires_at: expiresAfter === 'never' ? null : expiresAfter,
+      // max_views is optional, make it null if unlimited
+        max_views: maxViews === 'unlimited' ? null : parseInt(maxViews),
+      });
 
-      onSnippetCreated(link);
+      onSnippetCreated(snippet.link);
+    } catch (error) {
+      console.error('Error creating snippet:', error);
+    } finally {
       setIsSubmitting(false);
-    }, 800);
+    }
   };
 
   return (
@@ -76,17 +104,17 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="plaintext">Plain Text</SelectItem>
-                    <SelectItem value="json">JSON</SelectItem>
-                    <SelectItem value="javascript">JavaScript</SelectItem>
-                    <SelectItem value="python">Python</SelectItem>
-                    <SelectItem value="html">HTML</SelectItem>
-                    <SelectItem value="css">CSS</SelectItem>
-                    <SelectItem value="typescript">TypeScript</SelectItem>
-                    <SelectItem value="java">Java</SelectItem>
-                    <SelectItem value="bash">Bash</SelectItem>
-                    <SelectItem value="markdown">Markdown</SelectItem>
-                    <SelectItem value="csharp">C#</SelectItem>
+                    <SelectItem value="PLAINTEXT">Plain Text</SelectItem>
+                    <SelectItem value="JSON">JSON</SelectItem>
+                    <SelectItem value="JAVASCRIPT">JavaScript</SelectItem>
+                    <SelectItem value="PYTHON">Python</SelectItem>
+                    <SelectItem value="HTML">HTML</SelectItem>
+                    <SelectItem value="CSS">CSS</SelectItem>
+                    <SelectItem value="TYPESCRIPT">TypeScript</SelectItem>
+                    <SelectItem value="JAVA">Java</SelectItem>
+                    <SelectItem value="BASH">Bash</SelectItem>
+                    <SelectItem value="MARKDOWN">Markdown</SelectItem>
+                    <SelectItem value="CSHARP">C#</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
