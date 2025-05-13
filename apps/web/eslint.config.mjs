@@ -1,4 +1,4 @@
-import createConfig from '@code-snippet-tool/eslint-config/create-config';
+import createConfig from '@snippet-share/eslint-config/create-config';
 import pluginRouter from '@tanstack/eslint-plugin-router';
 
 export default createConfig({
