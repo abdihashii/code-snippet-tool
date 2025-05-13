@@ -6,6 +6,11 @@
   "author": "Abdirahman Haji",
   "license": "ISC",
   "keywords": [],
+  "scripts": {
+    "build:types": "pnpm --filter @snippet-share/types build",
+    "clean": "rm -rf node_modules dist",
+    "clean:all": "pnpm clean && pnpm -r clean"
+  },
   "dependencies": {
     "zod": "^3.24.4"
   },

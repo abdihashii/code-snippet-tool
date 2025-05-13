@@ -3,9 +3,11 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "clean": "rm -rf node_modules .wrangler"
   },
   "dependencies": {
+    "@snippet-share/types": "workspace:*",
     "@supabase/supabase-js": "^2.49.4",
     "hono": "^4.7.9"
   },
