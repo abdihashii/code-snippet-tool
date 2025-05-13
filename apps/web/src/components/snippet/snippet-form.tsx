@@ -70,7 +70,9 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
         max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
 
-      onSnippetCreated(snippet.id);
+      const link = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
+
+      onSnippetCreated(link);
     } catch (error) {
       console.error('Error creating snippet:', error);
     } finally {
