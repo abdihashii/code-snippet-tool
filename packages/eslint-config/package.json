@@ -1,5 +1,5 @@
 {
-  "name": "@code-snippet-tool/eslint-config",
+  "name": "@snippet-share/eslint-config",
   "type": "module",
   "version": "1.0.0",
   "description": "ESLint config for this monorepo and its apps + packages",

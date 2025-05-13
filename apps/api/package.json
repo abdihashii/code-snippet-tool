@@ -1,0 +1,13 @@
+{
+  "name": "@snippet-share/api",
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.10.0",
+  "description": "API for snippet-share",
+  "author": "Abdirahman Haji",
+  "license": "MIT",
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
