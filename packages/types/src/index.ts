@@ -36,4 +36,8 @@ export interface CreateSnippetPayload {
   expires_at: string | null;
 }
 
-export interface SnippetResponse extends Snippet {}
+export interface CreateSnippetResponse {
+  id: string; // uuid
+  success: boolean; // true if successful, false if not
+  message: string; // 'Snippet created successfully' or error message
+}

@@ -209,7 +209,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const snippet = await createSnippet({
+      const createSnippetResponse = await createSnippet({
         content: code,
         title: title === '' ? null : title,
         language,
@@ -217,10 +217,18 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
         expires_at: expiresAfter === 'never' ? null : expiresAfter,
         max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
-      const link = `http://localhost:3000/s/${snippet.id}`;
+
+      if (!createSnippetResponse.success) {
+        throw new Error(createSnippetResponse.message);
+      }
+
+      const link = `http://localhost:3000/s/${createSnippetResponse.id}`;
       onSnippetCreated(link);
+
+      toast.success('Snippet created successfully');
     } catch (error) {
       console.error('Error creating snippet:', error);
+      toast.error('Error creating snippet');
     } finally {
       setIsSubmitting(false);
     }
