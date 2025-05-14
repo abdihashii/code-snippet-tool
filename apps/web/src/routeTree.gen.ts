@@ -12,12 +12,19 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as SSnippetIdImport } from './routes/s/$snippet-id'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SSnippetIdRoute = SSnippetIdImport.update({
+  id: '/s/$snippet-id',
+  path: '/s/$snippet-id',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -32,6 +39,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/s/$snippet-id': {
+      id: '/s/$snippet-id'
+      path: '/s/$snippet-id'
+      fullPath: '/s/$snippet-id'
+      preLoaderRoute: typeof SSnippetIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/s/$snippet-id': typeof SSnippetIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/s/$snippet-id': typeof SSnippetIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/s/$snippet-id': typeof SSnippetIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/s/$snippet-id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/s/$snippet-id'
+  id: '__root__' | '/' | '/s/$snippet-id'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SSnippetIdRoute: typeof SSnippetIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SSnippetIdRoute: SSnippetIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +96,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/s/$snippet-id"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/s/$snippet-id": {
+      "filePath": "s/$snippet-id.tsx"
     }
   }
 }
