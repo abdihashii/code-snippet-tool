@@ -3,6 +3,10 @@ import type { Language } from '@snippet-share/types';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
 import plaintext from 'highlight.js/lib/languages/plaintext';
+import parserBabel from 'prettier/plugins/babel';
+import parserEstree from 'prettier/plugins/estree';
+import parserTypescript from 'prettier/plugins/typescript';
+import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createSnippet } from '@/api/snippets-api';
@@ -62,7 +66,10 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
   const [expiresAfter, setExpiresAfter] = useState('24h');
   const [maxViews, setMaxViews] = useState('unlimited');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loadedLanguages, setLoadedLanguages] = useState(() => new Set(['plaintext']));
+  const [loadedLanguages, setLoadedLanguages] = useState(
+    () => new Set(['plaintext']),
+  );
+  const [isPrettifying, setIsPrettifying] = useState(false);
 
   const loadHljsLanguage = useCallback(async (langIdentifier: string) => {
     if (hljs.getLanguage(langIdentifier) || langIdentifier === 'plaintext') {
@@ -80,7 +87,9 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
           hljs.registerLanguage(langIdentifier, module.default);
           setLoadedLanguages((prev) => new Set(prev).add(langIdentifier));
         } else {
-          console.warn(`Module for ${langIdentifier} loaded but has no default export.`);
+          console.warn(
+            `Module for ${langIdentifier} loaded but has no default export.`,
+          );
         }
       } catch (error) {
         console.error(`Failed to load language ${langIdentifier}:`, error);
@@ -158,7 +167,8 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
         expires_at: expiresAfter === 'never' ? null : expiresAfter,
         max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
-      const link = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
+      const link
+      = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
       onSnippetCreated(link);
     } catch (error) {
       console.error('Error creating snippet:', error);
@@ -166,6 +176,37 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
       setIsSubmitting(false);
     }
   };
+
+  const prettifyCode = useCallback(async () => {
+    if (language !== 'JAVASCRIPT' && language !== 'TYPESCRIPT') {
+      // Or show a message to the user
+      console.warn(
+        'Prettifying is only supported for JavaScript and TypeScript.',
+      );
+      return;
+    }
+
+    setIsPrettifying(true);
+    try {
+      const parser = language === 'TYPESCRIPT' ? 'typescript' : 'babel';
+      const plugins = language === 'TYPESCRIPT'
+        ? [parserTypescript, parserEstree]
+        : [parserBabel, parserEstree];
+
+      const formattedCode = await prettier.format(code, {
+        parser,
+        plugins,
+        // You can add Prettier options here if needed
+        // e.g., semi: true, singleQuote: true
+      });
+      setCode(formattedCode);
+    } catch (error) {
+      console.error('Error prettifying code:', error);
+      // Optionally, inform the user about the error
+    } finally {
+      setIsPrettifying(false);
+    }
+  }, [code, language, setCode]);
 
   return {
     // Form field states and setters
@@ -188,9 +229,11 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
 
     // Actions
     handleSubmit,
+    prettifyCode,
 
     // Status
     isSubmitting,
+    isPrettifying,
 
     // Constants and static data
     SUPPORTED_LANGUAGES,

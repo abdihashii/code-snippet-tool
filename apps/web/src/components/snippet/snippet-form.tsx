@@ -36,6 +36,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     maxViews,
     setMaxViews,
     isSubmitting,
+    isPrettifying,
 
     // Derived/Computed values for rendering
     highlightedHtml,
@@ -43,6 +44,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
 
     // Actions
     handleSubmit,
+    prettifyCode,
 
     // Constants and static data
     SUPPORTED_LANGUAGES,
@@ -81,14 +83,30 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               />
             </div>
 
-            <div className="text-right text-sm text-slate-500">
-              {code.length}
-              {' '}
-              /
-              {' '}
-              {MAX_CODE_LENGTH.toLocaleString()}
-              {' '}
-              characters
+            <div className="flex justify-end items-center gap-4 text-right text-sm text-slate-500">
+              {language === 'JAVASCRIPT' || language === 'TYPESCRIPT'
+                ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={prettifyCode}
+                      disabled={isPrettifying || (!code.trim())}
+                      className="text-xs"
+                    >
+                      {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
+                    </Button>
+                  )
+                : null}
+              <div>
+                {code.length}
+                {' '}
+                /
+                {' '}
+                {MAX_CODE_LENGTH.toLocaleString()}
+                {' '}
+                characters
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
