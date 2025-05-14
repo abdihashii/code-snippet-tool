@@ -3,13 +3,19 @@ import type { Language } from '@snippet-share/types';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
 import plaintext from 'highlight.js/lib/languages/plaintext';
+import prettierPluginJava from 'prettier-plugin-java';
 import parserBabel from 'prettier/plugins/babel';
 import parserEstree from 'prettier/plugins/estree';
+import parserHtml from 'prettier/plugins/html';
+import parserMarkdown from 'prettier/plugins/markdown';
 import parserTypescript from 'prettier/plugins/typescript';
 import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createSnippet } from '@/api/snippets-api';
+
+// Undefined to avoid further errors if referenced
+const prettierPluginSh = undefined;
 
 interface UseSnippetFormProps {
   onSnippetCreated: (link: string) => void;
@@ -54,6 +60,49 @@ const languageLoaders: Record<string, () => Promise<any>> = {
   csharp: () => import('highlight.js/lib/languages/csharp'),
 };
 
+interface PrettierConfig {
+  parser: string;
+  plugins: any[];
+}
+
+// These are the core plugins that are always available
+const coreParserPlugins = [
+  parserBabel,
+  parserEstree,
+  parserTypescript,
+  parserHtml,
+  parserMarkdown,
+];
+
+// Ensure external plugins are filtered for valid plugin objects and flattened
+// if they are arrays
+const externalCommunityPlugins = [
+  prettierPluginJava,
+  prettierPluginSh, // Undefined to avoid further errors if referenced
+]
+  .flatMap((p) => p)
+  .filter((p) => p && typeof p === 'object');
+
+// Spread the core and external plugins together to create a single array
+const allAvailablePlugins = [
+  ...coreParserPlugins,
+  ...externalCommunityPlugins,
+];
+
+// Map of languages to their corresponding Prettier config
+const PRETTIER_SUPPORT_MAP: Partial<Record<Language, PrettierConfig>> = {
+  JSON: { parser: 'json5', plugins: allAvailablePlugins },
+  JAVASCRIPT: { parser: 'babel', plugins: allAvailablePlugins },
+  HTML: { parser: 'html', plugins: allAvailablePlugins },
+  CSS: { parser: 'css', plugins: allAvailablePlugins },
+  TYPESCRIPT: { parser: 'typescript', plugins: allAvailablePlugins },
+  JAVA: { parser: 'java', plugins: allAvailablePlugins },
+  MARKDOWN: {
+    parser: 'markdown',
+    plugins: allAvailablePlugins,
+  },
+};
+
 export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
@@ -70,6 +119,10 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
     () => new Set(['plaintext']),
   );
   const [isPrettifying, setIsPrettifying] = useState(false);
+
+  const canPrettifyCurrentLanguage = useMemo(() => {
+    return !!PRETTIER_SUPPORT_MAP[language];
+  }, [language]);
 
   const loadHljsLanguage = useCallback(async (langIdentifier: string) => {
     if (hljs.getLanguage(langIdentifier) || langIdentifier === 'plaintext') {
@@ -178,31 +231,27 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
   };
 
   const prettifyCode = useCallback(async () => {
-    if (language !== 'JAVASCRIPT' && language !== 'TYPESCRIPT') {
-      // Or show a message to the user
+    const config = PRETTIER_SUPPORT_MAP[language];
+    if (!config) {
       console.warn(
-        'Prettifying is only supported for JavaScript and TypeScript.',
+        `Prettifying is not supported for ${language}.`,
       );
       return;
     }
 
     setIsPrettifying(true);
     try {
-      const parser = language === 'TYPESCRIPT' ? 'typescript' : 'babel';
-      const plugins = language === 'TYPESCRIPT'
-        ? [parserTypescript, parserEstree]
-        : [parserBabel, parserEstree];
-
       const formattedCode = await prettier.format(code, {
-        parser,
-        plugins,
-        // You can add Prettier options here if needed
+        parser: config.parser,
+        plugins: config.plugins,
+        // You can add global Prettier options here if needed
         // e.g., semi: true, singleQuote: true
       });
       setCode(formattedCode);
     } catch (error) {
-      console.error('Error prettifying code:', error);
+      console.error(`Error prettifying ${language} code:`, error);
       // Optionally, inform the user about the error
+      // (e.g., via a toast notification)
     } finally {
       setIsPrettifying(false);
     }
@@ -226,6 +275,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
     // Derived/Computed values for rendering
     highlightedHtml,
     codeClassName,
+    canPrettifyCurrentLanguage,
 
     // Actions
     handleSubmit,

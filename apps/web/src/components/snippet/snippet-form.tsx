@@ -37,6 +37,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     setMaxViews,
     isSubmitting,
     isPrettifying,
+    canPrettifyCurrentLanguage,
 
     // Derived/Computed values for rendering
     highlightedHtml,
@@ -84,7 +85,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
             </div>
 
             <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
-              {language === 'JAVASCRIPT' || language === 'TYPESCRIPT'
+              {canPrettifyCurrentLanguage
                 ? (
                     <Button
                       type="button"
@@ -98,7 +99,9 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                       {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
                     </Button>
                   )
-                : null}
+                : (
+                    <div />
+                  )}
               <div>
                 {code.length}
                 {' '}
