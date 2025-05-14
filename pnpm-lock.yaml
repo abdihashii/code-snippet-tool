@@ -88,6 +88,9 @@ importers:
       lucide-react:
         specifier: ^0.509.0
         version: 0.509.0(react@19.1.0)
+      prettier:
+        specifier: ^3.5.3
+        version: 3.5.3
       react:
         specifier: ^19.1.0
         version: 19.1.0
