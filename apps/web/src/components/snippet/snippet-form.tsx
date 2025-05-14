@@ -35,6 +35,8 @@ interface SnippetFormProps {
   onSnippetCreated: (link: string) => void;
 }
 
+const MAX_CODE_LENGTH = 10_000;
+
 export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
@@ -142,8 +144,8 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   return (
     <Card className="w-full shadow-md border-slate-200 bg-white">
       <form onSubmit={handleSubmit}>
-        <CardContent className="pt-6">
-          <div className="space-y-4">
+        <CardContent className="py-6">
+          <div className="flex flex-col gap-4">
             <div className="relative w-full">
               <pre
                 aria-hidden="true"
@@ -158,14 +160,30 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                 placeholder="Paste your code here..."
                 className="relative z-10 bg-transparent text-transparent caret-gray-800 dark:caret-gray-100 min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
+                onChange={(e) => {
+                  const newCode = e.target.value;
+                  if (newCode.length <= MAX_CODE_LENGTH) {
+                    setCode(newCode);
+                  } else {
+                    setCode(newCode.substring(0, MAX_CODE_LENGTH));
+                  }
+                }}
                 required
                 spellCheck="false"
               />
             </div>
 
+            <div className="text-right text-sm text-slate-500">
+              {code.length}
+              {' '}
+              /
+              {MAX_CODE_LENGTH}
+              {' '}
+              characters
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="title">Snippet Title (Optional)</Label>
                 <Input
                   id="title"
@@ -175,7 +193,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <Label
                   htmlFor="language"
                 >
@@ -205,7 +223,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <Label
                 htmlFor="uploader-info"
               >
@@ -219,14 +237,14 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               />
             </div>
 
-            <div className="mb-4">
+            <div className="flex flex-col gap-2">
               <h3
-                className="text-sm font-medium mb-3 text-slate-700"
+                className="text-sm font-medium text-slate-700"
               >
                 Link Settings
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="expires-after">Expires After</Label>
                   <Select value={expiresAfter} onValueChange={setExpiresAfter}>
                     <SelectTrigger id="expires-after" className="w-full">
@@ -241,7 +259,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                   </Select>
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="max-views">Max Views</Label>
                   <Select value={maxViews} onValueChange={setMaxViews}>
                     <SelectTrigger id="max-views" className="w-full">
