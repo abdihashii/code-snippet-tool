@@ -1,6 +1,7 @@
 import type {
   CreateSnippetPayload,
   CreateSnippetResponse,
+  GetSnippetByIdResponse,
 } from '@snippet-share/types';
 
 const API_URL = 'http://localhost:8787';
@@ -21,4 +22,16 @@ export async function createSnippet(
   }
 
   return response.json() as Promise<CreateSnippetResponse>;
+}
+
+export async function getSnippetById(
+  id: string,
+): Promise<GetSnippetByIdResponse> {
+  const response = await fetch(`${API_URL}/snippets/${id}`);
+
+  if (!response.ok) {
+    throw new Error('Failed to get snippet');
+  }
+
+  return response.json() as Promise<GetSnippetByIdResponse>;
 }
