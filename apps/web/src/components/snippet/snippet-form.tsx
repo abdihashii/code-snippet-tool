@@ -1,6 +1,7 @@
 import type { Language } from '@snippet-share/types';
 import type React from 'react';
 
+import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
 import bash from 'highlight.js/lib/languages/bash';
 import csharp from 'highlight.js/lib/languages/csharp';
@@ -92,19 +93,20 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     // loaded. actualLangForHljs provides the *name* of the language we want.
     if (hljs.getLanguage(actualLangForHljs)) {
       try {
-        return hljs.highlight(
+        const rawHtml = hljs.highlight(
           codeToHighlight,
           { language: actualLangForHljs, ignoreIllegals: true },
         ).value;
+        return DOMPurify.sanitize(rawHtml);
       } catch (error) {
         console.error(`Highlight.js error during highlight for language '${actualLangForHljs}':`, error);
         // Fallback to plain code on an unexpected error during highlighting
+        // No need to sanitize here as it's plain text
         return codeToHighlight;
       }
     }
-    // If the language (e.g., 'plaintext' itself on initial load before
-    // useEffect registers it) isn't registered yet, return the unhighlighted
-    // code to prevent an error.
+    // If the language isn't registered yet, return the unhighlighted code.
+    // No need to sanitize here as it's plain text
     return codeToHighlight;
   }, [code, actualLangForHljs]);
 
