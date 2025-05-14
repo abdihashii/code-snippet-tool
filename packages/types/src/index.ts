@@ -29,10 +29,11 @@ export interface CreateSnippetPayload {
   title: string | null;
   language: Language;
   name: string | null;
-  max_views: number | null; // Number of views, or null for unlimited (as per frontend logic for parsing 'unlimited')
-  expires_at: string | null; // Relative time like '1h', '24h', '7d', or null for 'never'
+  // Number of views, or null for unlimited
+  // (as per frontend logic for parsing 'unlimited')
+  max_views: number | null;
+  // Relative time like '1h', '24h', '7d', or null for 'never'
+  expires_at: string | null;
 }
 
-export interface SnippetResponse extends Snippet {
-  secret_key: string; // uuid
-}
+export interface SnippetResponse extends Snippet {}
