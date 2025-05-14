@@ -88,10 +88,24 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   // actualLangForHljs value.
   const highlightedHtml = useMemo(() => {
     const codeToHighlight = code || '';
-    return hljs.highlight(
-      codeToHighlight,
-      { language: actualLangForHljs, ignoreIllegals: true },
-    ).value;
+    // CRITICAL: Only attempt to highlight if highlight.js has the language
+    // loaded. actualLangForHljs provides the *name* of the language we want.
+    if (hljs.getLanguage(actualLangForHljs)) {
+      try {
+        return hljs.highlight(
+          codeToHighlight,
+          { language: actualLangForHljs, ignoreIllegals: true },
+        ).value;
+      } catch (error) {
+        console.error(`Highlight.js error during highlight for language '${actualLangForHljs}':`, error);
+        // Fallback to plain code on an unexpected error during highlighting
+        return codeToHighlight;
+      }
+    }
+    // If the language (e.g., 'plaintext' itself on initial load before
+    // useEffect registers it) isn't registered yet, return the unhighlighted
+    // code to prevent an error.
+    return codeToHighlight;
   }, [code, actualLangForHljs]);
 
   const handleSubmit = async (e: React.FormEvent) => {
