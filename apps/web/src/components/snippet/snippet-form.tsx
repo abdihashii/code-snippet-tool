@@ -27,28 +27,35 @@ interface SnippetFormProps {
 
 const MAX_CODE_LENGTH = 10_000;
 
-// Moved languageMap to be a top-level constant
-const languageMap: Record<Language, string> = {
-  PLAINTEXT: 'plaintext',
-  JSON: 'json',
-  JAVASCRIPT: 'javascript',
-  PYTHON: 'python',
-  HTML: 'html', // Highlight.js uses 'xml' for HTML syntax
-  CSS: 'css',
-  TYPESCRIPT: 'typescript',
-  JAVA: 'java',
-  BASH: 'bash',
-  MARKDOWN: 'markdown',
-  CSHARP: 'csharp',
-};
+interface LanguageOption {
+  value: Language;
+  label: string;
+  hljsId: string;
+}
 
-// Map language identifiers to their dynamic import functions
+// Single source of truth for supported languages
+const SUPPORTED_LANGUAGES: LanguageOption[] = [
+  { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
+  { value: 'JSON', label: 'JSON', hljsId: 'json' },
+  { value: 'JAVASCRIPT', label: 'JavaScript', hljsId: 'javascript' },
+  { value: 'PYTHON', label: 'Python', hljsId: 'python' },
+  { value: 'HTML', label: 'HTML', hljsId: 'xml' }, // HTML uses the 'xml' grammar in hljs
+  { value: 'CSS', label: 'CSS', hljsId: 'css' },
+  { value: 'TYPESCRIPT', label: 'TypeScript', hljsId: 'typescript' },
+  { value: 'JAVA', label: 'Java', hljsId: 'java' },
+  { value: 'BASH', label: 'Bash', hljsId: 'bash' },
+  { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
+  { value: 'CSHARP', label: 'C#', hljsId: 'csharp' },
+];
+
+// languageLoaders: keys are hljsId, ensure they match SUPPORTED_LANGUAGES' hljsId
 const languageLoaders: Record<string, () => Promise<any>> = {
   // 'plaintext' is loaded statically
   json: () => import('highlight.js/lib/languages/json'),
   javascript: () => import('highlight.js/lib/languages/javascript'),
   python: () => import('highlight.js/lib/languages/python'),
-  html: () => import('highlight.js/lib/languages/xml'), // HTML uses XML
+  // Loader for 'xml' (used by HTML)
+  xml: () => import('highlight.js/lib/languages/xml'),
   css: () => import('highlight.js/lib/languages/css'),
   typescript: () => import('highlight.js/lib/languages/typescript'),
   java: () => import('highlight.js/lib/languages/java'),
@@ -60,7 +67,11 @@ const languageLoaders: Record<string, () => Promise<any>> = {
 export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
-  const [language, setLanguage] = useState<Language>('PLAINTEXT');
+  const [language, setLanguage] = useState<Language>(
+    SUPPORTED_LANGUAGES.find(
+      (l) => l.value === 'PLAINTEXT',
+    )?.value || SUPPORTED_LANGUAGES[0].value,
+  );
   const [uploaderInfo, setUploaderInfo] = useState('');
   const [expiresAfter, setExpiresAfter] = useState('24h');
   const [maxViews, setMaxViews] = useState('unlimited');
@@ -111,38 +122,59 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
 
   // Effect to load a language when the `language` state changes
   useEffect(() => {
-    const targetHljsLang = languageMap[language];
-    if (targetHljsLang && !hljs.getLanguage(targetHljsLang)) {
-      loadHljsLanguage(targetHljsLang);
+    const langOption = SUPPORTED_LANGUAGES.find((l) => l.value === language);
+    const targetHljsId = langOption?.hljsId;
+    if (targetHljsId && !hljs.getLanguage(targetHljsId)) {
+      loadHljsLanguage(targetHljsId);
     }
   }, [language, loadHljsLanguage]);
 
   // Get the actual language for hljs, considering loaded languages
   const actualLangForHljs = useMemo(() => {
-    const mappedLang = languageMap[language];
-    if (mappedLang && hljs.getLanguage(mappedLang)) {
-      return mappedLang;
+    const langOption = SUPPORTED_LANGUAGES.find((l) => l.value === language);
+    const currentHljsId = langOption?.hljsId;
+    if (currentHljsId && hljs.getLanguage(currentHljsId)) {
+      return currentHljsId;
     }
-    return 'plaintext'; // Fallback to plaintext
+    // Fallback to plaintext if no specific language is loaded
+    return 'plaintext';
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, loadedLanguages]);
 
-  // Highlight the code with the actual language for hljs by using the
-  // actualLangForHljs value.
+  // Get the actual language for hljs, considering loaded languages
+  // This is used to set the class name for the code block
+  const codeClassName = useMemo(() => {
+    if (language === 'HTML') {
+      return 'html'; // Always use 'language-html' for HTML class for CSS
+    }
+    const langOption = SUPPORTED_LANGUAGES.find((l) => l.value === language);
+    // Use the specific hljsId if the language is known and loaded, otherwise fallback
+    if (langOption?.hljsId && hljs.getLanguage(langOption.hljsId)) {
+      return langOption.hljsId;
+    }
+    return actualLangForHljs; // Fallback to what hljs will actually use (e.g. plaintext)
+    // loadedLanguages ensures re-eval when hljs.getLanguage might change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, actualLangForHljs, loadedLanguages]);
+
   const highlightedHtml = useMemo(() => {
     const codeToHighlight = code || '';
-    // CRITICAL: Only attempt to highlight if highlight.js has the language
-    // loaded. actualLangForHljs provides the *name* of the language we want.
+    // actualLangForHljs will be 'xml' if HTML is selected and 'xml' is loaded.
+    // It will be 'plaintext' if no specific language is loaded.
     if (hljs.getLanguage(actualLangForHljs)) {
       try {
-        const rawHtml = hljs.highlight(
-          codeToHighlight,
-          { language: actualLangForHljs, ignoreIllegals: true },
-        ).value;
+        const rawHtml = hljs.highlight(codeToHighlight, {
+          // Use the resolved hljsId (e.g., 'xml' for HTML)
+          language: actualLangForHljs,
+          ignoreIllegals: true,
+        }).value;
         return DOMPurify.sanitize(rawHtml);
       } catch (error) {
-        console.error(`Highlight.js error during highlight for language '${actualLangForHljs}':`, error);
-        // Fallback to plain code on an unexpected error during highlighting
+        console.error(
+          `Highlight.js error during highlight for language '${actualLangForHljs}':`,
+          error,
+        );
+        // If the language isn't registered yet, return the unhighlighted code.
         // No need to sanitize here as it's plain text
         return codeToHighlight;
       }
@@ -171,7 +203,8 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
         max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
 
-      const link = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
+      const link
+      = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
 
       onSnippetCreated(link);
     } catch (error) {
@@ -192,7 +225,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                 className="absolute inset-0 rounded-md bg-background px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground"
               >
                 <code
-                  className={`language-${actualLangForHljs}`}
+                  className={`language-${codeClassName}`}
                   dangerouslySetInnerHTML={{ __html: `${highlightedHtml}\n` }}
                 />
               </pre>
@@ -247,17 +280,11 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PLAINTEXT">Plain Text</SelectItem>
-                    <SelectItem value="JSON">JSON</SelectItem>
-                    <SelectItem value="JAVASCRIPT">JavaScript</SelectItem>
-                    <SelectItem value="PYTHON">Python</SelectItem>
-                    <SelectItem value="HTML">HTML</SelectItem>
-                    <SelectItem value="CSS">CSS</SelectItem>
-                    <SelectItem value="TYPESCRIPT">TypeScript</SelectItem>
-                    <SelectItem value="JAVA">Java</SelectItem>
-                    <SelectItem value="BASH">Bash</SelectItem>
-                    <SelectItem value="MARKDOWN">Markdown</SelectItem>
-                    <SelectItem value="CSHARP">C#</SelectItem>
+                    {SUPPORTED_LANGUAGES.map((lang) => (
+                      <SelectItem key={lang.value} value={lang.value}>
+                        {lang.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
