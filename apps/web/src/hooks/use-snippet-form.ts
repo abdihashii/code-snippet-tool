@@ -3,7 +3,15 @@ import type { Language } from '@snippet-share/types';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
 import plaintext from 'highlight.js/lib/languages/plaintext';
+import prettierPluginJava from 'prettier-plugin-java';
+import parserBabel from 'prettier/plugins/babel';
+import parserEstree from 'prettier/plugins/estree';
+import parserHtml from 'prettier/plugins/html';
+import parserMarkdown from 'prettier/plugins/markdown';
+import parserTypescript from 'prettier/plugins/typescript';
+import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { createSnippet } from '@/api/snippets-api';
 
@@ -50,6 +58,48 @@ const languageLoaders: Record<string, () => Promise<any>> = {
   csharp: () => import('highlight.js/lib/languages/csharp'),
 };
 
+interface PrettierConfig {
+  parser: string;
+  plugins: any[];
+}
+
+// These are the core plugins that are always available
+const coreParserPlugins = [
+  parserBabel,
+  parserEstree,
+  parserTypescript,
+  parserHtml,
+  parserMarkdown,
+];
+
+// Ensure external plugins are filtered for valid plugin objects and flattened
+// if they are arrays
+const externalCommunityPlugins = [
+  prettierPluginJava,
+]
+  .flatMap((p) => p)
+  .filter((p) => p && typeof p === 'object');
+
+// Spread the core and external plugins together to create a single array
+const allAvailablePlugins = [
+  ...coreParserPlugins,
+  ...externalCommunityPlugins,
+];
+
+// Map of languages to their corresponding Prettier config
+const PRETTIER_SUPPORT_MAP: Partial<Record<Language, PrettierConfig>> = {
+  JSON: { parser: 'json5', plugins: allAvailablePlugins },
+  JAVASCRIPT: { parser: 'babel', plugins: allAvailablePlugins },
+  HTML: { parser: 'html', plugins: allAvailablePlugins },
+  CSS: { parser: 'css', plugins: allAvailablePlugins },
+  TYPESCRIPT: { parser: 'typescript', plugins: allAvailablePlugins },
+  JAVA: { parser: 'java', plugins: allAvailablePlugins },
+  MARKDOWN: {
+    parser: 'markdown',
+    plugins: allAvailablePlugins,
+  },
+};
+
 export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
@@ -62,7 +112,14 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
   const [expiresAfter, setExpiresAfter] = useState('24h');
   const [maxViews, setMaxViews] = useState('unlimited');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loadedLanguages, setLoadedLanguages] = useState(() => new Set(['plaintext']));
+  const [loadedLanguages, setLoadedLanguages] = useState(
+    () => new Set(['plaintext']),
+  );
+  const [isPrettifying, setIsPrettifying] = useState(false);
+
+  const canPrettifyCurrentLanguage = useMemo(() => {
+    return !!PRETTIER_SUPPORT_MAP[language];
+  }, [language]);
 
   const loadHljsLanguage = useCallback(async (langIdentifier: string) => {
     if (hljs.getLanguage(langIdentifier) || langIdentifier === 'plaintext') {
@@ -80,7 +137,9 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
           hljs.registerLanguage(langIdentifier, module.default);
           setLoadedLanguages((prev) => new Set(prev).add(langIdentifier));
         } else {
-          console.warn(`Module for ${langIdentifier} loaded but has no default export.`);
+          console.warn(
+            `Module for ${langIdentifier} loaded but has no default export.`,
+          );
         }
       } catch (error) {
         console.error(`Failed to load language ${langIdentifier}:`, error);
@@ -158,7 +217,8 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
         expires_at: expiresAfter === 'never' ? null : expiresAfter,
         max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
-      const link = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
+      const link
+      = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
       onSnippetCreated(link);
     } catch (error) {
       console.error('Error creating snippet:', error);
@@ -166,6 +226,33 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
       setIsSubmitting(false);
     }
   };
+
+  const prettifyCode = useCallback(async () => {
+    const config = PRETTIER_SUPPORT_MAP[language];
+    if (!config) {
+      console.warn(
+        `Prettifying is not supported for ${language}.`,
+      );
+      return;
+    }
+
+    setIsPrettifying(true);
+    try {
+      const formattedCode = await prettier.format(code, {
+        parser: config.parser,
+        plugins: config.plugins,
+        // You can add global Prettier options here if needed
+        // e.g., semi: true, singleQuote: true
+      });
+      setCode(formattedCode);
+      toast.success('Code prettified successfully');
+    } catch (error) {
+      console.error(`Error prettifying ${language} code:`, error);
+      toast.error('Error prettifying code');
+    } finally {
+      setIsPrettifying(false);
+    }
+  }, [code, language, setCode]);
 
   return {
     // Form field states and setters
@@ -185,12 +272,15 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
     // Derived/Computed values for rendering
     highlightedHtml,
     codeClassName,
+    canPrettifyCurrentLanguage,
 
     // Actions
     handleSubmit,
+    prettifyCode,
 
     // Status
     isSubmitting,
+    isPrettifying,
 
     // Constants and static data
     SUPPORTED_LANGUAGES,

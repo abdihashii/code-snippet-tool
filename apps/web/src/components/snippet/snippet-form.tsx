@@ -1,7 +1,7 @@
 import type { Language } from '@snippet-share/types';
 
 import { useSnippetForm } from '@/hooks/use-snippet-form';
-import { Shield } from 'lucide-react';
+import { ShieldIcon, Wand2Icon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -15,6 +15,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface SnippetFormProps {
   onSnippetCreated: (link: string) => void;
@@ -36,6 +42,8 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     maxViews,
     setMaxViews,
     isSubmitting,
+    isPrettifying,
+    canPrettifyCurrentLanguage,
 
     // Derived/Computed values for rendering
     highlightedHtml,
@@ -43,6 +51,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
 
     // Actions
     handleSubmit,
+    prettifyCode,
 
     // Constants and static data
     SUPPORTED_LANGUAGES,
@@ -81,14 +90,45 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               />
             </div>
 
-            <div className="text-right text-sm text-slate-500">
-              {code.length}
-              {' '}
-              /
-              {' '}
-              {MAX_CODE_LENGTH.toLocaleString()}
-              {' '}
-              characters
+            <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
+              {/* Prettify button */}
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={prettifyCode}
+                        disabled={isPrettifying || (!code.trim()) || !canPrettifyCurrentLanguage}
+                        className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <Wand2Icon className="h-4 w-4" />
+                        {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {code === ''
+                      ? 'Paste your code to start prettifying'
+                      : canPrettifyCurrentLanguage
+                        ? 'Prettify code for the current language'
+                        : 'Cannot prettify code for the current language'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              {/* Character count */}
+              <div>
+                {code.length}
+                {' '}
+                /
+                {' '}
+                {MAX_CODE_LENGTH.toLocaleString()}
+                {' '}
+                characters
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -193,10 +233,10 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
           <Button
             type="submit"
             size="lg"
-            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700"
+            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
             disabled={!code.trim() || isSubmitting}
           >
-            <Shield className="mr-2 h-4 w-4" />
+            <ShieldIcon className="h-4 w-4" />
             {isSubmitting
               ? 'Creating Secure Snippet...'
               : 'Create Secure Snippet'}
