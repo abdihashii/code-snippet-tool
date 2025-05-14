@@ -111,6 +111,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
       return currentHljsId;
     }
     return 'plaintext';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, loadedLanguages]);
 
   const codeClassName = useMemo(() => {
@@ -122,6 +123,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
       return langOption.hljsId;
     }
     return actualLangForHljs;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, actualLangForHljs, loadedLanguages]);
 
   const highlightedHtml = useMemo(() => {
