@@ -83,7 +83,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               />
             </div>
 
-            <div className="flex justify-end items-center gap-4 text-right text-sm text-slate-500">
+            <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
               {language === 'JAVASCRIPT' || language === 'TYPESCRIPT'
                 ? (
                     <Button
