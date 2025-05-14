@@ -85,7 +85,8 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               {code.length}
               {' '}
               /
-              {MAX_CODE_LENGTH}
+              {' '}
+              {MAX_CODE_LENGTH.toLocaleString()}
               {' '}
               characters
             </div>
