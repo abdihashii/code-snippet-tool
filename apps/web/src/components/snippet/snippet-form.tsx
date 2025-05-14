@@ -1,13 +1,8 @@
 import type { Language } from '@snippet-share/types';
-import type React from 'react';
 
-import DOMPurify from 'dompurify';
-import hljs from 'highlight.js/lib/core';
-import plaintext from 'highlight.js/lib/languages/plaintext';
+import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { Shield } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { createSnippet } from '@/api/snippets-api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,194 +20,34 @@ interface SnippetFormProps {
   onSnippetCreated: (link: string) => void;
 }
 
-const MAX_CODE_LENGTH = 10_000;
-
-interface LanguageOption {
-  value: Language;
-  label: string;
-  hljsId: string;
-}
-
-// Single source of truth for supported languages
-const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
-  { value: 'JSON', label: 'JSON', hljsId: 'json' },
-  { value: 'JAVASCRIPT', label: 'JavaScript', hljsId: 'javascript' },
-  { value: 'PYTHON', label: 'Python', hljsId: 'python' },
-  { value: 'HTML', label: 'HTML', hljsId: 'xml' }, // HTML uses the 'xml' grammar in hljs
-  { value: 'CSS', label: 'CSS', hljsId: 'css' },
-  { value: 'TYPESCRIPT', label: 'TypeScript', hljsId: 'typescript' },
-  { value: 'JAVA', label: 'Java', hljsId: 'java' },
-  { value: 'BASH', label: 'Bash', hljsId: 'bash' },
-  { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
-  { value: 'CSHARP', label: 'C#', hljsId: 'csharp' },
-];
-
-// languageLoaders: keys are hljsId, ensure they match SUPPORTED_LANGUAGES' hljsId
-const languageLoaders: Record<string, () => Promise<any>> = {
-  // 'plaintext' is loaded statically
-  json: () => import('highlight.js/lib/languages/json'),
-  javascript: () => import('highlight.js/lib/languages/javascript'),
-  python: () => import('highlight.js/lib/languages/python'),
-  // Loader for 'xml' (used by HTML)
-  xml: () => import('highlight.js/lib/languages/xml'),
-  css: () => import('highlight.js/lib/languages/css'),
-  typescript: () => import('highlight.js/lib/languages/typescript'),
-  java: () => import('highlight.js/lib/languages/java'),
-  bash: () => import('highlight.js/lib/languages/bash'),
-  markdown: () => import('highlight.js/lib/languages/markdown'),
-  csharp: () => import('highlight.js/lib/languages/csharp'),
-};
-
 export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
-  const [code, setCode] = useState('');
-  const [title, setTitle] = useState('');
-  const [language, setLanguage] = useState<Language>(
-    SUPPORTED_LANGUAGES.find(
-      (l) => l.value === 'PLAINTEXT',
-    )?.value || SUPPORTED_LANGUAGES[0].value,
-  );
-  const [uploaderInfo, setUploaderInfo] = useState('');
-  const [expiresAfter, setExpiresAfter] = useState('24h');
-  const [maxViews, setMaxViews] = useState('unlimited');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loadedLanguages, setLoadedLanguages] = useState(() => new Set(['plaintext']));
+  const {
+    // Form field states and setters
+    code,
+    setCode,
+    title,
+    setTitle,
+    language,
+    setLanguage,
+    uploaderInfo,
+    setUploaderInfo,
+    expiresAfter,
+    setExpiresAfter,
+    maxViews,
+    setMaxViews,
+    isSubmitting,
 
-  // Function to dynamically load and register a highlight.js language
-  const loadHljsLanguage = useCallback(async (langIdentifier: string) => {
-    // If language is already loaded by hljs or is plaintext (handled statically/initially)
-    if (hljs.getLanguage(langIdentifier) || langIdentifier === 'plaintext') {
-      // Ensure it's in our tracking set if not already
-      if (!loadedLanguages.has(langIdentifier)) {
-        setLoadedLanguages((prev) => new Set(prev).add(langIdentifier));
-      }
-      return;
-    }
+    // Derived/Computed values for rendering
+    highlightedHtml,
+    codeClassName,
 
-    const loader = languageLoaders[langIdentifier];
-    if (loader) {
-      try {
-        const module = await loader();
-        if (module && module.default) {
-          hljs.registerLanguage(langIdentifier, module.default);
-          setLoadedLanguages((prev) => new Set(prev).add(langIdentifier));
-        } else {
-          console.warn(`Module for ${langIdentifier} loaded but has no default export.`);
-        }
-      } catch (error) {
-        console.error(`Failed to load language ${langIdentifier}:`, error);
-      }
-    } else {
-      console.warn(`No dynamic loader defined for language: ${langIdentifier}`);
-    }
-  }, [loadedLanguages]);
+    // Actions
+    handleSubmit,
 
-  // Effect for initial plaintext registration. This is run once on mount.
-  useEffect(() => {
-    // Ensure plaintext is registered (it's imported statically)
-    if (!hljs.getLanguage('plaintext')) {
-      hljs.registerLanguage('plaintext', plaintext);
-      // loadedLanguages is initialized with plaintext, so no state update
-      // needed here
-    }
-    // No need to explicitly load initial language here, as the effect below
-    // will handle it
-    // based on the initial `language` state.
-  }, []);
-
-  // Effect to load a language when the `language` state changes
-  useEffect(() => {
-    const langOption = SUPPORTED_LANGUAGES.find((l) => l.value === language);
-    const targetHljsId = langOption?.hljsId;
-    if (targetHljsId && !hljs.getLanguage(targetHljsId)) {
-      loadHljsLanguage(targetHljsId);
-    }
-  }, [language, loadHljsLanguage]);
-
-  // Get the actual language for hljs, considering loaded languages
-  const actualLangForHljs = useMemo(() => {
-    const langOption = SUPPORTED_LANGUAGES.find((l) => l.value === language);
-    const currentHljsId = langOption?.hljsId;
-    if (currentHljsId && hljs.getLanguage(currentHljsId)) {
-      return currentHljsId;
-    }
-    // Fallback to plaintext if no specific language is loaded
-    return 'plaintext';
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, loadedLanguages]);
-
-  // Get the actual language for hljs, considering loaded languages
-  // This is used to set the class name for the code block
-  const codeClassName = useMemo(() => {
-    if (language === 'HTML') {
-      return 'html'; // Always use 'language-html' for HTML class for CSS
-    }
-    const langOption = SUPPORTED_LANGUAGES.find((l) => l.value === language);
-    // Use the specific hljsId if the language is known and loaded, otherwise fallback
-    if (langOption?.hljsId && hljs.getLanguage(langOption.hljsId)) {
-      return langOption.hljsId;
-    }
-    return actualLangForHljs; // Fallback to what hljs will actually use (e.g. plaintext)
-    // loadedLanguages ensures re-eval when hljs.getLanguage might change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, actualLangForHljs, loadedLanguages]);
-
-  const highlightedHtml = useMemo(() => {
-    const codeToHighlight = code || '';
-    // actualLangForHljs will be 'xml' if HTML is selected and 'xml' is loaded.
-    // It will be 'plaintext' if no specific language is loaded.
-    if (hljs.getLanguage(actualLangForHljs)) {
-      try {
-        const rawHtml = hljs.highlight(codeToHighlight, {
-          // Use the resolved hljsId (e.g., 'xml' for HTML)
-          language: actualLangForHljs,
-          ignoreIllegals: true,
-        }).value;
-        return DOMPurify.sanitize(rawHtml);
-      } catch (error) {
-        console.error(
-          `Highlight.js error during highlight for language '${actualLangForHljs}':`,
-          error,
-        );
-        // If the language isn't registered yet, return the unhighlighted code.
-        // No need to sanitize here as it's plain text
-        return codeToHighlight;
-      }
-    }
-    // If the language isn't registered yet, return the unhighlighted code.
-    // No need to sanitize here as it's plain text
-    return codeToHighlight;
-  }, [code, actualLangForHljs]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    setIsSubmitting(true);
-
-    try {
-      const snippet = await createSnippet({
-        encrypted_content: code,
-        // title is optional, make it null if empty
-        title: title === '' ? null : title,
-        language,
-        // name is optional, make it null if empty
-        name: uploaderInfo === '' ? null : uploaderInfo,
-        // expires_at is optional, make it null if never
-        expires_at: expiresAfter === 'never' ? null : expiresAfter,
-        // max_views is optional, make it null if unlimited
-        max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
-      });
-
-      const link
-      = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
-
-      onSnippetCreated(link);
-    } catch (error) {
-      console.error('Error creating snippet:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    // Constants and static data
+    SUPPORTED_LANGUAGES,
+    MAX_CODE_LENGTH,
+  } = useSnippetForm({ onSnippetCreated });
 
   return (
     <Card className="w-full shadow-md border-slate-200 bg-white">
@@ -280,11 +115,17 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
-                    {SUPPORTED_LANGUAGES.map((lang) => (
-                      <SelectItem key={lang.value} value={lang.value}>
-                        {lang.label}
-                      </SelectItem>
-                    ))}
+                    {SUPPORTED_LANGUAGES.map(
+                      (lang: {
+                        value: Language;
+                        label: string;
+                        hljsId: string;
+                      }) => (
+                        <SelectItem key={lang.value} value={lang.value}>
+                          {lang.label}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </Select>
               </div>
