@@ -1,8 +1,20 @@
 import type { Language } from '@snippet-share/types';
 import type React from 'react';
 
+import hljs from 'highlight.js/lib/core';
+import bash from 'highlight.js/lib/languages/bash';
+import csharp from 'highlight.js/lib/languages/csharp';
+import css from 'highlight.js/lib/languages/css';
+import java from 'highlight.js/lib/languages/java';
+import javascript from 'highlight.js/lib/languages/javascript';
+import json from 'highlight.js/lib/languages/json';
+import markdown from 'highlight.js/lib/languages/markdown';
+import plaintext from 'highlight.js/lib/languages/plaintext';
+import python from 'highlight.js/lib/languages/python';
+import typescript from 'highlight.js/lib/languages/typescript';
+import xml from 'highlight.js/lib/languages/xml'; // for HTML
 import { Shield } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { createSnippet } from '@/api/snippets-api';
 import { Button } from '@/components/ui/button';
@@ -31,25 +43,56 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const [maxViews, setMaxViews] = useState('unlimited');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
+  // Register all languages once when component mounts
+  useEffect(() => {
+    hljs.registerLanguage('plaintext', plaintext);
+    hljs.registerLanguage('javascript', javascript);
+    hljs.registerLanguage('json', json);
+    hljs.registerLanguage('python', python);
+    hljs.registerLanguage('html', xml); // HTML uses XML highlighter
+    hljs.registerLanguage('css', css);
+    hljs.registerLanguage('typescript', typescript);
+    hljs.registerLanguage('java', java);
+    hljs.registerLanguage('bash', bash);
+    hljs.registerLanguage('markdown', markdown);
+    hljs.registerLanguage('csharp', csharp);
+  }, []);
 
-  //   if (!code.trim()) return;
+  // Map our Language enum values to hljs language identifiers
+  const languageMap: Record<Language, string> = useMemo(() => ({
+    PLAINTEXT: 'plaintext',
+    JSON: 'json',
+    JAVASCRIPT: 'javascript',
+    PYTHON: 'python',
+    HTML: 'html',
+    CSS: 'css',
+    TYPESCRIPT: 'typescript',
+    JAVA: 'java',
+    BASH: 'bash',
+    MARKDOWN: 'markdown',
+    CSHARP: 'csharp',
+  }), []);
 
-  //   setIsSubmitting(true);
+  // Get the actual language for hljs by mapping our Language enum values to
+  // hljs language identifiers. If the language is not supported by hljs,
+  // we fallback to plaintext.
+  const actualLangForHljs = useMemo(() => {
+    const mappedLang = languageMap[language];
+    if (mappedLang && hljs.getLanguage(mappedLang)) {
+      return mappedLang;
+    }
+    return 'plaintext';
+  }, [language, languageMap]);
 
-  //   // In a real app, this would be an API call to create the snippet
-  //   // For demo purposes, we'll simulate an API call with a timeout
-  //   setTimeout(() => {
-  //     // Generate a fake unique link
-  //     const snippetId = Math.random().toString(36).substring(2, 10);
-  //     const secretKey = Math.random().toString(36).substring(2, 15);
-  //     const link = `https://secure-snippet.example/s/${snippetId}/${secretKey}`;
-
-  //     onSnippetCreated(link);
-  //     setIsSubmitting(false);
-  //   }, 800);
-  // };
+  // Highlight the code with the actual language for hljs by using the
+  // actualLangForHljs value.
+  const highlightedHtml = useMemo(() => {
+    const codeToHighlight = code || '';
+    return hljs.highlight(
+      codeToHighlight,
+      { language: actualLangForHljs, ignoreIllegals: true },
+    ).value;
+  }, [code, actualLangForHljs]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,13 +128,23 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
       <form onSubmit={handleSubmit}>
         <CardContent className="pt-6">
           <div className="space-y-4">
-            <div>
+            <div className="relative w-full">
+              <pre
+                aria-hidden="true"
+                className="absolute inset-0 rounded-md bg-background px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground"
+              >
+                <code
+                  className={`language-${actualLangForHljs}`}
+                  dangerouslySetInnerHTML={{ __html: `${highlightedHtml}\n` }}
+                />
+              </pre>
               <Textarea
                 placeholder="Paste your code here..."
-                className="min-h-[300px] font-mono text-sm resize-y"
+                className="relative z-10 bg-transparent text-transparent caret-gray-800 dark:caret-gray-100 min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 required
+                spellCheck="false"
               />
             </div>
 
