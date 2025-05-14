@@ -225,10 +225,10 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
       const link = `http://localhost:3000/s/${createSnippetResponse.id}`;
       onSnippetCreated(link);
 
-      toast.success('Snippet created successfully');
+      toast.success(createSnippetResponse.message);
     } catch (error) {
       console.error('Error creating snippet:', error);
-      toast.error('Error creating snippet');
+      toast.error(error instanceof Error ? error.message : 'Unknown error');
     } finally {
       setIsSubmitting(false);
     }
