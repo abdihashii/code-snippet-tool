@@ -1,7 +1,7 @@
 import type { Language } from '@snippet-share/types';
 
 import { useSnippetForm } from '@/hooks/use-snippet-form';
-import { Shield } from 'lucide-react';
+import { ShieldIcon, Wand2Icon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -92,8 +92,9 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                       size="sm"
                       onClick={prettifyCode}
                       disabled={isPrettifying || (!code.trim())}
-                      className="text-xs"
+                      className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
                     >
+                      <Wand2Icon className="h-4 w-4" />
                       {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
                     </Button>
                   )
@@ -211,10 +212,10 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
           <Button
             type="submit"
             size="lg"
-            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700"
+            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
             disabled={!code.trim() || isSubmitting}
           >
-            <Shield className="mr-2 h-4 w-4" />
+            <ShieldIcon className="h-4 w-4" />
             {isSubmitting
               ? 'Creating Secure Snippet...'
               : 'Create Secure Snippet'}
