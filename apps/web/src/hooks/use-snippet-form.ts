@@ -245,6 +245,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
         // e.g., semi: true, singleQuote: true
       });
       setCode(formattedCode);
+      toast.success('Code prettified successfully');
     } catch (error) {
       console.error(`Error prettifying ${language} code:`, error);
       toast.error('Error prettifying code');
