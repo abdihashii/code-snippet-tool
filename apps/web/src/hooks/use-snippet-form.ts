@@ -15,10 +15,6 @@ import { toast } from 'sonner';
 
 import { createSnippet } from '@/api/snippets-api';
 
-interface UseSnippetFormProps {
-  onSnippetCreated: (link: string) => void;
-}
-
 const MAX_CODE_LENGTH = 10_000;
 
 interface LanguageOption {
@@ -100,11 +96,24 @@ const PRETTIER_SUPPORT_MAP: Partial<Record<Language, PrettierConfig>> = {
   },
 };
 
-export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
-  const [code, setCode] = useState('');
+interface UseSnippetFormProps {
+  onSnippetCreated?: (link: string) => void;
+  initialCode?: string;
+  initialLanguage?: Language;
+}
+
+export function useSnippetForm(
+  {
+    onSnippetCreated,
+    initialCode,
+    initialLanguage,
+  }: UseSnippetFormProps,
+) {
+  const [code, setCode] = useState(initialCode ?? '');
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState<Language>(
-    SUPPORTED_LANGUAGES.find(
+    initialLanguage
+    || SUPPORTED_LANGUAGES.find(
       (l) => l.value === 'PLAINTEXT',
     )?.value || SUPPORTED_LANGUAGES[0].value,
   );
@@ -206,6 +215,10 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
   }, [code, actualLangForHljs]);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (!onSnippetCreated) {
+      throw new Error('onSnippetCreated is required');
+    }
+
     e.preventDefault();
     setIsSubmitting(true);
     try {
