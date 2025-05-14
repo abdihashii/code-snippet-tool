@@ -1,6 +1,5 @@
 import type { Language } from '@snippet-share/types';
 
-import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { ShieldIcon, Wand2Icon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useSnippetForm } from '@/hooks/use-snippet-form';
 
 interface SnippetFormProps {
   onSnippetCreated: (link: string) => void;

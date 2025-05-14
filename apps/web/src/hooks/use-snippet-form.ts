@@ -217,8 +217,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
         expires_at: expiresAfter === 'never' ? null : expiresAfter,
         max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
-      const link
-      = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
+      const link = `http://localhost:3000/s/${snippet.id}`;
       onSnippetCreated(link);
     } catch (error) {
       console.error('Error creating snippet:', error);
