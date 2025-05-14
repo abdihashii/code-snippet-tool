@@ -11,6 +11,7 @@ import parserMarkdown from 'prettier/plugins/markdown';
 import parserTypescript from 'prettier/plugins/typescript';
 import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { createSnippet } from '@/api/snippets-api';
 
@@ -246,8 +247,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
       setCode(formattedCode);
     } catch (error) {
       console.error(`Error prettifying ${language} code:`, error);
-      // Optionally, inform the user about the error
-      // (e.g., via a toast notification)
+      toast.error('Error prettifying code');
     } finally {
       setIsPrettifying(false);
     }
