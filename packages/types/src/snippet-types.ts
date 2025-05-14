@@ -32,3 +32,13 @@ export interface CreateSnippetResponse {
   success: boolean; // true if successful, false if not
   message: string; // 'Snippet created successfully' or error message
 }
+
+export interface GetSnippetByIdResponse {
+  id: string; // uuid
+  title: string | null;
+  language: Language;
+  name: string | null;
+  content: string; // Plaintext content
+  expires_at: string | null; // ISO timestamp string, or null
+  created_at: string; // ISO timestamp string
+}
