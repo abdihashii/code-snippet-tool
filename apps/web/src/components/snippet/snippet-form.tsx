@@ -85,23 +85,17 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
             </div>
 
             <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
-              {canPrettifyCurrentLanguage
-                ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={prettifyCode}
-                      disabled={isPrettifying || (!code.trim())}
-                      className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      <Wand2Icon className="h-4 w-4" />
-                      {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
-                    </Button>
-                  )
-                : (
-                    <div />
-                  )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={prettifyCode}
+                disabled={isPrettifying || (!code.trim()) || !canPrettifyCurrentLanguage}
+                className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+              >
+                <Wand2Icon className="h-4 w-4" />
+                {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
+              </Button>
               <div>
                 {code.length}
                 {' '}
