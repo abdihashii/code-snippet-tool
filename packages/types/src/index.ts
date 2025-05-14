@@ -13,7 +13,9 @@ export type Language =
 
 export interface Snippet {
   id: string; // uuid
-  content: string; // Plaintext content, not encrypted yet
+  encrypted_content: string; // Encrypted content
+  initialization_vector: string; // Initialization vector
+  auth_tag: string; // Authentication tag
   title: string | null;
   language: Language;
   name: string | null;
