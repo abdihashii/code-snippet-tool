@@ -14,9 +14,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createSnippet } from '@/api/snippets-api';
 
-// Undefined to avoid further errors if referenced
-const prettierPluginSh = undefined;
-
 interface UseSnippetFormProps {
   onSnippetCreated: (link: string) => void;
 }
@@ -78,7 +75,6 @@ const coreParserPlugins = [
 // if they are arrays
 const externalCommunityPlugins = [
   prettierPluginJava,
-  prettierPluginSh, // Undefined to avoid further errors if referenced
 ]
   .flatMap((p) => p)
   .filter((p) => p && typeof p === 'object');
