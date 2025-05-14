@@ -5,6 +5,11 @@ import { Hono } from 'hono';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
 
+import {
+  encryptText,
+  generateInitializationVector,
+  getEncryptionKey,
+} from '@/utils/encryption-utils';
 import { getSupabaseClient } from '@/utils/supabase-client';
 
 export const snippets = new Hono<{ Bindings: CloudflareBindings }>();
@@ -12,7 +17,7 @@ export const snippets = new Hono<{ Bindings: CloudflareBindings }>();
 // Create a new snippet
 snippets.post('/', async (c) => {
   const {
-    encrypted_content,
+    content,
     title,
     language,
     name,
@@ -37,13 +42,29 @@ snippets.post('/', async (c) => {
     }
   }
 
+  // Get the encryption key
+  const key = getEncryptionKey(c.env.ENCRYPTION_KEY);
+
+  // Generate a unique, cryptographically secure IV for this content
+  const initializationVector = generateInitializationVector();
+
+  // Encrypt the plaintext content
+  const { ciphertext, auth_tag, initialization_vector } = encryptText(
+    content,
+    key,
+    initializationVector,
+  );
+
+  // Get the supabase client
   const supabase = getSupabaseClient(c.env);
 
   const { data, error } = await supabase
     .from('snippets')
     .insert(
       {
-        encrypted_content,
+        encrypted_content: ciphertext,
+        initialization_vector,
+        auth_tag,
         title,
         language,
         name,
@@ -58,5 +79,9 @@ snippets.post('/', async (c) => {
     return c.json({ error: error.message }, 500);
   }
 
-  return c.json(data);
+  return c.json({
+    id: data.id,
+    success: true,
+    message: 'Snippet created successfully',
+  });
 });

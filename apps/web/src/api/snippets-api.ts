@@ -1,13 +1,13 @@
 import type {
   CreateSnippetPayload,
-  SnippetResponse,
+  CreateSnippetResponse,
 } from '@snippet-share/types';
 
 const API_URL = 'http://localhost:8787';
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,
-): Promise<SnippetResponse> {
+): Promise<CreateSnippetResponse> {
   const response = await fetch(`${API_URL}/snippets`, {
     method: 'POST',
     body: JSON.stringify(snippet),
@@ -20,5 +20,5 @@ export async function createSnippet(
     throw new Error('Failed to create snippet');
   }
 
-  return response.json() as Promise<SnippetResponse>;
+  return response.json() as Promise<CreateSnippetResponse>;
 }

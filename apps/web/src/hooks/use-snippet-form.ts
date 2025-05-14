@@ -209,19 +209,26 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const snippet = await createSnippet({
-        encrypted_content: code,
+      const createSnippetResponse = await createSnippet({
+        content: code,
         title: title === '' ? null : title,
         language,
         name: uploaderInfo === '' ? null : uploaderInfo,
         expires_at: expiresAfter === 'never' ? null : expiresAfter,
         max_views: maxViews === 'unlimited' ? null : Number.parseInt(maxViews),
       });
-      const link
-      = `http://localhost:3000/s/${snippet.id}/${snippet.secret_key}`;
+
+      if (!createSnippetResponse.success) {
+        throw new Error(createSnippetResponse.message);
+      }
+
+      const link = `http://localhost:3000/s/${createSnippetResponse.id}`;
       onSnippetCreated(link);
+
+      toast.success(createSnippetResponse.message);
     } catch (error) {
       console.error('Error creating snippet:', error);
+      toast.error(error instanceof Error ? error.message : 'Unknown error');
     } finally {
       setIsSubmitting(false);
     }

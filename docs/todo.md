@@ -1,2 +1,2 @@
-- [ ] Encrypt the code before storing it
+- [x] Encrypt the code before storing it
 - [ ] Snippet shared page
