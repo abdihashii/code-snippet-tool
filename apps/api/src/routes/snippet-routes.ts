@@ -58,6 +58,7 @@ snippets.post('/', async (c) => {
   // Get the supabase client
   const supabase = getSupabaseClient(c.env);
 
+  // Save the snippet to the database with the encrypted content
   const { data, error } = await supabase
     .from('snippets')
     .insert(
