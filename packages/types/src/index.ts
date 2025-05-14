@@ -13,7 +13,7 @@ export type Language =
 
 export interface Snippet {
   id: string; // uuid
-  encrypted_content: string;
+  content: string; // Plaintext content, not encrypted yet
   title: string | null;
   language: Language;
   name: string | null;
@@ -25,7 +25,7 @@ export interface Snippet {
 }
 
 export interface CreateSnippetPayload {
-  encrypted_content: string;
+  content: string; // Plaintext content, not encrypted yet
   title: string | null;
   language: Language;
   name: string | null;

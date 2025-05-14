@@ -210,7 +210,7 @@ export function useSnippetForm({ onSnippetCreated }: UseSnippetFormProps) {
     setIsSubmitting(true);
     try {
       const snippet = await createSnippet({
-        encrypted_content: code,
+        content: code,
         title: title === '' ? null : title,
         language,
         name: uploaderInfo === '' ? null : uploaderInfo,
