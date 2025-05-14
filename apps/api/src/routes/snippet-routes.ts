@@ -1,4 +1,8 @@
-import type { CreateSnippetPayload, Snippet } from '@snippet-share/types';
+import type {
+  CreateSnippetPayload,
+  GetSnippetByIdResponse,
+  Snippet,
+} from '@snippet-share/types';
 
 import { addDays, addHours, isPast } from 'date-fns';
 import { Hono } from 'hono';
@@ -21,7 +25,9 @@ export const snippets = new Hono<{ Bindings: CloudflareBindings }>();
 // --- Helper functions for bytea string conversion ---
 
 /**
- * Converts a Buffer to a PostgreSQL bytea hex string format (e.g., "\\x[hex_string]").
+ * Converts a Buffer to a PostgreSQL bytea hex string format
+ * (e.g., "\\x[hex_string]").
+ *
  * @param {Buffer} buffer The buffer to convert.
  * @returns {string} The bytea hex string.
  */
@@ -30,7 +36,9 @@ function bufferToPostgresByteaString(buffer: Buffer): string {
 }
 
 /**
- * Converts a PostgreSQL bytea hex string (e.g., "\\x[hex_string]") to a Buffer.
+ * Converts a PostgreSQL bytea hex string (e.g., "\\x[hex_string]") to a
+ * Buffer.
+ *
  * @param {string | null | undefined} byteaString The bytea hex string.
  * @returns {Buffer} The resulting buffer.
  * @throws {Error} If the string format is invalid.
@@ -101,7 +109,9 @@ snippets.post('/', async (c) => {
     const { data, error } = await supabase
       .from('snippets')
       .insert({
-        encrypted_content: bufferToPostgresByteaString(encryptedOutput.ciphertext),
+        encrypted_content: bufferToPostgresByteaString(
+          encryptedOutput.ciphertext,
+        ),
         initialization_vector: bufferToPostgresByteaString(
           encryptedOutput.initialization_vector,
         ),
@@ -134,7 +144,12 @@ snippets.post('/', async (c) => {
     const err = e as Error;
     console.error('Error during snippet creation:', err);
     // Provide a more generic error to the client
-    return c.json({ error: `An unexpected error occurred: ${err.message}` }, 500);
+    return c.json(
+      {
+        error: `An unexpected error occurred: ${err.message}`,
+      },
+      500,
+    );
   }
 });
 
@@ -211,10 +226,17 @@ snippets.get('/:id', async (c) => {
     const key = getEncryptionKey(c.env.ENCRYPTION_KEY);
 
     // Convert stored bytea hex strings back to Buffers
-    // The 'as string' cast assumes your Snippet type correctly defines these as strings
-    const ciphertext = postgresByteaStringToBuffer(typedSnippet.encrypted_content as string);
-    const initializationVector = postgresByteaStringToBuffer(typedSnippet.initialization_vector as string);
-    const authTag = postgresByteaStringToBuffer(typedSnippet.auth_tag as string);
+    // The 'as string' cast assumes your Snippet type correctly defines these
+    // as strings
+    const ciphertext = postgresByteaStringToBuffer(
+      typedSnippet.encrypted_content as string,
+    );
+    const initializationVector = postgresByteaStringToBuffer(
+      typedSnippet.initialization_vector as string,
+    );
+    const authTag = postgresByteaStringToBuffer(
+      typedSnippet.auth_tag as string,
+    );
 
     const decryptedContent = decryptText(
       ciphertext,
@@ -223,8 +245,7 @@ snippets.get('/:id', async (c) => {
       authTag,
     );
 
-    // 5. Return the decrypted content and relevant metadata
-    return c.json({
+    const response: GetSnippetByIdResponse = {
       id: typedSnippet.id,
       title: typedSnippet.title,
       language: typedSnippet.language,
@@ -232,8 +253,12 @@ snippets.get('/:id', async (c) => {
       content: decryptedContent,
       created_at: typedSnippet.created_at,
       expires_at: typedSnippet.expires_at,
-      // current_views and max_views could also be returned if relevant to the client
-    });
+      // current_views and max_views could also be returned if relevant to the
+      // client
+    };
+
+    // 5. Return the decrypted content and relevant metadata
+    return c.json(response);
   } catch (decryptionOrConversionError) {
     const err = decryptionOrConversionError as Error;
     console.error(`Processing failed for snippet ${snippetId}:`, err.message);
