@@ -3,19 +3,9 @@ import type React from 'react';
 
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
-import bash from 'highlight.js/lib/languages/bash';
-import csharp from 'highlight.js/lib/languages/csharp';
-import css from 'highlight.js/lib/languages/css';
-import java from 'highlight.js/lib/languages/java';
-import javascript from 'highlight.js/lib/languages/javascript';
-import json from 'highlight.js/lib/languages/json';
-import markdown from 'highlight.js/lib/languages/markdown';
 import plaintext from 'highlight.js/lib/languages/plaintext';
-import python from 'highlight.js/lib/languages/python';
-import typescript from 'highlight.js/lib/languages/typescript';
-import xml from 'highlight.js/lib/languages/xml'; // for HTML
 import { Shield } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createSnippet } from '@/api/snippets-api';
 import { Button } from '@/components/ui/button';
@@ -37,6 +27,36 @@ interface SnippetFormProps {
 
 const MAX_CODE_LENGTH = 10_000;
 
+// Moved languageMap to be a top-level constant
+const languageMap: Record<Language, string> = {
+  PLAINTEXT: 'plaintext',
+  JSON: 'json',
+  JAVASCRIPT: 'javascript',
+  PYTHON: 'python',
+  HTML: 'html', // Highlight.js uses 'xml' for HTML syntax
+  CSS: 'css',
+  TYPESCRIPT: 'typescript',
+  JAVA: 'java',
+  BASH: 'bash',
+  MARKDOWN: 'markdown',
+  CSHARP: 'csharp',
+};
+
+// Map language identifiers to their dynamic import functions
+const languageLoaders: Record<string, () => Promise<any>> = {
+  // 'plaintext' is loaded statically
+  json: () => import('highlight.js/lib/languages/json'),
+  javascript: () => import('highlight.js/lib/languages/javascript'),
+  python: () => import('highlight.js/lib/languages/python'),
+  html: () => import('highlight.js/lib/languages/xml'), // HTML uses XML
+  css: () => import('highlight.js/lib/languages/css'),
+  typescript: () => import('highlight.js/lib/languages/typescript'),
+  java: () => import('highlight.js/lib/languages/java'),
+  bash: () => import('highlight.js/lib/languages/bash'),
+  markdown: () => import('highlight.js/lib/languages/markdown'),
+  csharp: () => import('highlight.js/lib/languages/csharp'),
+};
+
 export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const [code, setCode] = useState('');
   const [title, setTitle] = useState('');
@@ -45,47 +65,67 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const [expiresAfter, setExpiresAfter] = useState('24h');
   const [maxViews, setMaxViews] = useState('unlimited');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadedLanguages, setLoadedLanguages] = useState(() => new Set(['plaintext']));
 
-  // Register all languages once when component mounts
+  // Function to dynamically load and register a highlight.js language
+  const loadHljsLanguage = useCallback(async (langIdentifier: string) => {
+    // If language is already loaded by hljs or is plaintext (handled statically/initially)
+    if (hljs.getLanguage(langIdentifier) || langIdentifier === 'plaintext') {
+      // Ensure it's in our tracking set if not already
+      if (!loadedLanguages.has(langIdentifier)) {
+        setLoadedLanguages((prev) => new Set(prev).add(langIdentifier));
+      }
+      return;
+    }
+
+    const loader = languageLoaders[langIdentifier];
+    if (loader) {
+      try {
+        const module = await loader();
+        if (module && module.default) {
+          hljs.registerLanguage(langIdentifier, module.default);
+          setLoadedLanguages((prev) => new Set(prev).add(langIdentifier));
+        } else {
+          console.warn(`Module for ${langIdentifier} loaded but has no default export.`);
+        }
+      } catch (error) {
+        console.error(`Failed to load language ${langIdentifier}:`, error);
+      }
+    } else {
+      console.warn(`No dynamic loader defined for language: ${langIdentifier}`);
+    }
+  }, [loadedLanguages]);
+
+  // Effect for initial plaintext registration. This is run once on mount.
   useEffect(() => {
-    hljs.registerLanguage('plaintext', plaintext);
-    hljs.registerLanguage('javascript', javascript);
-    hljs.registerLanguage('json', json);
-    hljs.registerLanguage('python', python);
-    hljs.registerLanguage('html', xml); // HTML uses XML highlighter
-    hljs.registerLanguage('css', css);
-    hljs.registerLanguage('typescript', typescript);
-    hljs.registerLanguage('java', java);
-    hljs.registerLanguage('bash', bash);
-    hljs.registerLanguage('markdown', markdown);
-    hljs.registerLanguage('csharp', csharp);
+    // Ensure plaintext is registered (it's imported statically)
+    if (!hljs.getLanguage('plaintext')) {
+      hljs.registerLanguage('plaintext', plaintext);
+      // loadedLanguages is initialized with plaintext, so no state update
+      // needed here
+    }
+    // No need to explicitly load initial language here, as the effect below
+    // will handle it
+    // based on the initial `language` state.
   }, []);
 
-  // Map our Language enum values to hljs language identifiers
-  const languageMap: Record<Language, string> = useMemo(() => ({
-    PLAINTEXT: 'plaintext',
-    JSON: 'json',
-    JAVASCRIPT: 'javascript',
-    PYTHON: 'python',
-    HTML: 'html',
-    CSS: 'css',
-    TYPESCRIPT: 'typescript',
-    JAVA: 'java',
-    BASH: 'bash',
-    MARKDOWN: 'markdown',
-    CSHARP: 'csharp',
-  }), []);
+  // Effect to load a language when the `language` state changes
+  useEffect(() => {
+    const targetHljsLang = languageMap[language];
+    if (targetHljsLang && !hljs.getLanguage(targetHljsLang)) {
+      loadHljsLanguage(targetHljsLang);
+    }
+  }, [language, loadHljsLanguage]);
 
-  // Get the actual language for hljs by mapping our Language enum values to
-  // hljs language identifiers. If the language is not supported by hljs,
-  // we fallback to plaintext.
+  // Get the actual language for hljs, considering loaded languages
   const actualLangForHljs = useMemo(() => {
     const mappedLang = languageMap[language];
     if (mappedLang && hljs.getLanguage(mappedLang)) {
       return mappedLang;
     }
-    return 'plaintext';
-  }, [language, languageMap]);
+    return 'plaintext'; // Fallback to plaintext
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, loadedLanguages]);
 
   // Highlight the code with the actual language for hljs by using the
   // actualLangForHljs value.
