@@ -15,6 +15,7 @@
     // Allows you to import .js and .json files. Always useful.
     "allowJs": true,
     "resolveJsonModule": true,
+    "moduleResolution": "node",
 
     // This option forces TypeScript to consider all files as modules.
     // This helps to avoid 'cannot redeclare block-scoped variable' errors.
@@ -36,5 +37,13 @@
     // Prevents you from accessing an array or object without first checking if
     // it's defined. This is a great way to prevent runtime errors.
     "noUncheckedIndexedAccess": true,
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist_ts",
+    "eslint.config.mjs",
+    "apps/web/eslint.config.mjs",
+    "packages/eslint-config/*.js",
+    "packages/types/dist"
+  ]
 }
