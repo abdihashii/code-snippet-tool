@@ -211,25 +211,25 @@ export type CompositeTypes<
     ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never;
 
-export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
-  public: {
-    Enums: {
-      language: [
-        'PLAINTEXT',
-        'JSON',
-        'JAVASCRIPT',
-        'PYTHON',
-        'HTML',
-        'CSS',
-        'TYPESCRIPT',
-        'JAVA',
-        'BASH',
-        'MARKDOWN',
-        'CSHARP',
-      ],
-    },
-  },
-} as const;
+// export const Constants = {
+//   graphql_public: {
+//     Enums: {},
+//   },
+//   public: {
+//     Enums: {
+//       language: [
+//         'PLAINTEXT',
+//         'JSON',
+//         'JAVASCRIPT',
+//         'PYTHON',
+//         'HTML',
+//         'CSS',
+//         'TYPESCRIPT',
+//         'JAVA',
+//         'BASH',
+//         'MARKDOWN',
+//         'CSHARP',
+//       ],
+//     },
+//   },
+// } as const;

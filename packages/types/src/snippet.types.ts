@@ -1,4 +1,4 @@
-import type { Language } from './language-types';
+import type { Language } from './language.types';
 
 export interface Snippet {
   id: string; // uuid
