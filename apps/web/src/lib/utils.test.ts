@@ -58,6 +58,18 @@ describe('formatExpiryTimestamp', () => {
 
   describe('"Future - Within 1 Minute"', () => {
     it(
+      'should return "in 0 seconds" for a date less than 1 second in the future',
+      () => {
+        // Simulate a time that is in the future but rounds down to 0 full
+        // seconds difference. 0.5 seconds in the future
+        const futureDate = new Date(baseTime.getTime() + 500);
+        expect(
+          formatExpiryTimestamp(futureDate.toISOString()),
+        ).toBe('in 0 seconds');
+      },
+    );
+
+    it(
       'should return "in 30 seconds" for a date 30 seconds in the future',
       () => {
         const futureDate = addSeconds(baseTime, 30);
