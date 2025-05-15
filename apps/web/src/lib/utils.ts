@@ -1,7 +1,14 @@
 import type { ClassValue } from 'clsx';
 
 import { clsx } from 'clsx';
-import { differenceInMinutes, format, isFuture, isValid, parseISO } from 'date-fns';
+import {
+  differenceInMinutes,
+  differenceInSeconds,
+  format,
+  isFuture,
+  isValid,
+  parseISO,
+} from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -26,11 +33,14 @@ export function formatExpiryTimestamp(
   }
 
   const now = new Date();
+  const diffSeconds = differenceInSeconds(date, now);
+
+  if (diffSeconds < 60) {
+    return `in ${diffSeconds} second${diffSeconds === 1 ? '' : 's'}`;
+  }
+
   const diffMinutes = differenceInMinutes(date, now);
 
-  if (diffMinutes < 1) {
-    return 'in less than a minute';
-  }
   if (diffMinutes < 60) {
     return `in ${diffMinutes} minute${diffMinutes === 1 ? '' : 's'}`;
   }

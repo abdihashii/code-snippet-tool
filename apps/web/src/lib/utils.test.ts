@@ -45,12 +45,32 @@ describe('formatExpiryTimestamp', () => {
 
   describe('"Future - Within 1 Minute"', () => {
     it(
-      'should return "in less than a minute" for a date less than 1 minute in the future',
+      'should return "in 30 seconds" for a date 30 seconds in the future',
       () => {
         const futureDate = addSeconds(baseTime, 30);
         expect(
           formatExpiryTimestamp(futureDate.toISOString()),
-        ).toBe('in less than a minute');
+        ).toBe('in 30 seconds');
+      },
+    );
+
+    it(
+      'should return "in 1 second" for a date 1 second in the future',
+      () => {
+        const futureDate = addSeconds(baseTime, 1);
+        expect(
+          formatExpiryTimestamp(futureDate.toISOString()),
+        ).toBe('in 1 second');
+      },
+    );
+
+    it(
+      'should return "in 59 seconds" for a date 59 seconds in the future',
+      () => {
+        const futureDate = addSeconds(baseTime, 59);
+        expect(
+          formatExpiryTimestamp(futureDate.toISOString()),
+        ).toBe('in 59 seconds');
       },
     );
   });
