@@ -26,7 +26,7 @@ export function CodeEditor({
         aria-hidden="true"
         className={cn(
           'absolute inset-0 rounded-md px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground',
-          isReadOnly ? 'bg-muted' : 'bg-background',
+          isReadOnly ? 'bg-accent' : 'bg-background',
         )}
       >
         <code
