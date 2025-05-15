@@ -62,7 +62,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   return (
     <Card className="w-full shadow-md border-slate-200 bg-white">
       <form onSubmit={handleSubmit}>
-        <CardContent className="py-6">
+        <CardContent className="mb-8">
           <div className="flex flex-col gap-4">
             {/* Code editor */}
             <CodeEditor
@@ -209,7 +209,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-center pb-6">
+        <CardFooter className="flex justify-center">
           <Button
             type="submit"
             size="lg"
