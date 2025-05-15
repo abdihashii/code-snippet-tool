@@ -30,6 +30,10 @@ export async function getSnippetById(
   const response = await fetch(`${API_URL}/snippets/${id}`);
 
   if (!response.ok) {
+    // If the snippet has expired, return the snippet with the expired flag
+    if (response.status === 410) {
+      return response.json() as Promise<GetSnippetByIdResponse>;
+    }
     throw new Error('Failed to get snippet');
   }
 
