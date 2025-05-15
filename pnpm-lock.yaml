@@ -15,6 +15,9 @@ importers:
       '@eslint-react/eslint-plugin':
         specifier: ^1.49.0
         version: 1.49.0(eslint@9.26.0(jiti@2.4.2))(ts-api-utils@2.1.0(typescript@5.8.3))(typescript@5.8.3)
+      '@types/node':
+        specifier: ^22.15.17
+        version: 22.15.17
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
