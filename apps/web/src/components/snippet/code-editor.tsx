@@ -1,4 +1,5 @@
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 export interface CodeEditorProps {
   code: string;
@@ -23,7 +24,10 @@ export function CodeEditor({
     <div className="relative w-full">
       <pre
         aria-hidden="true"
-        className="absolute inset-0 rounded-md bg-background px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground"
+        className={cn(
+          'absolute inset-0 rounded-md px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground',
+          isReadOnly ? 'bg-muted' : 'bg-background',
+        )}
       >
         <code
           className={`language-${codeClassName}`}
