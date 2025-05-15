@@ -23,10 +23,24 @@ function RouteComponent() {
   const {
     // Form field states and setters
     code,
-    isPrettifying,
+
+    // Derived/Computed values for rendering
+    highlightedHtml,
+    codeClassName,
     canPrettifyCurrentLanguage,
+
+    // Actions
     prettifyCode,
+
+    // Status
+    isPrettifying,
+
+    // Constants
+    MAX_CODE_LENGTH,
   } = useSnippetForm({ initialCode: content, initialLanguage: language });
+
+  // Dummy onCodeChange for read-only editor
+  const handleCodeChange = () => {};
 
   return (
     <main
@@ -54,9 +68,11 @@ function RouteComponent() {
           <Card className="w-full shadow-md border-slate-200 bg-white">
             <CardContent className="py-6 flex flex-col gap-4">
               <CodeEditor
-                initialCode={content}
-                initialLanguage={language}
-                onSnippetCreated={() => {}}
+                code={code}
+                onCodeChange={handleCodeChange} // no-op for read-only editor
+                highlightedHtml={highlightedHtml}
+                codeClassName={codeClassName}
+                MAX_CODE_LENGTH={MAX_CODE_LENGTH}
                 isReadOnly={true}
               />
 

@@ -1,32 +1,24 @@
-import type { Language } from '@snippet-share/types';
+import { Textarea } from '@/components/ui/textarea';
 
-import { useSnippetForm } from '@/hooks/use-snippet-form';
-
-import { Textarea } from '../ui/textarea';
+export interface CodeEditorProps {
+  code: string;
+  onCodeChange: (newCode: string) => void;
+  highlightedHtml: string;
+  codeClassName: string;
+  isReadOnly?: boolean;
+  MAX_CODE_LENGTH: number;
+  placeholder?: string;
+}
 
 export function CodeEditor({
+  code,
+  onCodeChange,
+  highlightedHtml,
+  codeClassName,
   isReadOnly = false,
-  initialCode,
-  initialLanguage,
-}: {
-  onSnippetCreated: (link: string) => void;
-  isReadOnly: boolean;
-  initialCode?: string;
-  initialLanguage?: Language;
-}) {
-  const {
-    // Form field states and setters
-    code,
-    setCode,
-
-    // Derived/Computed values for rendering
-    codeClassName,
-    highlightedHtml,
-
-    // Constants and static data
-    MAX_CODE_LENGTH,
-  } = useSnippetForm({ initialCode, initialLanguage });
-
+  MAX_CODE_LENGTH,
+  placeholder = 'Paste your code here...',
+}: CodeEditorProps) {
   return (
     <div className="relative w-full">
       <pre
@@ -39,15 +31,15 @@ export function CodeEditor({
         />
       </pre>
       <Textarea
-        placeholder="Paste your code here..."
+        placeholder={placeholder}
         className="relative z-10 bg-transparent text-transparent caret-gray-800 dark:caret-gray-100 min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         value={code}
         onChange={(e) => {
           const newCode = e.target.value;
           if (newCode.length <= MAX_CODE_LENGTH) {
-            setCode(newCode);
+            onCodeChange(newCode);
           } else {
-            setCode(newCode.substring(0, MAX_CODE_LENGTH));
+            onCodeChange(newCode.substring(0, MAX_CODE_LENGTH));
           }
         }}
         required

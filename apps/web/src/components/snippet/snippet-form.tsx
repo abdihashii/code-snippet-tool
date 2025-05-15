@@ -31,6 +31,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   const {
     // Form field states and setters
     code,
+    setCode,
     title,
     setTitle,
     language,
@@ -44,6 +45,10 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     isSubmitting,
     isPrettifying,
     canPrettifyCurrentLanguage,
+
+    // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
+    highlightedHtml,
+    codeClassName,
 
     // Actions
     handleSubmit,
@@ -61,7 +66,11 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
           <div className="flex flex-col gap-4">
             {/* Code editor */}
             <CodeEditor
-              onSnippetCreated={onSnippetCreated}
+              code={code}
+              onCodeChange={setCode}
+              highlightedHtml={highlightedHtml}
+              codeClassName={codeClassName}
+              MAX_CODE_LENGTH={MAX_CODE_LENGTH}
               isReadOnly={isSubmitting}
             />
 
@@ -132,11 +141,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                   </SelectTrigger>
                   <SelectContent>
                     {SUPPORTED_LANGUAGES.map(
-                      (lang: {
-                        value: Language;
-                        label: string;
-                        hljsId: string;
-                      }) => (
+                      (lang) => (
                         <SelectItem key={lang.value} value={lang.value}>
                           {lang.label}
                         </SelectItem>
