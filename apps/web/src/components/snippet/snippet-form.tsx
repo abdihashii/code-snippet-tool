@@ -120,7 +120,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                 <Label htmlFor="title">Snippet Title (Optional)</Label>
                 <Input
                   id="title"
-                  placeholder="My awesome code"
+                  placeholder="My Awesome Code"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
