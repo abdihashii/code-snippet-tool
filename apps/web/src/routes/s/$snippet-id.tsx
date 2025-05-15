@@ -1,11 +1,19 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowLeftIcon, ShieldIcon } from 'lucide-react';
+import { ArrowLeftIcon, ClockIcon, EyeIcon, ShieldIcon } from 'lucide-react';
 
 import { getSnippetById } from '@/api/snippets-api';
 import { CodeEditor } from '@/components/snippet/code-editor';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
+import { formatExpiryTimestamp } from '@/lib/utils';
 
 export const Route = createFileRoute('/s/$snippet-id')({
   component: RouteComponent,
@@ -17,7 +25,15 @@ export const Route = createFileRoute('/s/$snippet-id')({
 });
 
 function RouteComponent() {
-  const { content, language } = Route.useLoaderData();
+  const {
+    content,
+    language,
+    title,
+    expires_at,
+    max_views,
+    name,
+    created_at,
+  } = Route.useLoaderData();
 
   const {
     // Form field states and setters
@@ -58,6 +74,42 @@ function RouteComponent() {
 
         <div className="transition-all duration-300 ease-in-out">
           <Card className="w-full shadow-md border-slate-200 bg-white">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl text-slate-800 dark:text-slate-100">
+                  {title || 'Untitled Snippet'}
+                </CardTitle>
+                <div className="flex space-x-2">
+                  <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                    <ClockIcon className="h-3 w-3" />
+                    Expires:
+                    {' '}
+                    {formatExpiryTimestamp(expires_at)}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="flex items-center gap-1 text-xs"
+                  >
+                    <EyeIcon className="h-3 w-3" />
+                    {max_views === 1
+                      ? 'Burns after reading'
+                      : 'Multiple views'}
+                  </Badge>
+                </div>
+              </div>
+              {name && (
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Shared by:
+                  {name}
+                </p>
+              )}
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                Created:
+                {' '}
+                {created_at}
+              </p>
+            </CardHeader>
+
             <CardContent>
               <CodeEditor
                 code={code}
