@@ -17,8 +17,8 @@ import {
 
 // Tests for formatExpiryTimestamp
 describe('formatExpiryTimestamp', () => {
-  // June 15, 2024, 12:00:00 PM
-  const baseTime = new Date(2024, 5, 15, 12, 0, 0);
+  // June 15, 2025, 12:00:00 PM
+  const baseTime = new Date(2025, 5, 15, 12, 0, 0);
 
   beforeEach(() => {
     vi.useFakeTimers();
