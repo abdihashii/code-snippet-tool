@@ -26,9 +26,6 @@ function RouteComponent() {
     isPrettifying,
     canPrettifyCurrentLanguage,
     prettifyCode,
-
-    // Constants and static data
-    MAX_CODE_LENGTH,
   } = useSnippetForm({ initialCode: content, initialLanguage: language });
 
   return (
@@ -63,46 +60,33 @@ function RouteComponent() {
                 isReadOnly={true}
               />
 
-              <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
-                {/* Prettify button */}
-                <TooltipProvider delayDuration={0}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={prettifyCode}
-                          disabled={isPrettifying || (!code.trim()) || !canPrettifyCurrentLanguage}
-                          className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
-                        >
-                          <Wand2Icon className="h-4 w-4" />
-                          {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
-                        </Button>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {code === ''
-                        ? 'Paste your code to start prettifying'
-                        : canPrettifyCurrentLanguage
-                          ? 'Prettify code for the current language'
-                          : 'Cannot prettify code for the current language'}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-                {/* Character count */}
-                <div>
-                  {code.length}
-                  {' '}
-                  /
-                  {' '}
-                  {MAX_CODE_LENGTH.toLocaleString()}
-                  {' '}
-                  characters
-                </div>
-              </div>
+              {/* Prettify button */}
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="w-fit">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={prettifyCode}
+                        disabled={isPrettifying || (!code.trim()) || !canPrettifyCurrentLanguage}
+                        className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <Wand2Icon className="h-4 w-4" />
+                        {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {code === ''
+                      ? 'Paste your code to start prettifying'
+                      : canPrettifyCurrentLanguage
+                        ? 'Prettify code for the current language'
+                        : 'Cannot prettify code for the current language'}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardContent>
           </Card>
         </div>
