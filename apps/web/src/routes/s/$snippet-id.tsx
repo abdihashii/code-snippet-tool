@@ -3,8 +3,13 @@ import type { GetSnippetByIdResponse, Language } from '@snippet-share/types';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowLeftIcon, ClockIcon, EyeIcon, ShieldIcon } from 'lucide-react';
 
+import type { ApiErrorResponse } from '@/api/snippets-api';
+
 import { getSnippetById } from '@/api/snippets-api';
 import { CodeEditor } from '@/components/snippet/code-editor';
+import {
+  SnippetExpiredMessage,
+} from '@/components/snippet/snippet-expired-message';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,12 +21,6 @@ import {
 } from '@/components/ui/card';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { formatExpiryTimestamp, hasExpiredByTime } from '@/lib/utils';
-
-// Define an interface for the API error response structure
-interface ApiErrorResponse {
-  error: string;
-  message: string;
-}
 
 export const Route = createFileRoute('/s/$snippet-id')({
   component: RouteComponent,
@@ -38,7 +37,8 @@ function RouteComponent() {
   // At this point, the loader data is either GetSnippetByIdResponse or
   // ApiErrorResponse because the response is either the snippet or an error
   // response
-  const loadedData = Route.useLoaderData() as GetSnippetByIdResponse | ApiErrorResponse;
+  const loadedData
+  = Route.useLoaderData() as GetSnippetByIdResponse | ApiErrorResponse;
 
   // Prepare props for useSnippetForm, defaulting if loadedData is an error
   const initialCodeForHook = ('error' in loadedData)
@@ -70,6 +70,34 @@ function RouteComponent() {
 
   // Now, check for error and return error UI if necessary
   if ('error' in loadedData && loadedData.error) {
+    // Check for specific API error messages that indicate the snippet is not
+    // available
+    const errorTitle = loadedData.error;
+    const errorMessage = (loadedData as ApiErrorResponse).message
+      || 'This snippet could not be retrieved.';
+
+    if (
+      errorTitle === 'Snippet expired'
+      || errorTitle === 'Snippet has reached its maximum view limit.'
+      || errorTitle === 'Snippet not found or access denied'
+    ) {
+      return (
+        <main
+          className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50"
+        >
+          <div className="w-full max-w-xl mx-auto">
+            <SnippetExpiredMessage
+              title={errorTitle}
+              message={errorMessage}
+              showGoHomeButton={true}
+            />
+          </div>
+        </main>
+      );
+    }
+
+    // For other, unexpected errors that still have the 'error' property
+    // structure, display the error message returned from the response
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50">
         <div className="w-full max-w-xl mx-auto text-center">
@@ -170,11 +198,10 @@ function RouteComponent() {
             <CardContent>
               {isExpired
                 ? (
-                    <div className="text-center py-8">
-                      <p className="text-xl font-semibold text-slate-600">
-                        This snippet has expired.
-                      </p>
-                    </div>
+                    <SnippetExpiredMessage
+                      title="Snippet Expired"
+                      message="This snippet has expired based on its set expiry time and is no longer viewable."
+                    />
                   )
                 : (
                     <CodeEditor
