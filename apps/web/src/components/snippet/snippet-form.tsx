@@ -160,7 +160,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               </Label>
               <Input
                 id="uploader-info"
-                placeholder="John Doe"
+                placeholder="Muhammad Ali"
                 value={uploaderInfo}
                 onChange={(e) => setUploaderInfo(e.target.value)}
               />
