@@ -20,7 +20,11 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
-import { formatExpiryTimestamp, hasExpiredByTime } from '@/lib/utils';
+import {
+  formatExpiryTimestamp,
+  hasExpiredByTime,
+  hasReachedMaxViews,
+} from '@/lib/utils';
 
 export const Route = createFileRoute('/s/$snippet-id')({
   component: RouteComponent,
@@ -129,11 +133,17 @@ function RouteComponent() {
     title,
     expires_at,
     max_views,
+    current_views,
     name,
     created_at,
   } = loadedData as GetSnippetByIdResponse; // Safe cast as error case is handled
 
   const isExpired = hasExpiredByTime(expires_at);
+  // Client-side check for max views, in case API doesn't return 403 for some
+  // reason but snippet data is fetched
+  const hasReachedDisplayLimit = max_views !== null && current_views !== undefined
+    ? hasReachedMaxViews(current_views, max_views)
+    : false;
 
   return (
     <main
@@ -203,16 +213,23 @@ function RouteComponent() {
                       message="This snippet has expired based on its set expiry time and is no longer viewable."
                     />
                   )
-                : (
-                    <CodeEditor
-                      code={code}
-                      onCodeChange={handleCodeChange} // no-op for read-only editor
-                      highlightedHtml={highlightedHtml}
-                      codeClassName={codeClassName}
-                      MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-                      isReadOnly={true}
-                    />
-                  )}
+                : hasReachedDisplayLimit
+                  ? (
+                      <SnippetExpiredMessage
+                        title="View Limit Reached"
+                        message="This snippet has reached its maximum view limit and is no longer available."
+                      />
+                    )
+                  : (
+                      <CodeEditor
+                        code={code}
+                        onCodeChange={handleCodeChange} // no-op for read-only editor
+                        highlightedHtml={highlightedHtml}
+                        codeClassName={codeClassName}
+                        MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                        isReadOnly={true}
+                      />
+                    )}
             </CardContent>
             <CardFooter className="flex justify-center">
               <Link to="/">

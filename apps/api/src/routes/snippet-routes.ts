@@ -253,8 +253,8 @@ snippets.get('/:id', async (c) => {
       content: decryptedContent,
       created_at: typedSnippet.created_at,
       expires_at: typedSnippet.expires_at,
-      // current_views and max_views could also be returned if relevant to the
-      // client
+      max_views: typedSnippet.max_views,
+      current_views: typedSnippet.current_views,
     };
 
     // 5. Return the decrypted content and relevant metadata
