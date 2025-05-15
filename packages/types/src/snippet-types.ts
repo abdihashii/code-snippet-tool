@@ -38,6 +38,7 @@ export interface GetSnippetByIdResponse {
   title: string | null;
   language: Language;
   name: string | null;
+  max_views: number | null;
   content: string; // Plaintext content
   expires_at: string | null; // ISO timestamp string, or null
   created_at: string; // ISO timestamp string
