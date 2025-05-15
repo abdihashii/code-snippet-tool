@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ShieldIcon, Wand2Icon } from 'lucide-react';
+import { ArrowLeftIcon, ShieldIcon } from 'lucide-react';
 
 import { getSnippetById } from '@/api/snippets-api';
 import { CodeEditor } from '@/components/snippet/code-editor';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 
 export const Route = createFileRoute('/s/$snippet-id')({
@@ -27,13 +26,6 @@ function RouteComponent() {
     // Derived/Computed values for rendering
     highlightedHtml,
     codeClassName,
-    canPrettifyCurrentLanguage,
-
-    // Actions
-    prettifyCode,
-
-    // Status
-    isPrettifying,
 
     // Constants
     MAX_CODE_LENGTH,
@@ -66,7 +58,7 @@ function RouteComponent() {
 
         <div className="transition-all duration-300 ease-in-out">
           <Card className="w-full shadow-md border-slate-200 bg-white">
-            <CardContent className="py-6 flex flex-col gap-4">
+            <CardContent>
               <CodeEditor
                 code={code}
                 onCodeChange={handleCodeChange} // no-op for read-only editor
@@ -75,35 +67,19 @@ function RouteComponent() {
                 MAX_CODE_LENGTH={MAX_CODE_LENGTH}
                 isReadOnly={true}
               />
-
-              {/* Prettify button */}
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="w-fit">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={prettifyCode}
-                        disabled={isPrettifying || (!code.trim()) || !canPrettifyCurrentLanguage}
-                        className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
-                      >
-                        <Wand2Icon className="h-4 w-4" />
-                        {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {code === ''
-                      ? 'Paste your code to start prettifying'
-                      : canPrettifyCurrentLanguage
-                        ? 'Prettify code for the current language'
-                        : 'Cannot prettify code for the current language'}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
             </CardContent>
+            <CardFooter className="flex justify-center">
+              <Link to="/">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <ArrowLeftIcon className="h-4 w-4" />
+                  Back to Home
+                </Button>
+              </Link>
+            </CardFooter>
           </Card>
         </div>
       </div>
