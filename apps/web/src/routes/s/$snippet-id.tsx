@@ -111,7 +111,7 @@ function RouteComponent() {
           <p className="text-slate-600 mb-6">
             {loadedData.message}
           </p>
-          <Link to="/">
+          <Link to="/new">
             <Button
               variant="outline"
               size="sm"
@@ -232,7 +232,7 @@ function RouteComponent() {
                     )}
             </CardContent>
             <CardFooter className="flex justify-center">
-              <Link to="/">
+              <Link to="/new">
                 <Button
                   variant="outline"
                   size="sm"

@@ -26,7 +26,7 @@ export function SnippetExpiredMessage({
         {message}
       </p>
       {showGoHomeButton && (
-        <Link to="/">
+        <Link to="/new">
           <Button
             variant="outline"
             size="sm"

@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as NewIndexImport } from './routes/new/index'
 import { Route as SSnippetIdImport } from './routes/s/$snippet-id'
 
 // Create/Update Routes
@@ -19,6 +20,12 @@ import { Route as SSnippetIdImport } from './routes/s/$snippet-id'
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const NewIndexRoute = NewIndexImport.update({
+  id: '/new/',
+  path: '/new/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,6 +53,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SSnippetIdImport
       parentRoute: typeof rootRoute
     }
+    '/new/': {
+      id: '/new/'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof NewIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -54,36 +68,41 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
+  '/new': typeof NewIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
+  '/new': typeof NewIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
+  '/new/': typeof NewIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/s/$snippet-id'
+  fullPaths: '/' | '/s/$snippet-id' | '/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/s/$snippet-id'
-  id: '__root__' | '/' | '/s/$snippet-id'
+  to: '/' | '/s/$snippet-id' | '/new'
+  id: '__root__' | '/' | '/s/$snippet-id' | '/new/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SSnippetIdRoute: typeof SSnippetIdRoute
+  NewIndexRoute: typeof NewIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SSnippetIdRoute: SSnippetIdRoute,
+  NewIndexRoute: NewIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +116,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/s/$snippet-id"
+        "/s/$snippet-id",
+        "/new/"
       ]
     },
     "/": {
@@ -105,6 +125,9 @@ export const routeTree = rootRoute
     },
     "/s/$snippet-id": {
       "filePath": "s/$snippet-id.tsx"
+    },
+    "/new/": {
+      "filePath": "new/index.tsx"
     }
   }
 }
