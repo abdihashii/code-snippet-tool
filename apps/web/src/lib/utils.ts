@@ -11,8 +11,19 @@ import {
 } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 
+const DATE_FORMAT = 'MM/dd/yyyy hh:mm a';
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function formatTimestamp(
+  timestamp: string | Date | null | undefined,
+): string {
+  if (!timestamp) {
+    return 'Never';
+  }
+  return format(timestamp, DATE_FORMAT);
 }
 
 export function formatExpiryTimestamp(
@@ -44,7 +55,7 @@ export function formatExpiryTimestamp(
   if (diffMinutes < 60) {
     return `in ${diffMinutes} minute${diffMinutes === 1 ? '' : 's'}`;
   }
-  return format(date, 'MM/dd/yyyy hh:mm a');
+  return format(date, DATE_FORMAT);
 }
 
 export function hasReachedMaxViews(
