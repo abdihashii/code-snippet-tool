@@ -1,18 +1,11 @@
 import type {
+  ApiErrorResponse,
   CreateSnippetPayload,
   CreateSnippetResponse,
   GetSnippetByIdResponse,
 } from '@snippet-share/types';
 
 const API_URL = 'http://localhost:8787';
-
-// Define ApiErrorResponse locally if not available in shared types. This
-// matches the structure used in $snippet-id.tsx and returned by the API for
-// errors
-export interface ApiErrorResponse {
-  error: string;
-  message: string;
-}
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,

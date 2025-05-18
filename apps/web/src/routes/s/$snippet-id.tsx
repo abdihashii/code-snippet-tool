@@ -1,9 +1,7 @@
-import type { GetSnippetByIdResponse, Language } from '@snippet-share/types';
+import type { ApiErrorResponse, GetSnippetByIdResponse, Language } from '@snippet-share/types';
 
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowLeftIcon, ClockIcon, EyeIcon, ShieldIcon } from 'lucide-react';
-
-import type { ApiErrorResponse } from '@/api/snippets-api';
 
 import { getSnippetById } from '@/api/snippets-api';
 import { CodeEditor } from '@/components/snippet/code-editor';
