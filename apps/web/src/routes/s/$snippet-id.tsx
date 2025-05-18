@@ -20,6 +20,7 @@ import {
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import {
   formatExpiryTimestamp,
+  formatTimestamp,
   hasExpiredByTime,
   hasReachedMaxViews,
 } from '@/lib/utils';
@@ -193,13 +194,14 @@ function RouteComponent() {
               {name && (
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                   Shared by:
+                  {' '}
                   {name}
                 </p>
               )}
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Created:
                 {' '}
-                {created_at}
+                {formatTimestamp(created_at)}
               </p>
             </CardHeader>
 
