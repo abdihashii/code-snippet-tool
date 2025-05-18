@@ -44,13 +44,14 @@ export function generateInitializationVector(): Buffer {
  * For this example, it attempts to read the key from an environment variable
  * `ENCRYPTION_KEY_HEX` (expected to be a 64-character hex string for a 256-bit key).
  *
+ * @param {string} keyHex The encryption key as a 64-character hex string.
  * @returns {Buffer} The encryption key as a Buffer (32 bytes).
  * @throws {Error} If the key is not found via the environment variable or is invalid.
  */
 export function getEncryptionKey(keyHex: string): Buffer {
   if (!keyHex) {
     throw new Error(
-      'ENCRYPTION_KEY_HEX environment variable not set. '
+      'Encryption key not provided. '
       + 'This is required for the example. In a production system, '
       + 'this function must securely fetch the key from a Key Management Service.',
     );
@@ -59,7 +60,7 @@ export function getEncryptionKey(keyHex: string): Buffer {
   // A 256-bit key is 32 bytes, which is 64 hexadecimal characters.
   if (keyHex.length !== 64) {
     throw new Error(
-      'Invalid ENCRYPTION_KEY_HEX length. Expected 64 hex characters for a 256-bit key.',
+      'Invalid encryption key length. Expected 64 hex characters for a 256-bit key.',
     );
   }
 
@@ -67,19 +68,19 @@ export function getEncryptionKey(keyHex: string): Buffer {
     const key = Buffer.from(keyHex, 'hex');
     if (key.length !== 32) {
       // This check is a bit redundant if hex length is 64, but good for sanity.
-      throw new Error('Derived key is not 32 bytes long. Check ENCRYPTION_KEY_HEX.');
+      throw new Error('Derived key is not 32 bytes long. Check your encryption key.');
     }
     return key;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Failed to parse ENCRYPTION_KEY_HEX as a hex string: ${message}`);
+    throw new Error(`Failed to parse encryption key as a hex string: ${message}`);
   }
 }
 
 /**
  * Interface for the output of the encryption function.
  */
-interface EncryptedTextOutput {
+export interface EncryptedTextOutput {
   ciphertext: Buffer; // The encrypted data
   auth_tag: Buffer; // The GCM authentication tag
   initialization_vector: Buffer; // The IV that was used for this encryption
@@ -149,5 +150,83 @@ export function encryptText(
     console.error('Encryption failed:', error);
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(`Encryption process failed: ${message}`);
+  }
+}
+
+/**
+ * Decrypts ciphertext using AES-256-GCM.
+ *
+ * @param {Buffer} ciphertext The encrypted data.
+ * @param {Buffer} key The 32-byte (256-bit) encryption key.
+ * @param {Buffer} initialization_vector The 12-byte (96-bit) Initialization Vector used for encryption.
+ * @param {Buffer} auth_tag The GCM authentication tag generated during encryption.
+ * @returns {string} The decrypted plaintext.
+ * @throws {Error} If decryption fails (e.g., auth tag mismatch, invalid inputs).
+ */
+export function decryptText(
+  ciphertext: Buffer,
+  key: Buffer,
+  initialization_vector: Buffer,
+  auth_tag: Buffer,
+): string {
+  // Validate key length
+  if (key.length !== 32) {
+    throw new Error(
+      'Invalid key length. Key must be 32 bytes (256 bits) for AES-256-GCM.',
+    );
+  }
+
+  // Validate IV length
+  if (initialization_vector.length !== 12) {
+    throw new Error(
+      'Invalid IV length. IV must be 12 bytes (96 bits) for AES-256-GCM with common usage.',
+    );
+  }
+
+  // Validate auth tag length (typically 16 bytes for AES-GCM)
+  if (auth_tag.length !== 16) {
+    // Note: AES-GCM supports other tag lengths, but 16 bytes (128 bits) is common.
+    // If you use other tag lengths, adjust this check accordingly.
+    throw new Error(
+      'Invalid auth tag length. Expected 16 bytes (128 bits) for common AES-256-GCM usage.',
+    );
+  }
+
+  try {
+    // Decipher the ciphertext using the same algorithm and key
+    const decipher = crypto.createDecipheriv(
+      'aes-256-gcm',
+      key,
+      initialization_vector,
+    );
+
+    // Set the authentication tag. This is crucial for GCM.
+    // If the tag does not match, decipher.final() will throw an error.
+    decipher.setAuthTag(auth_tag);
+
+    // Update with the ciphertext and finalize
+    let decrypted = decipher.update(ciphertext);
+    decrypted = Buffer.concat([decrypted, decipher.final()]); // final() throws on auth failure
+
+    // Return the decrypted text as a UTF-8 string
+    return decrypted.toString('utf-8');
+  } catch (error) {
+    console.error('Decryption failed:', error);
+    // Do not provide overly specific error messages to the client in case of
+    // auth failure, as it might leak sensitive information. A generic
+    // "Decryption failed" or "Invalid data" is often better.
+    // The console log above is for server-side debugging.
+    const message = error instanceof Error ? error.message : String(error);
+    // Check for common GCM authentication failure messages
+    if (
+      message.toLowerCase().includes('unsupported state')
+      || message.toLowerCase().includes('authentication tag mismatch')
+      || message.toLowerCase().includes('bad decrypt') // Node.js versions might vary error message
+    ) {
+      throw new Error(
+        'Decryption failed: Authentication tag mismatch or invalid/corrupted data.',
+      );
+    }
+    throw new Error(`Decryption process failed: ${message}`);
   }
 }

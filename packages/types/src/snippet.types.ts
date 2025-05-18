@@ -1,4 +1,4 @@
-import type { Language } from './language-types';
+import type { Language } from './language.types';
 
 export interface Snippet {
   id: string; // uuid
@@ -31,4 +31,16 @@ export interface CreateSnippetResponse {
   id: string; // uuid
   success: boolean; // true if successful, false if not
   message: string; // 'Snippet created successfully' or error message
+}
+
+export interface GetSnippetByIdResponse {
+  id: string; // uuid
+  title: string | null;
+  language: Language;
+  name: string | null;
+  max_views: number | null;
+  current_views: number;
+  content: string; // Plaintext content
+  expires_at: string | null; // ISO timestamp string, or null
+  created_at: string; // ISO timestamp string
 }

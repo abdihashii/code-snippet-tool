@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
   TooltipContent,
@@ -21,6 +20,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
+
+import { CodeEditor } from './code-editor';
 
 interface SnippetFormProps {
   onSnippetCreated: (link: string) => void;
@@ -45,7 +46,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     isPrettifying,
     canPrettifyCurrentLanguage,
 
-    // Derived/Computed values for rendering
+    // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
     highlightedHtml,
     codeClassName,
 
@@ -61,34 +62,17 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
   return (
     <Card className="w-full shadow-md border-slate-200 bg-white">
       <form onSubmit={handleSubmit}>
-        <CardContent className="py-6">
+        <CardContent className="mb-8">
           <div className="flex flex-col gap-4">
-            <div className="relative w-full">
-              <pre
-                aria-hidden="true"
-                className="absolute inset-0 rounded-md bg-background px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground"
-              >
-                <code
-                  className={`language-${codeClassName}`}
-                  dangerouslySetInnerHTML={{ __html: `${highlightedHtml}\n` }}
-                />
-              </pre>
-              <Textarea
-                placeholder="Paste your code here..."
-                className="relative z-10 bg-transparent text-transparent caret-gray-800 dark:caret-gray-100 min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                value={code}
-                onChange={(e) => {
-                  const newCode = e.target.value;
-                  if (newCode.length <= MAX_CODE_LENGTH) {
-                    setCode(newCode);
-                  } else {
-                    setCode(newCode.substring(0, MAX_CODE_LENGTH));
-                  }
-                }}
-                required
-                spellCheck="false"
-              />
-            </div>
+            {/* Code editor */}
+            <CodeEditor
+              code={code}
+              onCodeChange={setCode}
+              highlightedHtml={highlightedHtml}
+              codeClassName={codeClassName}
+              MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+              isReadOnly={isSubmitting}
+            />
 
             <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
               {/* Prettify button */}
@@ -136,7 +120,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                 <Label htmlFor="title">Snippet Title (Optional)</Label>
                 <Input
                   id="title"
-                  placeholder="My awesome code"
+                  placeholder="My Awesome Code"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
@@ -157,11 +141,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                   </SelectTrigger>
                   <SelectContent>
                     {SUPPORTED_LANGUAGES.map(
-                      (lang: {
-                        value: Language;
-                        label: string;
-                        hljsId: string;
-                      }) => (
+                      (lang) => (
                         <SelectItem key={lang.value} value={lang.value}>
                           {lang.label}
                         </SelectItem>
@@ -180,7 +160,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               </Label>
               <Input
                 id="uploader-info"
-                placeholder="John Doe"
+                placeholder="Muhammad Ali"
                 value={uploaderInfo}
                 onChange={(e) => setUploaderInfo(e.target.value)}
               />
@@ -229,7 +209,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-center pb-6">
+        <CardFooter className="flex justify-center">
           <Button
             type="submit"
             size="lg"
