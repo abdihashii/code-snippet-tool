@@ -4,6 +4,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowLeftIcon, ClockIcon, EyeIcon, ShieldIcon } from 'lucide-react';
 
 import { getSnippetById } from '@/api/snippets-api';
+import { Header } from '@/components/layout/header';
 import { CodeEditor } from '@/components/snippet/code-editor';
 import {
   SnippetExpiredMessage,
@@ -149,22 +150,7 @@ function RouteComponent() {
       className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-6 md:p-8 bg-slate-50"
     >
       <div className="w-full max-w-3xl mx-auto">
-        <header className="mb-6 mt-4">
-          <Link to="/" className="flex items-center justify-center">
-            <ShieldIcon className="h-6 w-6 mr-2 text-teal-600" />
-            <h1
-              className="text-2xl font-semibold text-slate-800"
-            >
-              Secure Snippet Sharer
-            </h1>
-          </Link>
-        </header>
-
-        <p
-          className="text-center text-slate-600 mb-8"
-        >
-          Share code snippets securely and simply
-        </p>
+        <Header />
 
         <div className="transition-all duration-300 ease-in-out">
           <Card className="w-full shadow-md border-slate-200 bg-white">
