@@ -1,8 +1,8 @@
 {
-  "name": "code-snippet-tool",
+  "name": "snippet-share",
   "version": "1.0.0",
   "packageManager": "pnpm@10.10.0",
-  "description": "Code Snippet Tool Monorepo",
+  "description": "Snippet Share Monorepo",
   "author": "Abdirahman Haji",
   "license": "ISC",
   "keywords": [],
