@@ -1,7 +1,18 @@
-import type { ApiErrorResponse, GetSnippetByIdResponse, Language } from '@snippet-share/types';
+import type {
+  ApiErrorResponse,
+  GetSnippetByIdResponse,
+  Language,
+} from '@snippet-share/types';
 
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowLeftIcon, ClockIcon, EyeIcon, ShieldIcon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  ClockIcon,
+  EyeIcon,
+  LockIcon,
+  ShieldIcon,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { getSnippetById } from '@/api/snippets-api';
 import { Header } from '@/components/layout/header';
@@ -18,7 +29,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
+import { decryptSnippet } from '@/lib/crypto';
 import {
   formatExpiryTimestamp,
   formatTimestamp,
@@ -38,16 +59,29 @@ export const Route = createFileRoute('/s/$snippet-id')({
 });
 
 function RouteComponent() {
+  const [password, setPassword] = useState('');
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+  const [decryptionError, setDecryptionError] = useState<string | null>(null);
+
   // At this point, the loader data is either GetSnippetByIdResponse or
   // ApiErrorResponse because the response is either the snippet or an error
   // response
   const loadedData
   = Route.useLoaderData() as GetSnippetByIdResponse | ApiErrorResponse;
 
+  // Check if this is a password-protected snippet
+  const isPasswordProtected = !('error' in loadedData)
+    && loadedData.encrypted_dek
+    && loadedData.iv_for_dek
+    && loadedData.auth_tag_for_dek
+    && loadedData.kdf_salt
+    && loadedData.kdf_parameters;
+
   // Prepare props for useSnippetForm, defaulting if loadedData is an error
   const initialCodeForHook = ('error' in loadedData)
     ? ''
-    : loadedData.content;
+    : decryptedContent || loadedData.encrypted_content;
   const initialLanguageForHook = ('error' in loadedData)
     ? 'PLAINTEXT' as Language
     : loadedData.language;
@@ -67,10 +101,73 @@ function RouteComponent() {
     initialLanguage: initialLanguageForHook,
   });
 
-  // Dummy onCodeChange for read-only editor
-  // TODO: see if needed, or can be removed if useSnippetForm doesn't return it
-  // when read-only
-  const handleCodeChange = () => {};
+  // Handle password submission
+  const handlePasswordSubmit = async () => {
+    if (!password) return;
+
+    try {
+      if ('error' in loadedData) return;
+
+      const decrypted = await decryptSnippet({
+        encryptedContent: loadedData.encrypted_content,
+        iv: loadedData.initialization_vector,
+        authTag: loadedData.auth_tag,
+        encryptedDek: loadedData.encrypted_dek!,
+        ivForDek: loadedData.iv_for_dek!,
+        authTagForDek: loadedData.auth_tag_for_dek!,
+        kdfSalt: loadedData.kdf_salt!,
+        kdfParameters: loadedData.kdf_parameters!,
+        password,
+      });
+
+      setDecryptedContent(decrypted);
+      setShowPasswordDialog(false);
+      setDecryptionError(null);
+    } catch (err) {
+      console.error('Failed to decrypt with password:', err);
+      setDecryptionError('Invalid password. Please try again.');
+    }
+  };
+
+  // Handle regular snippet decryption (with DEK from URL fragment)
+  const handleRegularDecryption = async () => {
+    if ('error' in loadedData) return;
+
+    try {
+      const dek = window.location.hash.substring(1);
+
+      if (!dek) {
+        console.error('No decryption key found in URL');
+        throw new Error('No decryption key found in URL');
+      }
+
+      const decrypted = await decryptSnippet({
+        encryptedContent: loadedData.encrypted_content,
+        iv: loadedData.initialization_vector,
+        authTag: loadedData.auth_tag,
+        dek,
+      });
+
+      setDecryptedContent(decrypted);
+      setDecryptionError(null);
+    } catch (err) {
+      console.error('Failed to decrypt snippet:', err);
+      setDecryptionError(
+        'Failed to decrypt snippet. The link may be invalid or corrupted.',
+      );
+    }
+  };
+
+  // Attempt decryption when component mounts
+  useEffect(() => {
+    if ('error' in loadedData) return;
+
+    if (isPasswordProtected) {
+      setShowPasswordDialog(true);
+    } else {
+      handleRegularDecryption();
+    }
+  }, [loadedData]);
 
   // Now, check for error and return error UI if necessary
   if ('error' in loadedData && loadedData.error) {
@@ -160,7 +257,19 @@ function RouteComponent() {
                   {title || 'Untitled Snippet'}
                 </CardTitle>
                 <div className="flex space-x-2">
-                  <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                  {isPasswordProtected && (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1 text-xs"
+                    >
+                      <LockIcon className="h-3 w-3" />
+                      Password Protected
+                    </Badge>
+                  )}
+                  <Badge
+                    variant="outline"
+                    className="flex items-center gap-1 text-xs"
+                  >
                     <ClockIcon className="h-3 w-3" />
                     Expires:
                     {' '}
@@ -206,17 +315,40 @@ function RouteComponent() {
                         message="This snippet has reached its maximum view limit and is no longer available."
                       />
                     )
-                  : (
-                      <CodeEditor
-                        code={code}
-                        onCodeChange={handleCodeChange} // no-op for read-only editor
-                        highlightedHtml={highlightedHtml}
-                        codeClassName={codeClassName}
-                        MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-                        isReadOnly={true}
-                      />
-                    )}
+                  : decryptionError
+                    ? (
+                        <div className="text-center py-8">
+                          <ShieldIcon
+                            className="h-12 w-12 mx-auto mb-4 text-red-500"
+                          />
+                          <h3
+                            className="text-lg font-semibold text-slate-800 mb-2"
+                          >
+                            {decryptionError}
+                          </h3>
+                          {isPasswordProtected && (
+                            <Button
+                              variant="outline"
+                              onClick={() => setShowPasswordDialog(true)}
+                              className="mt-4"
+                            >
+                              Try Again
+                            </Button>
+                          )}
+                        </div>
+                      )
+                    : (
+                        <CodeEditor
+                          code={code}
+                          onCodeChange={() => {}}
+                          highlightedHtml={highlightedHtml}
+                          codeClassName={codeClassName}
+                          MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                          isReadOnly={true}
+                        />
+                      )}
             </CardContent>
+
             <CardFooter className="flex justify-center">
               <Link to="/new">
                 <Button
@@ -232,6 +364,37 @@ function RouteComponent() {
           </Card>
         </div>
       </div>
+
+      {/* Password Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Password Protected Snippet</DialogTitle>
+            <DialogDescription>
+              This snippet is password protected. Please enter the password to view its contents.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handlePasswordSubmit();
+                }
+              }}
+            />
+            {decryptionError && (
+              <p className="text-sm text-red-500 mt-2">{decryptionError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={handlePasswordSubmit}>Decrypt</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <footer className="mt-auto py-4 text-center text-sm text-slate-500">
         ©
