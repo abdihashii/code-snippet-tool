@@ -9,6 +9,7 @@ import {
   ArrowLeftIcon,
   ClockIcon,
   EyeIcon,
+  Loader2,
   LockIcon,
   ShieldIcon,
 } from 'lucide-react';
@@ -63,6 +64,7 @@ function RouteComponent() {
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
   const [decryptionError, setDecryptionError] = useState<string | null>(null);
+  const [isDecrypting, setIsDecrypting] = useState(false);
 
   // At this point, the loader data is either GetSnippetByIdResponse or
   // ApiErrorResponse because the response is either the snippet or an error
@@ -104,6 +106,8 @@ function RouteComponent() {
   // Handle password submission
   const handlePasswordSubmit = async () => {
     if (!password) return;
+    setIsDecrypting(true);
+    setDecryptionError(null);
 
     try {
       if ('error' in loadedData) return;
@@ -126,12 +130,16 @@ function RouteComponent() {
     } catch (err) {
       console.error('Failed to decrypt with password:', err);
       setDecryptionError('Invalid password. Please try again.');
+    } finally {
+      setIsDecrypting(false);
     }
   };
 
   // Handle regular snippet decryption (with DEK from URL fragment)
   const handleRegularDecryption = async () => {
     if ('error' in loadedData) return;
+    setIsDecrypting(true);
+    setDecryptionError(null);
 
     try {
       const dek = window.location.hash.substring(1);
@@ -155,6 +163,8 @@ function RouteComponent() {
       setDecryptionError(
         'Failed to decrypt snippet. The link may be invalid or corrupted.',
       );
+    } finally {
+      setIsDecrypting(false);
     }
   };
 
@@ -326,7 +336,7 @@ function RouteComponent() {
                           >
                             {decryptionError}
                           </h3>
-                          {isPasswordProtected && (
+                          {isPasswordProtected && !isDecrypting && (
                             <Button
                               variant="outline"
                               onClick={() => setShowPasswordDialog(true)}
@@ -337,16 +347,27 @@ function RouteComponent() {
                           )}
                         </div>
                       )
-                    : (
-                        <CodeEditor
-                          code={code}
-                          onCodeChange={() => {}}
-                          highlightedHtml={highlightedHtml}
-                          codeClassName={codeClassName}
-                          MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-                          isReadOnly={true}
-                        />
-                      )}
+                    : isDecrypting
+                      ? (
+                          <div className="text-center py-8">
+                            <Loader2
+                              className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600"
+                            />
+                            <h3 className="text-lg font-semibold text-slate-800">
+                              Decrypting...
+                            </h3>
+                          </div>
+                        )
+                      : (
+                          <CodeEditor
+                            code={code}
+                            onCodeChange={() => {}}
+                            highlightedHtml={highlightedHtml}
+                            codeClassName={codeClassName}
+                            MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                            isReadOnly={true}
+                          />
+                        )}
             </CardContent>
 
             <CardFooter className="flex justify-center">
