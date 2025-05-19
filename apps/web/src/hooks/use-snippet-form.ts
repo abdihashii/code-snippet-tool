@@ -10,7 +10,7 @@ import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { PasswordStrengthResult } from '@/lib/password-strength';
+import type { PasswordStrengthAnalysis } from '@/lib/password-strength';
 
 import { createSnippet } from '@/api/snippets-api';
 import {
@@ -107,8 +107,8 @@ export function useSnippetForm({
     setIsPasswordProtectionEnabled,
   ] = useState(false);
   const [snippetPassword, setSnippetPassword] = useState('');
-  const [passwordStrength, setPasswordStrength]
-  = useState<PasswordStrengthResult | null>(null);
+  const [passwordStrengthAnalysis, setPasswordStrengthAnalysis]
+  = useState<PasswordStrengthAnalysis | null>(null);
 
   const { highlightedHtml, codeClassName } = useCodeHighlighting(
     { code, language },
@@ -125,11 +125,11 @@ export function useSnippetForm({
 
   // Effect to check password strength
   useEffect(() => {
-    if (isPasswordProtectionEnabled && snippetPassword) {
-      setPasswordStrength(checkPasswordStrength(snippetPassword));
+    if (isPasswordProtectionEnabled) {
+      setPasswordStrengthAnalysis(checkPasswordStrength(snippetPassword));
     } else {
-      // Reset strength if password protection is off or password is empty
-      setPasswordStrength(null);
+      // Reset strength if password protection is off
+      setPasswordStrengthAnalysis(null);
     }
   }, [snippetPassword, isPasswordProtectionEnabled]);
 
@@ -403,7 +403,7 @@ export function useSnippetForm({
     setIsPasswordProtectionEnabled,
     snippetPassword,
     setSnippetPassword,
-    passwordStrength,
+    passwordStrengthAnalysis,
 
     // Derived/Computed values for rendering
     highlightedHtml,
