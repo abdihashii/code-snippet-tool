@@ -2,9 +2,6 @@ import type { Language } from './language.types';
 
 export interface Snippet {
   id: string; // uuid
-  encrypted_content: string; // Encrypted content
-  initialization_vector: string; // Initialization vector
-  auth_tag: string; // Authentication tag
   title: string | null;
   language: Language;
   name: string | null;
@@ -13,10 +10,25 @@ export interface Snippet {
   expires_at: string | null; // ISO timestamp string, or null
   created_at: string; // ISO timestamp string
   updated_at: string; // ISO timestamp string
+
+  // Encrypted content and related crypto params
+  encrypted_content: string; // Encrypted content
+  initialization_vector: string; // Initialization vector
+  auth_tag: string; // Authentication tag
+
+  // Optional password protection fields
+  encrypted_dek?: string; // Base64 encoded encrypted DEK
+  iv_for_dek?: string; // Base64 encoded IV for DEK encryption
+  auth_tag_for_dek?: string; // Base64 encoded auth tag for DEK encryption
+  kdf_salt?: string; // Base64 encoded salt for KDF
+  kdf_parameters?: { // Parameters used for KDF
+    iterations: number;
+    hash: string; // e.g., 'SHA-256'
+  };
 }
 
 export interface CreateSnippetPayload {
-  content: string; // Plaintext content, not encrypted yet
+  // Unencrypted, required fields
   title: string | null;
   language: Language;
   name: string | null;
@@ -25,6 +37,21 @@ export interface CreateSnippetPayload {
   max_views: number | null;
   // Relative time like '1h', '24h', '7d', or null for 'never'
   expires_at: string | null;
+
+  // Encrypted content and related crypto params
+  encrypted_content: string; // Base64 encoded encrypted content
+  initialization_vector: string; // Base64 encoded IV for content
+  auth_tag: string; // Base64 encoded auth tag for content
+
+  // Optional fields for password protection
+  encrypted_dek?: string; // Base64 encoded encrypted DEK
+  iv_for_dek?: string; // Base64 encoded IV for DEK encryption
+  auth_tag_for_dek?: string; // Base64 encoded auth tag for DEK encryption
+  kdf_salt?: string; // Base64 encoded salt for KDF
+  kdf_parameters?: { // Parameters used for KDF
+    iterations: number;
+    hash: string; // e.g., 'SHA-256'
+  };
 }
 
 export interface CreateSnippetResponse {
@@ -34,13 +61,28 @@ export interface CreateSnippetResponse {
 }
 
 export interface GetSnippetByIdResponse {
+  // Unencrypted, required fields
   id: string; // uuid
   title: string | null;
   language: Language;
   name: string | null;
   max_views: number | null;
   current_views: number;
-  content: string; // Plaintext content
-  expires_at: string | null; // ISO timestamp string, or null
   created_at: string; // ISO timestamp string
+  expires_at: string | null; // ISO timestamp string, or null
+
+  // Encrypted content and related crypto params
+  encrypted_content: string; // Base64 encoded encrypted content
+  initialization_vector: string; // Base64 encoded IV for content
+  auth_tag: string; // Base64 encoded auth tag for content
+
+  // Optional password protection fields
+  encrypted_dek?: string; // Base64 encoded encrypted DEK
+  iv_for_dek?: string; // Base64 encoded IV for DEK encryption
+  auth_tag_for_dek?: string; // Base64 encoded auth tag for DEK encryption
+  kdf_salt?: string; // Base64 encoded salt for KDF
+  kdf_parameters?: { // Parameters used for KDF
+    iterations: number;
+    hash: string; // e.g., 'SHA-256'
+  };
 }
