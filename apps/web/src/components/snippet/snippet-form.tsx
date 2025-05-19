@@ -4,6 +4,7 @@ import { ShieldIcon, Wand2Icon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -45,6 +46,10 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     isSubmitting,
     isPrettifying,
     canPrettifyCurrentLanguage,
+    isPasswordProtectionEnabled,
+    setIsPasswordProtectionEnabled,
+    snippetPassword,
+    setSnippetPassword,
 
     // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
     highlightedHtml,
@@ -205,6 +210,42 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                   </Select>
                 </div>
               </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {/* Password Protection Toggle */}
+              <div className="flex items-center space-x-2 my-4">
+                <Checkbox
+                  id="enablePassword"
+                  checked={isPasswordProtectionEnabled}
+                  onCheckedChange={
+                    (checked) => setIsPasswordProtectionEnabled(
+                      checked === 'indeterminate'
+                        ? false
+                        : checked,
+                    )
+                  }
+                />
+                <Label htmlFor="enablePassword" className="cursor-pointer">
+                  Enable Password Protection (Premium Feature)
+                </Label>
+              </div>
+
+              {/* Password Input Field (conditional) */}
+              {isPasswordProtectionEnabled && (
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="snippet-password">Password</Label>
+                  <Input
+                    id="snippet-password"
+                    type="password"
+                    placeholder="Enter a strong password"
+                    value={snippetPassword} // New state variable
+                    onChange={(e) => setSnippetPassword(e.target.value)} // New state setter
+                    disabled={isSubmitting}
+                  />
+                  {/* Add password strength indicator or confirm password if desired */}
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
