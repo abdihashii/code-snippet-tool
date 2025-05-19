@@ -13,7 +13,7 @@ import {
   LockIcon,
   ShieldIcon,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { getSnippetById } from '@/api/snippets-api';
 import { Header } from '@/components/layout/header';
@@ -30,14 +30,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { decryptSnippet } from '@/lib/crypto';
@@ -61,7 +53,6 @@ export const Route = createFileRoute('/s/$snippet-id')({
 
 function RouteComponent() {
   const [password, setPassword] = useState('');
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
   const [decryptionError, setDecryptionError] = useState<string | null>(null);
   const [isDecrypting, setIsDecrypting] = useState(false);
@@ -125,7 +116,6 @@ function RouteComponent() {
       });
 
       setDecryptedContent(decrypted);
-      setShowPasswordDialog(false);
       setDecryptionError(null);
     } catch (err) {
       console.error('Failed to decrypt with password:', err);
@@ -136,7 +126,7 @@ function RouteComponent() {
   };
 
   // Handle regular snippet decryption (with DEK from URL fragment)
-  const handleRegularDecryption = async () => {
+  const handleRegularDecryption = useCallback(async () => {
     if ('error' in loadedData) return;
     setIsDecrypting(true);
     setDecryptionError(null);
@@ -166,18 +156,25 @@ function RouteComponent() {
     } finally {
       setIsDecrypting(false);
     }
-  };
+  }, [loadedData, setDecryptedContent, setDecryptionError, setIsDecrypting]);
 
   // Attempt decryption when component mounts
   useEffect(() => {
     if ('error' in loadedData) return;
 
-    if (isPasswordProtected) {
-      setShowPasswordDialog(true);
-    } else {
+    // If not password protected, and not yet decrypted or decrypting, try to
+    // decrypt.
+    if (!isPasswordProtected && !decryptedContent && !isDecrypting) {
       handleRegularDecryption();
     }
-  }, [loadedData]);
+    // For password-protected snippets, decryption is now user-triggered.
+  }, [
+    loadedData,
+    isPasswordProtected,
+    decryptedContent,
+    isDecrypting,
+    handleRegularDecryption,
+  ]);
 
   // Now, check for error and return error UI if necessary
   if ('error' in loadedData && loadedData.error) {
@@ -325,49 +322,99 @@ function RouteComponent() {
                         message="This snippet has reached its maximum view limit and is no longer available."
                       />
                     )
-                  : decryptionError
+                  : isDecrypting
                     ? (
                         <div className="text-center py-8">
-                          <ShieldIcon
-                            className="h-12 w-12 mx-auto mb-4 text-red-500"
+                          <Loader2
+                            className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600"
                           />
-                          <h3
-                            className="text-lg font-semibold text-slate-800 mb-2"
-                          >
-                            {decryptionError}
+                          <h3 className="text-lg font-semibold text-slate-800">
+                            Decrypting...
                           </h3>
-                          {isPasswordProtected && !isDecrypting && (
-                            <Button
-                              variant="outline"
-                              onClick={() => setShowPasswordDialog(true)}
-                              className="mt-4"
-                            >
-                              Try Again
-                            </Button>
-                          )}
                         </div>
                       )
-                    : isDecrypting
+                    : isPasswordProtected && !decryptedContent
                       ? (
-                          <div className="text-center py-8">
-                            <Loader2
-                              className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600"
-                            />
-                            <h3 className="text-lg font-semibold text-slate-800">
-                              Decrypting...
-                            </h3>
+                          <div>
+                            <div
+                              className="rounded-md border bg-muted/50 px-6 py-8 space-y-4"
+                            >
+                              <div className="mb-2">
+                                <h3
+                                  className="text-lg font-semibold leading-none tracking-tight"
+                                >
+                                  Password Protected Snippet
+                                </h3>
+                                <p
+                                  className="text-sm text-muted-foreground mt-1"
+                                >
+                                  This snippet is password protected. Please enter the password to view its contents.
+                                </p>
+                              </div>
+                              <div className="space-y-2">
+                                <Input
+                                  type="password"
+                                  placeholder="Enter password"
+                                  value={password}
+                                  onChange={(e) => setPassword(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      handlePasswordSubmit();
+                                    }
+                                  }}
+                                />
+                                {decryptionError && (
+                                  <p
+                                    className="text-sm text-red-500"
+                                  >
+                                    {decryptionError}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex justify-end mt-2">
+                                <Button
+                                  onClick={handlePasswordSubmit}
+                                  disabled={isDecrypting}
+                                  className="bg-teal-600 hover:bg-teal-700"
+                                >
+                                  {isDecrypting ? 'Decrypting...' : 'Decrypt'}
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                         )
-                      : (
-                          <CodeEditor
-                            code={code}
-                            onCodeChange={() => {}}
-                            highlightedHtml={highlightedHtml}
-                            codeClassName={codeClassName}
-                            MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-                            isReadOnly={true}
-                          />
-                        )}
+                      : decryptionError
+                        ? (
+                            <div className="text-center py-8">
+                              <ShieldIcon
+                                className="h-12 w-12 mx-auto mb-4 text-red-500"
+                              />
+                              <h3
+                                className="text-lg font-semibold text-slate-800 mb-2"
+                              >
+                                {decryptionError}
+                              </h3>
+                            </div>
+                          )
+                        : decryptedContent
+                          ? (
+                              <CodeEditor
+                                code={code}
+                                onCodeChange={() => {}}
+                                highlightedHtml={highlightedHtml}
+                                codeClassName={codeClassName}
+                                MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                                isReadOnly={true}
+                              />
+                            )
+                          : (
+                              <div className="text-center py-8">
+                                <Loader2
+                                  className="h-6 w-6 mx-auto animate-spin text-slate-500"
+                                />
+                                <p className="text-sm text-slate-500 mt-2">Loading snippet...</p>
+                              </div>
+                            )}
             </CardContent>
 
             <CardFooter className="flex justify-center">
@@ -385,37 +432,6 @@ function RouteComponent() {
           </Card>
         </div>
       </div>
-
-      {/* Password Dialog */}
-      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Password Protected Snippet</DialogTitle>
-            <DialogDescription>
-              This snippet is password protected. Please enter the password to view its contents.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handlePasswordSubmit();
-                }
-              }}
-            />
-            {decryptionError && (
-              <p className="text-sm text-red-500 mt-2">{decryptionError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button onClick={handlePasswordSubmit}>Decrypt</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <footer className="mt-auto py-4 text-center text-sm text-slate-500">
         ©
