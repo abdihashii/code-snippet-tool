@@ -50,7 +50,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     setIsPasswordProtectionEnabled,
     snippetPassword,
     setSnippetPassword,
-    passwordStrength,
+    passwordStrengthAnalysis,
 
     // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
     highlightedHtml,
@@ -245,26 +245,39 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                     onChange={(e) => setSnippetPassword(e.target.value)}
                     disabled={isSubmitting}
                   />
-                  {/* TODO: Also add confirm password field */}
-                  {isPasswordProtectionEnabled && passwordStrength && snippetPassword && (
-                    <div className="mt-1 text-xs">
-                      <span
-                        className={
-                          getPasswordStrengthColor(passwordStrength.strength)
-                        }
-                      >
-                        Strength:
-                        {' '}
-                        {passwordStrength.strength}
-                      </span>
-                      {passwordStrength.issues.length > 0 && (
-                        <ul
-                          className="list-disc list-inside mt-1 text-slate-500"
+                  {/* Password strength and suggestions display */}
+                  {isPasswordProtectionEnabled && passwordStrengthAnalysis && (
+                    <div className="mt-2 text-xs">
+                      {/* Overall Strength */}
+                      <div className="mb-1">
+                        <span className="font-medium">Strength: </span>
+                        <span
+                          className={getPasswordStrengthColor(
+                            passwordStrengthAnalysis.strength,
+                          )}
                         >
-                          {passwordStrength.issues.map((issue) => (
-                            <li key={issue}>{issue}</li>
-                          ))}
-                        </ul>
+                          {passwordStrengthAnalysis.strength}
+                        </span>
+                      </div>
+
+                      {/* Suggestions List */}
+                      {passwordStrengthAnalysis.criteria.length > 0 && (
+                        <div>
+                          <span className="font-medium text-slate-600">We suggest:</span>
+                          <ul className="list-none pl-0 mt-1 space-y-0.5">
+                            {passwordStrengthAnalysis.criteria.map((criterion) => (
+                              <li
+                                key={criterion.key}
+                                className={criterion.isMet ? 'text-teal-600' : 'text-slate-500'}
+                              >
+                                {/* Simple checkmark or cross, or just rely on color */}
+                                {criterion.isMet ? '✓' : '-'}
+                                {' '}
+                                {criterion.label}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       )}
                     </div>
                   )}
