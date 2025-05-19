@@ -50,6 +50,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     setIsPasswordProtectionEnabled,
     snippetPassword,
     setSnippetPassword,
+    passwordStrength,
 
     // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
     highlightedHtml,
@@ -58,6 +59,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     // Actions
     handleSubmit,
     prettifyCode,
+    getPasswordStrengthColor,
 
     // Constants and static data
     SUPPORTED_LANGUAGES,
@@ -239,11 +241,33 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                     id="snippet-password"
                     type="password"
                     placeholder="Enter a strong password"
-                    value={snippetPassword} // New state variable
-                    onChange={(e) => setSnippetPassword(e.target.value)} // New state setter
+                    value={snippetPassword}
+                    onChange={(e) => setSnippetPassword(e.target.value)}
                     disabled={isSubmitting}
                   />
-                  {/* Add password strength indicator or confirm password if desired */}
+                  {/* TODO: Also add confirm password field */}
+                  {isPasswordProtectionEnabled && passwordStrength && snippetPassword && (
+                    <div className="mt-1 text-xs">
+                      <span
+                        className={
+                          getPasswordStrengthColor(passwordStrength.strength)
+                        }
+                      >
+                        Strength:
+                        {' '}
+                        {passwordStrength.strength}
+                      </span>
+                      {passwordStrength.issues.length > 0 && (
+                        <ul
+                          className="list-disc list-inside mt-1 text-slate-500"
+                        >
+                          {passwordStrength.issues.map((issue) => (
+                            <li key={issue}>{issue}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

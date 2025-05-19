@@ -10,11 +10,17 @@ import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import type { PasswordStrengthResult } from '@/lib/password-strength';
+
 import { createSnippet } from '@/api/snippets-api';
 import {
   SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
+import {
+  checkPasswordStrength,
+  PasswordStrength,
+} from '@/lib/password-strength';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
 
 const MAX_CODE_LENGTH = 10_000;
@@ -101,6 +107,8 @@ export function useSnippetForm({
     setIsPasswordProtectionEnabled,
   ] = useState(false);
   const [snippetPassword, setSnippetPassword] = useState('');
+  const [passwordStrength, setPasswordStrength]
+  = useState<PasswordStrengthResult | null>(null);
 
   const { highlightedHtml, codeClassName } = useCodeHighlighting(
     { code, language },
@@ -114,6 +122,16 @@ export function useSnippetForm({
       setCode(initialCode ?? '');
     }
   }, [initialCode]);
+
+  // Effect to check password strength
+  useEffect(() => {
+    if (isPasswordProtectionEnabled && snippetPassword) {
+      setPasswordStrength(checkPasswordStrength(snippetPassword));
+    } else {
+      // Reset strength if password protection is off or password is empty
+      setPasswordStrength(null);
+    }
+  }, [snippetPassword, isPasswordProtectionEnabled]);
 
   const canPrettifyCurrentLanguage = useMemo(() => {
     return !!PRETTIER_SUPPORT_MAP[language];
@@ -350,6 +368,23 @@ export function useSnippetForm({
     }
   }, [code, language, setCode]);
 
+  // Helper function for color based on strength
+  function getPasswordStrengthColor(strength: PasswordStrength) {
+    switch (strength) {
+      case PasswordStrength.TooShort:
+      case PasswordStrength.Weak:
+        return 'text-red-500';
+      case PasswordStrength.Medium:
+        return 'text-yellow-500';
+      case PasswordStrength.Strong:
+        return 'text-green-500';
+      case PasswordStrength.VeryStrong:
+        return 'text-emerald-600'; // Or a stronger green
+      default:
+        return 'text-slate-500';
+    }
+  }
+
   return {
     // Form field states and setters
     code,
@@ -368,6 +403,7 @@ export function useSnippetForm({
     setIsPasswordProtectionEnabled,
     snippetPassword,
     setSnippetPassword,
+    passwordStrength,
 
     // Derived/Computed values for rendering
     highlightedHtml,
@@ -377,6 +413,7 @@ export function useSnippetForm({
     // Actions
     handleSubmit,
     prettifyCode,
+    getPasswordStrengthColor,
 
     // Status
     isSubmitting,
