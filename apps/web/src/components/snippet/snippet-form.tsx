@@ -1,6 +1,15 @@
 import type { Language } from '@snippet-share/types';
 
-import { ShieldIcon, Wand2Icon } from 'lucide-react';
+import {
+  CopyCheckIcon,
+  CopyIcon,
+  EyeIcon,
+  EyeOffIcon,
+  RefreshCwIcon,
+  ShieldIcon,
+  Wand2Icon,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -51,6 +60,11 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     snippetPassword,
     setSnippetPassword,
     passwordStrengthAnalysis,
+    handleGeneratePassword,
+    showPassword,
+    setShowPassword,
+    passwordCopied,
+    setPasswordCopied,
 
     // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
     highlightedHtml,
@@ -236,15 +250,60 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
               {/* Password Input Field (conditional) */}
               {isPasswordProtectionEnabled && (
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="snippet-password">Password</Label>
-                  <Input
-                    id="snippet-password"
-                    type="password"
-                    placeholder="Enter a strong password"
-                    value={snippetPassword}
-                    onChange={(e) => setSnippetPassword(e.target.value)}
-                    disabled={isSubmitting}
-                  />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="snippet-password">Password</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGeneratePassword}
+                      className="text-xs px-2 py-1 h-auto border-slate-300 hover:bg-slate-50 flex items-center gap-1"
+                    >
+                      <RefreshCwIcon className="h-3 w-3" />
+                      Generate
+                    </Button>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="snippet-password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter a strong password"
+                      value={snippetPassword}
+                      onChange={(e) => setSnippetPassword(e.target.value)}
+                      disabled={isSubmitting}
+                    />
+                    <div
+                      className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-3"
+                    >
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword
+                          ? <EyeIcon className="h-4 w-4" />
+                          : <EyeOffIcon className="h-4 w-4" />}
+                      </span>
+                      <span
+                        className="cursor-pointer"
+                        onClick={() => {
+                          navigator.clipboard.writeText(snippetPassword);
+                          setPasswordCopied(true);
+                          toast.success('Password copied to clipboard');
+                          setTimeout(() => setPasswordCopied(false), 1500);
+                        }}
+                      >
+                        {
+                          passwordCopied
+                            ? (
+                                <CopyCheckIcon
+                                  className="h-4 w-4 text-teal-600"
+                                />
+                              )
+                            : <CopyIcon className="h-4 w-4" />
+                        }
+                      </span>
+                    </div>
+                  </div>
                   {/* Password strength and suggestions display */}
                   {isPasswordProtectionEnabled && passwordStrengthAnalysis && (
                     <div className="mt-2 text-xs">
@@ -263,7 +322,11 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
                       {/* Suggestions List */}
                       {passwordStrengthAnalysis.criteria.length > 0 && (
                         <div>
-                          <span className="font-medium text-slate-600">We suggest:</span>
+                          <span
+                            className="font-medium text-slate-600"
+                          >
+                            We suggest:
+                          </span>
                           <ul className="list-none pl-0 mt-1 space-y-0.5">
                             {passwordStrengthAnalysis.criteria.map((criterion) => (
                               <li
