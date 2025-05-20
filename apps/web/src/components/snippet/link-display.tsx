@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, CheckIcon, CopyIcon, ShieldIcon } from 'lucide-react';
+import { ArrowLeftIcon, CopyCheckIcon, CopyIcon, ShieldIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -60,7 +60,7 @@ export function LinkDisplay(
                 onClick={handleCopy}
               >
                 {copied
-                  ? <CheckIcon className="h-4 w-4 text-green-500" />
+                  ? <CopyCheckIcon className="h-4 w-4 text-green-500" />
                   : <CopyIcon className="h-4 w-4" />}
               </Button>
             </div>
