@@ -1,4 +1,4 @@
-import { Check, Copy, Shield } from 'lucide-react';
+import { ArrowLeftIcon, Check, Copy, Shield } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -61,7 +61,13 @@ export function LinkDisplay({ link, onCreateAnother }: LinkDisplayProps) {
         </CardContent>
 
         <CardFooter className="flex justify-center pb-6 pt-2">
-          <Button onClick={onCreateAnother} variant="outline" className="w-full sm:w-auto">
+          <Button
+            size="lg"
+            onClick={onCreateAnother}
+            variant="outline"
+            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2 text-white hover:text-white"
+          >
+            <ArrowLeftIcon className="h-4 w-4" />
             Create Another Snippet
           </Button>
         </CardFooter>
