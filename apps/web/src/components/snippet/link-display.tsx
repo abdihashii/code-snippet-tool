@@ -64,8 +64,7 @@ export function LinkDisplay({ link, onCreateAnother }: LinkDisplayProps) {
           <Button
             size="lg"
             onClick={onCreateAnother}
-            variant="outline"
-            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2 text-white hover:text-white"
+            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Create Another Snippet
