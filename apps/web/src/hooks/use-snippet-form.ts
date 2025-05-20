@@ -21,6 +21,7 @@ import {
   checkPasswordStrength,
   PasswordStrength,
 } from '@/lib/password-strength';
+import { generateStrongPassword } from '@/lib/password-utils';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
 
 const MAX_CODE_LENGTH = 10_000;
@@ -109,6 +110,8 @@ export function useSnippetForm({
   const [snippetPassword, setSnippetPassword] = useState('');
   const [passwordStrengthAnalysis, setPasswordStrengthAnalysis]
   = useState<PasswordStrengthAnalysis | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordCopied, setPasswordCopied] = useState(false);
 
   const { highlightedHtml, codeClassName } = useCodeHighlighting(
     { code, language },
@@ -132,6 +135,13 @@ export function useSnippetForm({
       setPasswordStrengthAnalysis(null);
     }
   }, [snippetPassword, isPasswordProtectionEnabled]);
+
+  const handleGeneratePassword = useCallback(() => {
+    const newPassword = generateStrongPassword();
+    setSnippetPassword(newPassword);
+
+    toast.info('Strong password generated and filled!');
+  }, [setSnippetPassword]);
 
   const canPrettifyCurrentLanguage = useMemo(() => {
     return !!PRETTIER_SUPPORT_MAP[language];
@@ -403,17 +413,22 @@ export function useSnippetForm({
     setIsPasswordProtectionEnabled,
     snippetPassword,
     setSnippetPassword,
-    passwordStrengthAnalysis,
+    showPassword,
+    setShowPassword,
+    passwordCopied,
+    setPasswordCopied,
 
     // Derived/Computed values for rendering
     highlightedHtml,
     codeClassName,
     canPrettifyCurrentLanguage,
+    passwordStrengthAnalysis,
 
     // Actions
     handleSubmit,
     prettifyCode,
     getPasswordStrengthColor,
+    handleGeneratePassword,
 
     // Status
     isSubmitting,
