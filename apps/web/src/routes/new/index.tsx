@@ -12,7 +12,8 @@ export const Route = createFileRoute('/new/')({
 function RouteComponent() {
   const [currentState, setCurrentState] = useState<'form' | 'link'>('form');
   const [generatedLink, setGeneratedLink] = useState<string>('');
-  const [snippetPasswordWasSet, setSnippetPasswordWasSet] = useState<boolean>(false);
+  const [snippetPasswordWasSet, setSnippetPasswordWasSet]
+  = useState<boolean>(false);
 
   const handleSnippetCreated = (
     result: { link: string; passwordWasSet: boolean }) => {
