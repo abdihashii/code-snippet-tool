@@ -8,9 +8,12 @@ import { Input } from '@/components/ui/input';
 interface LinkDisplayProps {
   link: string;
   onCreateAnother: () => void;
+  passwordWasSet: boolean;
 }
 
-export function LinkDisplay({ link, onCreateAnother }: LinkDisplayProps) {
+export function LinkDisplay(
+  { link, onCreateAnother, passwordWasSet }: LinkDisplayProps,
+) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -56,6 +59,11 @@ export function LinkDisplay({ link, onCreateAnother }: LinkDisplayProps) {
               {' '}
               Share this link with your recipient(s). This link is secret and will not be
               shown again. Keep it safe!
+              {passwordWasSet && (
+                <span className="block mt-1">
+                  Remember to share the password securely and separately with the recipient.
+                </span>
+              )}
             </p>
           </div>
         </CardContent>

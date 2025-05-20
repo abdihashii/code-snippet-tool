@@ -34,7 +34,9 @@ import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { CodeEditor } from './code-editor';
 
 interface SnippetFormProps {
-  onSnippetCreated: (link: string) => void;
+  onSnippetCreated: (
+    result: { link: string; passwordWasSet: boolean },
+  ) => void;
 }
 
 export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {

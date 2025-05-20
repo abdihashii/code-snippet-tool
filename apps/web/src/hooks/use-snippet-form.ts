@@ -80,7 +80,9 @@ const PRETTIER_SUPPORT_MAP: Partial<Record<Language, PrettierConfig>> = {
 };
 
 interface UseSnippetFormProps {
-  onSnippetCreated?: (link: string) => void;
+  onSnippetCreated?: (
+    result: { link: string; passwordWasSet: boolean }
+  ) => void;
   initialCode?: string;
   initialLanguage?: Language;
 }
@@ -319,7 +321,10 @@ export function useSnippetForm({
       const link = `${baseUrl}${shareableLinkPath}${createSnippetResponse.id}${shareableLinkFragment}`;
 
       // Call the callback function to notify the parent component that the
-      onSnippetCreated(link);
+      onSnippetCreated({
+        link,
+        passwordWasSet: isPasswordProtectionEnabled && !!snippetPassword,
+      });
 
       // Display a success message to the user depending on whether a password
       // was provided.
