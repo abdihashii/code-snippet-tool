@@ -1,7 +1,7 @@
 {
   "name": "snippet-share",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@10.11.0",
   "description": "Snippet Share Monorepo",
   "author": "Abdirahman Haji",
   "license": "ISC",
