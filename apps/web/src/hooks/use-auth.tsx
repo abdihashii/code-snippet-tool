@@ -6,9 +6,6 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userDataState, setUserDataState] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [emailState, setEmailState] = useState<string>('');
-  const [passwordState, setPasswordState] = useState<string>('');
-  const [confirmPasswordState, setConfirmPasswordState] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [
     showConfirmPassword,
@@ -23,6 +20,7 @@ export function useAuth() {
     // Second stage input validation
     if (password !== confirmPassword) {
       setError('Both passwords need to be the same.');
+      return;
     }
 
     setIsLoading(true);
@@ -32,6 +30,8 @@ export function useAuth() {
       if (!userData) {
         throw new Error('User data was not sent properly for some reason.');
       }
+
+      setUserDataState(userData);
     } catch (signupError: any) {
       setError(signupError);
     } finally {
@@ -47,12 +47,6 @@ export function useAuth() {
     setUserData: setUserDataState,
     error,
     setError,
-    email: emailState,
-    setEmail: setEmailState,
-    password: passwordState,
-    setPassword: setPasswordState,
-    confirmPassword: confirmPasswordState,
-    setConfirmPassword: setConfirmPasswordState,
     showPassword,
     setShowPassword,
     showConfirmPassword,
