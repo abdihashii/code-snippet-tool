@@ -8,6 +8,8 @@
   "keywords": [],
   "scripts": {
     "build:types": "pnpm --filter @snippet-share/types build",
+    "dev:web": "pnpm --filter @snippet-share/web dev",
+    "dev:api": "pnpm --filter @snippet-share/api dev",
     "clean": "rm -rf node_modules dist",
     "clean:all": "pnpm clean && pnpm -r clean"
   },
