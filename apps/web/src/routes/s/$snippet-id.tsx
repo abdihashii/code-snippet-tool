@@ -16,7 +16,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 import { getSnippetById } from '@/api/snippets-api';
-import { Header } from '@/components/layout/header';
+import { AppLayout } from '@/components/layout/app-layout';
 import { CodeEditor } from '@/components/snippet/code-editor';
 import {
   SnippetExpiredMessage,
@@ -250,196 +250,182 @@ function RouteComponent() {
     : false;
 
   return (
-    <main
-      className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-6 md:p-8 bg-slate-50"
-    >
-      <div className="w-full max-w-3xl mx-auto">
-        <Header />
-
-        <div className="transition-all duration-300 ease-in-out">
-          <Card className="w-full shadow-md border-slate-200 bg-white">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl text-slate-800 dark:text-slate-100">
-                  {title || 'Untitled Snippet'}
-                </CardTitle>
-                <div className="flex space-x-2">
-                  {isPasswordProtected && (
-                    <Badge
-                      variant="outline"
-                      className="flex items-center gap-1 text-xs"
-                    >
-                      <LockIcon className="h-3 w-3" />
-                      Password Protected
-                    </Badge>
-                  )}
+    <AppLayout>
+      <div className="transition-all duration-300 ease-in-out">
+        <Card className="w-full shadow-md border-slate-200 bg-white">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl text-slate-800 dark:text-slate-100">
+                {title || 'Untitled Snippet'}
+              </CardTitle>
+              <div className="flex space-x-2">
+                {isPasswordProtected && (
                   <Badge
                     variant="outline"
                     className="flex items-center gap-1 text-xs"
                   >
-                    <ClockIcon className="h-3 w-3" />
-                    Expires:
-                    {' '}
-                    {formatExpiryTimestamp(expires_at)}
+                    <LockIcon className="h-3 w-3" />
+                    Password Protected
                   </Badge>
-                  <Badge
-                    variant="outline"
-                    className="flex items-center gap-1 text-xs"
-                  >
-                    <EyeIcon className="h-3 w-3" />
-                    {max_views === 1
-                      ? 'Burns after reading'
-                      : 'Multiple views'}
-                  </Badge>
-                </div>
-              </div>
-              {name && (
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Shared by:
+                )}
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 text-xs"
+                >
+                  <ClockIcon className="h-3 w-3" />
+                  Expires:
                   {' '}
-                  {name}
-                </p>
-              )}
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                Created:
+                  {formatExpiryTimestamp(expires_at)}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 text-xs"
+                >
+                  <EyeIcon className="h-3 w-3" />
+                  {max_views === 1
+                    ? 'Burns after reading'
+                    : 'Multiple views'}
+                </Badge>
+              </div>
+            </div>
+            {name && (
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Shared by:
                 {' '}
-                {formatTimestamp(created_at)}
+                {name}
               </p>
-            </CardHeader>
+            )}
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+              Created:
+              {' '}
+              {formatTimestamp(created_at)}
+            </p>
+          </CardHeader>
 
-            <CardContent>
-              {isExpired
+          <CardContent>
+            {isExpired
+              ? (
+                  <SnippetExpiredMessage
+                    title="Snippet Expired"
+                    message="This snippet has expired based on its set expiry time and is no longer viewable."
+                  />
+                )
+              : hasReachedDisplayLimit
                 ? (
                     <SnippetExpiredMessage
-                      title="Snippet Expired"
-                      message="This snippet has expired based on its set expiry time and is no longer viewable."
+                      title="View Limit Reached"
+                      message="This snippet has reached its maximum view limit and is no longer available."
                     />
                   )
-                : hasReachedDisplayLimit
+                : isDecrypting
                   ? (
-                      <SnippetExpiredMessage
-                        title="View Limit Reached"
-                        message="This snippet has reached its maximum view limit and is no longer available."
-                      />
+                      <div className="text-center py-8">
+                        <Loader2
+                          className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600"
+                        />
+                        <h3 className="text-lg font-semibold text-slate-800">
+                          Decrypting...
+                        </h3>
+                      </div>
                     )
-                  : isDecrypting
+                  : isPasswordProtected && !decryptedContent
                     ? (
-                        <div className="text-center py-8">
-                          <Loader2
-                            className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600"
-                          />
-                          <h3 className="text-lg font-semibold text-slate-800">
-                            Decrypting...
-                          </h3>
-                        </div>
-                      )
-                    : isPasswordProtected && !decryptedContent
-                      ? (
-                          <div>
-                            <div
-                              className="rounded-md border bg-muted/50 px-6 py-8 space-y-4"
-                            >
-                              <div className="mb-2">
-                                <h3
-                                  className="text-lg font-semibold leading-none tracking-tight"
-                                >
-                                  Password Protected Snippet
-                                </h3>
+                        <div>
+                          <div
+                            className="rounded-md border bg-muted/50 px-6 py-8 space-y-4"
+                          >
+                            <div className="mb-2">
+                              <h3
+                                className="text-lg font-semibold leading-none tracking-tight"
+                              >
+                                Password Protected Snippet
+                              </h3>
+                              <p
+                                className="text-sm text-muted-foreground mt-1"
+                              >
+                                This snippet is password protected. Please enter the password to view its contents.
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              <Input
+                                type="password"
+                                placeholder="Enter password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handlePasswordSubmit();
+                                  }
+                                }}
+                              />
+                              {decryptionError && (
                                 <p
-                                  className="text-sm text-muted-foreground mt-1"
+                                  className="text-sm text-red-500"
                                 >
-                                  This snippet is password protected. Please enter the password to view its contents.
+                                  {decryptionError}
                                 </p>
-                              </div>
-                              <div className="space-y-2">
-                                <Input
-                                  type="password"
-                                  placeholder="Enter password"
-                                  value={password}
-                                  onChange={(e) => setPassword(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handlePasswordSubmit();
-                                    }
-                                  }}
-                                />
-                                {decryptionError && (
-                                  <p
-                                    className="text-sm text-red-500"
-                                  >
-                                    {decryptionError}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="flex justify-end mt-2">
-                                <Button
-                                  onClick={handlePasswordSubmit}
-                                  disabled={isDecrypting}
-                                  className="bg-teal-600 hover:bg-teal-700"
-                                >
-                                  {isDecrypting ? 'Decrypting...' : 'Decrypt'}
-                                </Button>
-                              </div>
+                              )}
+                            </div>
+                            <div className="flex justify-end mt-2">
+                              <Button
+                                onClick={handlePasswordSubmit}
+                                disabled={isDecrypting}
+                                className="bg-teal-600 hover:bg-teal-700"
+                              >
+                                {isDecrypting ? 'Decrypting...' : 'Decrypt'}
+                              </Button>
                             </div>
                           </div>
+                        </div>
+                      )
+                    : decryptionError
+                      ? (
+                          <div className="text-center py-8">
+                            <ShieldIcon
+                              className="h-12 w-12 mx-auto mb-4 text-red-500"
+                            />
+                            <h3
+                              className="text-lg font-semibold text-slate-800 mb-2"
+                            >
+                              {decryptionError}
+                            </h3>
+                          </div>
                         )
-                      : decryptionError
+                      : decryptedContent
                         ? (
-                            <div className="text-center py-8">
-                              <ShieldIcon
-                                className="h-12 w-12 mx-auto mb-4 text-red-500"
-                              />
-                              <h3
-                                className="text-lg font-semibold text-slate-800 mb-2"
-                              >
-                                {decryptionError}
-                              </h3>
-                            </div>
+                            <CodeEditor
+                              code={code}
+                              onCodeChange={() => {}}
+                              highlightedHtml={highlightedHtml}
+                              codeClassName={codeClassName}
+                              MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                              isReadOnly={true}
+                            />
                           )
-                        : decryptedContent
-                          ? (
-                              <CodeEditor
-                                code={code}
-                                onCodeChange={() => {}}
-                                highlightedHtml={highlightedHtml}
-                                codeClassName={codeClassName}
-                                MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-                                isReadOnly={true}
+                        : (
+                            <div className="text-center py-8">
+                              <Loader2
+                                className="h-6 w-6 mx-auto animate-spin text-slate-500"
                               />
-                            )
-                          : (
-                              <div className="text-center py-8">
-                                <Loader2
-                                  className="h-6 w-6 mx-auto animate-spin text-slate-500"
-                                />
-                                <p className="text-sm text-slate-500 mt-2">Loading snippet...</p>
-                              </div>
-                            )}
-            </CardContent>
+                              <p className="text-sm text-slate-500 mt-2">Loading snippet...</p>
+                            </div>
+                          )}
+          </CardContent>
 
-            <CardFooter className="flex justify-center">
-              <Link to="/new">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <ArrowLeftIcon className="h-4 w-4" />
-                  Back to Home
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </div>
+          <CardFooter className="flex justify-center">
+            <Link to="/new">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
       </div>
-
-      <footer className="mt-auto py-4 text-center text-sm text-slate-500">
-        ©
-        {' '}
-        {new Date().getFullYear()}
-        {' '}
-        Secure Snippet Sharer
-      </footer>
-    </main>
+    </AppLayout>
   );
 }
