@@ -7,6 +7,7 @@
     "clean": "rm -rf node_modules .wrangler"
   },
   "dependencies": {
+    "@snippet-share/schemas": "workspace:*",
     "@snippet-share/types": "workspace:*",
     "@supabase/supabase-js": "^2.49.4",
     "hono": "^4.7.9"

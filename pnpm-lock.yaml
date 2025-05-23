@@ -39,6 +39,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@snippet-share/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       '@snippet-share/types':
         specifier: workspace:*
         version: link:../../packages/types

@@ -1,3 +1,4 @@
+import { signupSchema } from '@snippet-share/schemas';
 import { Hono } from 'hono';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
@@ -8,15 +9,20 @@ export const auth = new Hono<{ Bindings: CloudflareBindings }>();
 
 auth.post('/signup', async (c) => {
   // Get the email and passwords from the request body
-  const { email, password, confirmPassword } = await c.req.json();
+  const body = await c.req.json();
 
   // Final input validation stage
-  if (password !== confirmPassword) {
+  const validationResult = signupSchema
+    .safeParse(body);
+
+  if (!validationResult.success) {
     return c.json({
-      error: 'Both passwords need to be the same.',
+      error: validationResult.error.message,
       success: false,
     }, 400);
   }
+
+  const { email, password } = validationResult.data;
 
   try {
     // Get the supabase client
