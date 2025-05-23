@@ -25,13 +25,13 @@ function Index() {
                 Start Sharing
               </Button>
             </Link>
-            <Link to="/signup" className="w-full">
+            {/* <Link to="/signup" className="w-full">
               <Button
                 className="w-full bg-teal-600 hover:bg-teal-700 hover:cursor-pointer"
               >
                 Create an Account
               </Button>
-            </Link>
+            </Link> */}
           </div>
         </CardContent>
       </Card>
