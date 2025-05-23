@@ -1,3 +1,4 @@
+import { signupSchema } from '@snippet-share/schemas';
 import { useState } from 'react';
 
 import { signUp } from '@/api/auth-apis';
@@ -21,8 +22,11 @@ export function useAuth() {
     setError(null);
 
     // Second stage input validation
-    if (password !== confirmPassword) {
-      setError('Both passwords need to be the same.');
+    const validationResult = signupSchema
+      .safeParse({ email, password, confirmPassword });
+
+    if (!validationResult.success) {
+      setError(validationResult.error.message);
       return;
     }
 
