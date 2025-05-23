@@ -15,12 +15,12 @@ interface LanguageOption {
 export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
   { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
   { value: 'JSON', label: 'JSON', hljsId: 'json' },
-  { value: 'JAVASCRIPT', label: 'JavaScript', hljsId: 'javascript' },
+  { value: 'JAVASCRIPT', label: 'JavaScript / JSX', hljsId: 'javascript' },
   { value: 'PYTHON', label: 'Python', hljsId: 'python' },
   // HTML uses the 'xml' grammar in hljs
   { value: 'HTML', label: 'HTML', hljsId: 'xml' },
   { value: 'CSS', label: 'CSS', hljsId: 'css' },
-  { value: 'TYPESCRIPT', label: 'TypeScript', hljsId: 'typescript' },
+  { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript' },
   { value: 'JAVA', label: 'Java', hljsId: 'java' },
   { value: 'BASH', label: 'Bash', hljsId: 'bash' },
   { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
