@@ -155,16 +155,17 @@ snippets.post('/', async (c) => {
       return c.json(
         {
           error: `Failed to create snippet: ${error.message}`,
+          success: false,
         },
         500,
       );
     }
 
     return c.json({
-      id: data.id,
+      data: { id: data.id },
       success: true,
       message: 'Snippet created successfully',
-    });
+    }, 201);
   } catch (e) {
     const err = e as Error;
     console.error('Error during snippet creation:', err);
@@ -172,6 +173,7 @@ snippets.post('/', async (c) => {
     return c.json(
       {
         error: `An unexpected error occurred: ${err.message}`,
+        success: false,
       },
       500,
     );
@@ -183,7 +185,10 @@ snippets.get('/:id', async (c) => {
   const snippetId = c.req.param('id');
 
   if (!snippetId) {
-    return c.json({ error: 'Snippet ID is required' }, 400);
+    return c.json({
+      error: 'Snippet ID is required',
+      success: false,
+    }, 400);
   }
 
   // Get the supabase client
@@ -201,6 +206,7 @@ snippets.get('/:id', async (c) => {
     return c.json(
       {
         error: 'Snippet not found or access denied',
+        success: false,
       },
       404,
     ); // More generic error message for security
@@ -215,6 +221,7 @@ snippets.get('/:id', async (c) => {
     // Optional: implement deletion logic here or via a scheduled task
     return c.json({
       error: 'Snippet expired',
+      success: false,
       message: 'This snippet has expired and is no longer available.',
     }, 410);
   }
@@ -227,6 +234,7 @@ snippets.get('/:id', async (c) => {
     if (typedSnippet.current_views >= typedSnippet.max_views) {
       return c.json({
         error: 'Snippet has reached its maximum view limit.',
+        success: false,
         message: 'This snippet has been viewed the maximum number of times and is no longer available.',
       }, 403); // 403 Forbidden
     }
@@ -302,13 +310,17 @@ snippets.get('/:id', async (c) => {
       });
     }
 
-    return c.json(response);
+    return c.json({
+      data: response,
+      success: true,
+    });
   } catch (conversionError) {
     const err = conversionError as Error;
     console.error(`Processing failed for snippet ${snippetId}:`, err.message);
     return c.json(
       {
         error: 'Failed to process snippet. It may be corrupted or the link is invalid.',
+        success: false,
       },
       500, // Internal Server Error for conversion failures
     );

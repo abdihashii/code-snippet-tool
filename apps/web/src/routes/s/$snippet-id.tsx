@@ -40,14 +40,14 @@ import {
   hasReachedMaxViews,
 } from '@/lib/utils';
 
+type LoaderResponse = GetSnippetByIdResponse | ApiErrorResponse;
+
 export const Route = createFileRoute('/s/$snippet-id')({
   component: RouteComponent,
   loader: async ({ params }) => {
     const snippetId = params['snippet-id'];
-    // The return type of getSnippetById needs to accommodate ApiErrorResponse
     const snippet = await getSnippetById(snippetId);
-    // APIErrorResponse is casted to the snippet response in case of 410 Gone
-    return snippet as GetSnippetByIdResponse | ApiErrorResponse;
+    return snippet as LoaderResponse;
   },
 });
 
@@ -58,10 +58,10 @@ function RouteComponent() {
   const [isDecrypting, setIsDecrypting] = useState(false);
 
   // At this point, the loader data is either GetSnippetByIdResponse or
-  // ApiErrorResponse because the response is either the snippet or an error
+  // SnippetErrorResponse because the response is either the snippet or an error
   // response
   const loadedData
-  = Route.useLoaderData() as GetSnippetByIdResponse | ApiErrorResponse;
+  = Route.useLoaderData() as LoaderResponse;
 
   // Check if this is a password-protected snippet
   const isPasswordProtected = !('error' in loadedData)
