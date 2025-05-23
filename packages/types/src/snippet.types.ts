@@ -54,12 +54,6 @@ export interface CreateSnippetPayload {
   };
 }
 
-export interface CreateSnippetResponse {
-  id: string; // uuid
-  success: boolean; // true if successful, false if not
-  message: string; // 'Snippet created successfully' or error message
-}
-
 export interface GetSnippetByIdResponse {
   // Unencrypted, required fields
   id: string; // uuid

@@ -308,17 +308,22 @@ export function useSnippetForm({
       // Create the snippet by calling the createSnippet API.
       const createSnippetResponse = await createSnippet(payload);
 
-      // If the snippet creation failed, throw an error.
-      if (!createSnippetResponse.success || !createSnippetResponse.id) {
+      // If the snippet creation failed, handle error
+      if (!createSnippetResponse.success) {
         throw new Error(
-          createSnippetResponse.message
-          || 'Failed to create snippet: No ID returned.',
+          createSnippetResponse.error || 'Failed to create snippet',
         );
+      }
+
+      // Extract the ID from the successful response
+      const snippetId = createSnippetResponse.data.id;
+      if (!snippetId) {
+        throw new Error('No snippet ID returned from server');
       }
 
       // Construct the shareable link.
       const baseUrl = window.location.origin;
-      const link = `${baseUrl}${shareableLinkPath}${createSnippetResponse.id}${shareableLinkFragment}`;
+      const link = `${baseUrl}${shareableLinkPath}${snippetId}${shareableLinkFragment}`;
 
       // Call the callback function to notify the parent component that the
       onSnippetCreated({

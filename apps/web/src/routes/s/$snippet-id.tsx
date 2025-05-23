@@ -1,5 +1,5 @@
 import type {
-  ApiErrorResponse,
+  ApiResponse,
   GetSnippetByIdResponse,
   Language,
 } from '@snippet-share/types';
@@ -40,7 +40,7 @@ import {
   hasReachedMaxViews,
 } from '@/lib/utils';
 
-type LoaderResponse = GetSnippetByIdResponse | ApiErrorResponse;
+type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 
 export const Route = createFileRoute('/s/$snippet-id')({
   component: RouteComponent,
@@ -53,31 +53,32 @@ export const Route = createFileRoute('/s/$snippet-id')({
 
 function RouteComponent() {
   const [password, setPassword] = useState('');
-  const [decryptedContent, setDecryptedContent] = useState<string | null>(null);
+  const [
+    decryptedContent,
+    setDecryptedContent,
+  ] = useState<string | null>(null);
   const [decryptionError, setDecryptionError] = useState<string | null>(null);
   const [isDecrypting, setIsDecrypting] = useState(false);
 
-  // At this point, the loader data is either GetSnippetByIdResponse or
-  // SnippetErrorResponse because the response is either the snippet or an error
-  // response
-  const loadedData
-  = Route.useLoaderData() as LoaderResponse;
+  // Get the loader data as ApiResponse<GetSnippetByIdResponse>
+  const loadedData = Route.useLoaderData() as LoaderResponse;
+
+  // Extract data for successful responses, or use defaults for error cases
+  const snippetData = loadedData.success ? loadedData.data : null;
 
   // Check if this is a password-protected snippet
-  const isPasswordProtected = !('error' in loadedData)
-    && loadedData.encrypted_dek
-    && loadedData.iv_for_dek
-    && loadedData.auth_tag_for_dek
-    && loadedData.kdf_salt
-    && loadedData.kdf_parameters;
+  const isPasswordProtected = snippetData?.encrypted_dek
+    && snippetData?.iv_for_dek
+    && snippetData?.auth_tag_for_dek
+    && snippetData?.kdf_salt
+    && snippetData?.kdf_parameters;
 
-  // Prepare props for useSnippetForm, defaulting if loadedData is an error
-  const initialCodeForHook = ('error' in loadedData)
-    ? ''
-    : decryptedContent || loadedData.encrypted_content;
-  const initialLanguageForHook = ('error' in loadedData)
-    ? 'PLAINTEXT' as Language
-    : loadedData.language;
+  // Prepare props for useSnippetForm
+  const initialCodeForHook = decryptedContent
+    || snippetData?.encrypted_content
+    || '';
+  const initialLanguageForHook = snippetData?.language
+    || ('PLAINTEXT' as Language);
 
   const {
     // Form field states and setters
@@ -96,22 +97,20 @@ function RouteComponent() {
 
   // Handle password submission
   const handlePasswordSubmit = async () => {
-    if (!password) return;
+    if (!password || !snippetData) return;
     setIsDecrypting(true);
     setDecryptionError(null);
 
     try {
-      if ('error' in loadedData) return;
-
       const decrypted = await decryptSnippet({
-        encryptedContent: loadedData.encrypted_content,
-        iv: loadedData.initialization_vector,
-        authTag: loadedData.auth_tag,
-        encryptedDek: loadedData.encrypted_dek!,
-        ivForDek: loadedData.iv_for_dek!,
-        authTagForDek: loadedData.auth_tag_for_dek!,
-        kdfSalt: loadedData.kdf_salt!,
-        kdfParameters: loadedData.kdf_parameters!,
+        encryptedContent: snippetData.encrypted_content,
+        iv: snippetData.initialization_vector,
+        authTag: snippetData.auth_tag,
+        encryptedDek: snippetData.encrypted_dek!,
+        ivForDek: snippetData.iv_for_dek!,
+        authTagForDek: snippetData.auth_tag_for_dek!,
+        kdfSalt: snippetData.kdf_salt!,
+        kdfParameters: snippetData.kdf_parameters!,
         password,
       });
 
@@ -127,7 +126,7 @@ function RouteComponent() {
 
   // Handle regular snippet decryption (with DEK from URL fragment)
   const handleRegularDecryption = useCallback(async () => {
-    if ('error' in loadedData) return;
+    if (!snippetData) return;
     setIsDecrypting(true);
     setDecryptionError(null);
 
@@ -140,9 +139,9 @@ function RouteComponent() {
       }
 
       const decrypted = await decryptSnippet({
-        encryptedContent: loadedData.encrypted_content,
-        iv: loadedData.initialization_vector,
-        authTag: loadedData.auth_tag,
+        encryptedContent: snippetData.encrypted_content,
+        iv: snippetData.initialization_vector,
+        authTag: snippetData.auth_tag,
         dek,
       });
 
@@ -156,11 +155,11 @@ function RouteComponent() {
     } finally {
       setIsDecrypting(false);
     }
-  }, [loadedData, setDecryptedContent, setDecryptionError, setIsDecrypting]);
+  }, [snippetData, setDecryptedContent, setDecryptionError, setIsDecrypting]);
 
   // Attempt decryption when component mounts
   useEffect(() => {
-    if ('error' in loadedData) return;
+    if (!snippetData) return;
 
     // If not password protected, and not yet decrypted or decrypting, try to
     // decrypt.
@@ -169,19 +168,17 @@ function RouteComponent() {
     }
     // For password-protected snippets, decryption is now user-triggered.
   }, [
-    loadedData,
+    snippetData,
     isPasswordProtected,
     decryptedContent,
     isDecrypting,
     handleRegularDecryption,
   ]);
 
-  // Now, check for error and return error UI if necessary
-  if ('error' in loadedData && loadedData.error) {
-    // Check for specific API error messages that indicate the snippet is not
-    // available
+  // Now handle error cases after all hooks are called
+  if (!loadedData.success) {
     const errorTitle = loadedData.error;
-    const errorMessage = (loadedData as ApiErrorResponse).message
+    const errorMessage = loadedData.message
       || 'This snippet could not be retrieved.';
 
     if (
@@ -204,10 +201,11 @@ function RouteComponent() {
       );
     }
 
-    // For other, unexpected errors that still have the 'error' property
-    // structure, display the error message returned from the response
+    // For other, unexpected errors
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50">
+      <main
+        className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50"
+      >
         <div className="w-full max-w-xl mx-auto text-center">
           <ShieldIcon className="h-12 w-12 mx-auto mb-4 text-red-500" />
           <h1 className="text-2xl font-semibold text-slate-800 mb-2">
@@ -231,8 +229,7 @@ function RouteComponent() {
     );
   }
 
-  // If we are here, loadedData is GetSnippetByIdResponse. We can use its
-  // properties directly
+  // At this point we know snippetData exists (success case)
   const {
     title,
     expires_at,
@@ -240,7 +237,7 @@ function RouteComponent() {
     current_views,
     name,
     created_at,
-  } = loadedData as GetSnippetByIdResponse; // Safe cast as error case is handled
+  } = snippetData!; // Non-null assertion since we're in success case
 
   const isExpired = hasExpiredByTime(expires_at);
   // Client-side check for max views, in case API doesn't return 403 for some
