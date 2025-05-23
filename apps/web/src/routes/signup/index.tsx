@@ -1,8 +1,10 @@
+import type { SignupFormData } from '@snippet-share/schemas';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import { signupSchema } from '@snippet-share/schemas';
 import { createFileRoute } from '@tanstack/react-router';
 import { EyeIcon, EyeOffIcon, Loader2Icon, LogInIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 import { AppLayout } from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
@@ -10,18 +12,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/use-auth';
-
-// Validation schema
-const signupSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string(),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
-
-type SignupFormData = z.infer<typeof signupSchema>;
 
 export const Route = createFileRoute('/signup/')({
   component: RouteComponent,
