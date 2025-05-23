@@ -36,8 +36,9 @@ auth.post('/signup', async (c) => {
     }
 
     return c.json({
-      userData: data,
+      data: { userData: data },
       success: true,
+      message: 'User registered successfully',
     }, 201); // 201 for successful resource creation
   } catch (signupError) {
     return c.json({

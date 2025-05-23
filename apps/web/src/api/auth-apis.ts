@@ -1,16 +1,6 @@
+import type { ApiResponse } from '@snippet-share/types';
+
 const API_URL = 'http://localhost:8787';
-
-interface ApiSuccessResponse {
-  userData: any;
-  success: true;
-}
-
-interface ApiErrorResponse {
-  error: string;
-  success: false;
-}
-
-type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 
 export async function signUp(
   email: string,
@@ -25,16 +15,16 @@ export async function signUp(
     },
   });
 
-  const responseData: ApiResponse = await response.json();
+  const responseData: ApiResponse<{ userData: any }> = await response.json();
 
   // Check if the response indicates an error
   if (!response.ok || !responseData.success) {
-    const errorMessage = 'error' in responseData
+    const errorMessage = !responseData.success
       ? responseData.error
       : `HTTP ${response.status}: Failed to sign up ${email}`;
 
     throw new Error(errorMessage);
   }
 
-  return responseData.userData;
+  return responseData.data.userData;
 }
