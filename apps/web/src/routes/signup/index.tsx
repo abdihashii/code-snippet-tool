@@ -57,22 +57,26 @@ function RouteComponent() {
   if (error) {
     return (
       <AppLayout>
-        <p>
-          There was an error:
-          {' '}
-          {error}
-        </p>
+        <div className="flex flex-col gap-4">
+          <p>
+            There was an error:
+          </p>
+          <pre><code>{JSON.stringify(error, null, 2)}</code></pre>
+        </div>
       </AppLayout>
     );
   }
 
   if (userData) {
     return (
-      <p>
-        Sign up successful:
-        {' '}
-        <pre><code>{JSON.stringify(userData, null, 2)}</code></pre>
-      </p>
+      <AppLayout>
+        <div className="flex flex-col gap-4">
+          <p>
+            Sign up successful:
+          </p>
+          <pre><code>{JSON.stringify(userData, null, 2)}</code></pre>
+        </div>
+      </AppLayout>
     );
   }
 

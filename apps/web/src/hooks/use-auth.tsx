@@ -17,6 +17,9 @@ export function useAuth() {
     password: string,
     confirmPassword: string,
   ) {
+    // Clear previous errors
+    setError(null);
+
     // Second stage input validation
     if (password !== confirmPassword) {
       setError('Both passwords need to be the same.');
@@ -25,15 +28,23 @@ export function useAuth() {
 
     setIsLoading(true);
     try {
-      const { userData } = await signUp(email, password, confirmPassword);
+      const userData = await signUp(email, password, confirmPassword);
 
       if (!userData) {
-        throw new Error('User data was not sent properly for some reason.');
+        throw new Error(
+          'User data was not received properly from the server.',
+        );
       }
 
       setUserDataState(userData);
     } catch (signupError: any) {
-      setError(signupError);
+      console.error('Signup error:', signupError);
+
+      const errorMessage = signupError instanceof Error
+        ? signupError.message
+        : 'An unexpected error occurred during signup. Please try again.';
+
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

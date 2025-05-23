@@ -14,10 +14,10 @@ auth.post('/signup', async (c) => {
   if (password !== confirmPassword) {
     return c.json({
       error: 'Both passwords need to be the same.',
+      success: false,
     }, 400);
   }
 
-  // Try to sign up the user using the supabase client
   try {
     // Get the supabase client
     const supabase = getSupabaseClient(c.env);
@@ -28,15 +28,21 @@ auth.post('/signup', async (c) => {
     });
 
     if (error) {
-      return c.json({ error: `Error signing up the user: ${error}` });
+      // Return 400 for client errors (validation, user already exists, etc.)
+      return c.json({
+        error: error.message,
+        success: false,
+      }, 400);
     }
 
     return c.json({
       userData: data,
-    }, 200);
+      success: true,
+    }, 201); // 201 for successful resource creation
   } catch (signupError) {
     return c.json({
       error: `Unknown signup error: ${signupError}`,
-    });
+      success: false,
+    }, 500);
   }
 });
