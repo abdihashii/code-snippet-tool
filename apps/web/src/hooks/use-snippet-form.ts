@@ -195,9 +195,28 @@ export function useSnippetForm({
       );
 
       // Prepare the payload for the createSnippet API call.
-      let payload: CreateSnippetPayload;
-      let shareableLinkPath: string;
+      const shareableLinkPath = '/s/';
       let shareableLinkFragment = '';
+
+      // Common payload properties that are shared between password-protected
+      // and non-protected flows
+      const basePayload = {
+        // Unencrypted, required fields
+        title: title === '' ? null : title,
+        language,
+        name: uploaderInfo === '' ? null : uploaderInfo,
+        expires_at: expiresAfter === 'never' ? null : expiresAfter,
+        max_views: maxViews === 'unlimited'
+          ? null
+          : Number.parseInt(maxViews),
+
+        // Encrypted content and related crypto params
+        encrypted_content: arrayBufferToBase64(encryptedSnippetBlob),
+        initialization_vector: arrayBufferToBase64(ivContent),
+        auth_tag: arrayBufferToBase64(authTagContent),
+      };
+
+      let payload: CreateSnippetPayload;
 
       // If password protection is enabled and a password is provided, we
       // need to generate a unique salt and derive a Key Encryption Key
@@ -255,22 +274,9 @@ export function useSnippetForm({
           encryptedDekWithTag.byteLength - 16,
         );
 
-        // Prepare the payload for the createSnippet API call.
+        // Add password-protection specific fields to the base payload
         payload = {
-          // Unencrypted, required fields
-          title: title === '' ? null : title,
-          language,
-          name: uploaderInfo === '' ? null : uploaderInfo,
-          expires_at: expiresAfter === 'never' ? null : expiresAfter,
-          max_views: maxViews === 'unlimited'
-            ? null
-            : Number.parseInt(maxViews),
-
-          // Encrypted content and related crypto params
-          encrypted_content: arrayBufferToBase64(encryptedSnippetBlob),
-          initialization_vector: arrayBufferToBase64(ivContent),
-          auth_tag: arrayBufferToBase64(authTagContent),
-
+          ...basePayload,
           // Encrypted DEK and related crypto params
           encrypted_dek: arrayBufferToBase64(encryptedDek),
           iv_for_dek: arrayBufferToBase64(ivForDek),
@@ -283,25 +289,9 @@ export function useSnippetForm({
             hash: kdfParams.hash,
           },
         };
-        shareableLinkPath = '/s/';
       } else {
         // Default/Free Flow - No password protection
-        payload = {
-          // Unencrypted, required fields
-          title: title === '' ? null : title,
-          language,
-          name: uploaderInfo === '' ? null : uploaderInfo,
-          expires_at: expiresAfter === 'never' ? null : expiresAfter,
-          max_views: maxViews === 'unlimited'
-            ? null
-            : Number.parseInt(maxViews),
-
-          // Encrypted content and related crypto params
-          encrypted_content: arrayBufferToBase64(encryptedSnippetBlob),
-          initialization_vector: arrayBufferToBase64(ivContent),
-          auth_tag: arrayBufferToBase64(authTagContent),
-        };
-        shareableLinkPath = '/s/';
+        payload = basePayload;
         shareableLinkFragment = `#${await exportKeyToUrlSafeBase64(dek)}`;
       }
 
