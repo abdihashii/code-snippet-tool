@@ -12,6 +12,7 @@ export interface ApiErrorResponse {
   message?: string;
 }
 
+// Standardized API response pattern for all endpoints.
 export type ApiResponse<TData = any> =
   | ApiSuccessResponse<TData>
   | ApiErrorResponse;
