@@ -1,9 +1,9 @@
 const LOWERCASE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
 const UPPERCASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const NUMBER_CHARS = '0123456789';
-// Symbols consistent with the regex in password-strength.ts: /[!@#$%^&*(),.?":{}|<>=]/
-const SYMBOL_CHARS = '!@#$%^&*(),.?":{}|<>=_-'; // Added underscore and hyphen for more variety, commonly accepted symbols
+const SYMBOL_CHARS = '!@#$%^&*(),.?":{}|<>=_-';
 
+// All characters that can be used to generate a password.
 const ALL_CHARS
 = LOWERCASE_CHARS + UPPERCASE_CHARS + NUMBER_CHARS + SYMBOL_CHARS;
 
@@ -14,8 +14,12 @@ const ALL_CHARS
  * @returns A random number between 0 (inclusive) and max (exclusive).
  */
 function getRandomInt(max: number): number {
+  // First, generate a random number between 0 and 2^32 - 1.
   const randomBuffer = new Uint32Array(1);
+  // Then, use the crypto API to fill the buffer with a cryptographically
+  // secure random number.
   crypto.getRandomValues(randomBuffer);
+  // Finally, return the modulo of the random number and the max value.
   return randomBuffer[0] % max;
 }
 
