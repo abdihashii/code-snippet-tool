@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import { ErrorBoundary } from '@/components/error-boundary';
 import { AppLayout } from '@/components/layout/app-layout';
 import { LinkDisplay } from '@/components/snippet/link-display';
 import { SnippetForm } from '@/components/snippet/snippet-form';
@@ -31,17 +32,19 @@ function RouteComponent() {
   return (
     <AppLayout>
       <div className="transition-all duration-300 ease-in-out">
-        {currentState === 'form'
-          ? (
-              <SnippetForm onSnippetCreated={handleSnippetCreated} />
-            )
-          : (
-              <LinkDisplay
-                link={generatedLink}
-                onCreateAnother={handleCreateAnother}
-                passwordWasSet={snippetPasswordWasSet}
-              />
-            )}
+        <ErrorBoundary>
+          {currentState === 'form'
+            ? (
+                <SnippetForm onSnippetCreated={handleSnippetCreated} />
+              )
+            : (
+                <LinkDisplay
+                  link={generatedLink}
+                  onCreateAnother={handleCreateAnother}
+                  passwordWasSet={snippetPasswordWasSet}
+                />
+              )}
+        </ErrorBoundary>
       </div>
     </AppLayout>
   );

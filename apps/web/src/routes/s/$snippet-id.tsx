@@ -16,6 +16,8 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 import { getSnippetById } from '@/api/snippets-api';
+import { ErrorBoundary } from '@/components/error-boundary';
+import { SnippetErrorFallback } from '@/components/error-fallback';
 import { AppLayout } from '@/components/layout/app-layout';
 import { CodeEditor } from '@/components/snippet/code-editor';
 import {
@@ -390,15 +392,17 @@ function RouteComponent() {
                         )
                       : decryptedContent
                         ? (
-                            <CodeEditor
-                              code={code}
-                              onCodeChange={() => {}}
-                              highlightedHtml={highlightedHtml}
-                              codeClassName={codeClassName}
-                              MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-                              isReadOnly={true}
-                              title={title ?? 'Untitled Snippet'}
-                            />
+                            <ErrorBoundary fallback={SnippetErrorFallback}>
+                              <CodeEditor
+                                code={code}
+                                onCodeChange={() => {}}
+                                highlightedHtml={highlightedHtml}
+                                codeClassName={codeClassName}
+                                MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                                isReadOnly={true}
+                                title={title ?? 'Untitled Snippet'}
+                              />
+                            </ErrorBoundary>
                           )
                         : (
                             <div className="text-center py-8">
