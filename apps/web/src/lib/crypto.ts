@@ -1,5 +1,3 @@
-import { Buffer } from 'node:buffer';
-
 interface DecryptSnippetParams {
   encryptedContent: string;
   iv: string;
@@ -14,6 +12,45 @@ interface DecryptSnippetParams {
     hash: string;
   };
   password?: string;
+}
+
+/**
+ * Converts a Base64 string to an ArrayBuffer.
+ *
+ * @param base64 - The Base64 string to convert.
+ * @returns An ArrayBuffer containing the decoded binary data.
+ */
+function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  // Convert the Base64 string to a binary string using atob.
+  const binaryString = atob(base64);
+
+  // Create a new Uint8Array with the same length as the binary string.
+  const bytes = new Uint8Array(binaryString.length);
+
+  // Fill the Uint8Array with the character codes of the binary string.
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  // Return the buffer of the Uint8Array.
+  return bytes.buffer;
+}
+
+/**
+ * Converts a Base64url string to a Base64 string.
+ *
+ * @param base64url - The Base64url string to convert.
+ * @returns A Base64 string.
+ */
+function base64urlToBase64(base64url: string): string {
+  // Replace the URL-safe characters with the standard Base64 characters.
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+
+  // Add padding if necessary.
+  const padding = (4 - (base64.length % 4)) % 4;
+
+  // Return the Base64 string with the padding added.
+  return base64 + '='.repeat(padding);
 }
 
 /**
@@ -63,21 +100,17 @@ export async function decryptSnippet({
   password,
 }: DecryptSnippetParams): Promise<string> {
   // Convert Base64 strings to ArrayBuffers
-  const encryptedContentBuffer = Buffer.from(encryptedContent, 'base64');
-  const ivBuffer = Buffer.from(iv, 'base64');
-  const authTagBuffer = Buffer.from(authTag, 'base64');
+  const encryptedContentBuffer = base64ToArrayBuffer(encryptedContent);
+  const ivBuffer = base64ToArrayBuffer(iv);
+  const authTagBuffer = base64ToArrayBuffer(authTag);
 
   let finalDek: ArrayBuffer;
 
   if (dek) {
     // For regular snippets, use the DEK directly from the URL
     // Convert base64url to standard base64
-    let base64Dek = dek.replace(/-/g, '+').replace(/_/g, '/');
-    // Add padding if necessary
-    while (base64Dek.length % 4) {
-      base64Dek += '=';
-    }
-    finalDek = Buffer.from(base64Dek, 'base64');
+    const base64Dek = base64urlToBase64(dek);
+    finalDek = base64ToArrayBuffer(base64Dek);
   } else if (
     password
     && encryptedDek
@@ -87,10 +120,10 @@ export async function decryptSnippet({
     && kdfParameters
   ) {
     // For password-protected snippets, derive the KEK and decrypt the DEK
-    const encryptedDekBuffer = Buffer.from(encryptedDek, 'base64');
-    const ivForDekBuffer = Buffer.from(ivForDek, 'base64');
-    const authTagForDekBuffer = Buffer.from(authTagForDek, 'base64');
-    const kdfSaltBuffer = Buffer.from(kdfSalt, 'base64');
+    const encryptedDekBuffer = base64ToArrayBuffer(encryptedDek);
+    const ivForDekBuffer = base64ToArrayBuffer(ivForDek);
+    const authTagForDekBuffer = base64ToArrayBuffer(authTagForDek);
+    const kdfSaltBuffer = base64ToArrayBuffer(kdfSalt);
 
     // Derive the KEK from the password
     const kek = await deriveKeyFromPassword(
@@ -277,6 +310,8 @@ async function decryptContent(
     return new TextDecoder().decode(decryptedArrayBuffer);
   } catch (e) {
     console.error('Decryption failed in decryptContent:', e);
-    return 'DECRYPTION_FAILED_IN_DECRYPT_CONTENT'; // Test marker for debugging
+    throw new Error(
+      'Failed to decrypt content. The decryption key may be incorrect or the data may be corrupted.',
+    );
   }
 }
