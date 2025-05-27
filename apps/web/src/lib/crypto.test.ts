@@ -310,5 +310,243 @@ describe('crypto', () => {
         expect(result).toBe(largeContent);
       });
     });
+
+    describe('real-world usage from $snippet-id.tsx', () => {
+      it('should handle field name mapping from API response', async () => {
+        const mockKey = { type: 'secret' };
+        const decryptedData = new TextEncoder().encode('API response content');
+
+        mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
+        mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
+
+        // Test with field names as they come from the API
+        const result = await decryptSnippet({
+          encryptedContent: 'QVBJIHJlc3BvbnNl',
+          iv: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from initialization_vector
+          authTag: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from auth_tag
+          dek: 'test-dek-from-url-hash',
+        });
+
+        expect(result).toBe('API response content');
+      });
+
+      it('should handle password-protected snippet with API field names', async () => {
+        const mockKek = { type: 'secret' };
+        const mockDekKey = { type: 'secret' };
+        const decryptedDek = new Uint8Array(32).buffer;
+        const decryptedContent = new TextEncoder().encode('Password protected content');
+
+        mockCrypto.subtle.importKey
+          .mockResolvedValueOnce({ type: 'password' })
+          .mockResolvedValueOnce(mockKek)
+          .mockResolvedValueOnce(mockDekKey);
+
+        mockCrypto.subtle.deriveBits.mockResolvedValue(new ArrayBuffer(32));
+
+        mockCrypto.subtle.decrypt
+          .mockResolvedValueOnce(decryptedDek)
+          .mockResolvedValueOnce(decryptedContent.buffer);
+
+        // Test with field names as they come from the API
+        const result = await decryptSnippet({
+          encryptedContent: 'UGFzc3dvcmQ=',
+          iv: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from initialization_vector
+          authTag: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from auth_tag
+          encryptedDek: 'BBBBBBBBBBBBBBBBBBBBBB==', // maps from encrypted_dek
+          ivForDek: 'CCCCCCCCCCCCCCCCCCCCCC==', // maps from iv_for_dek
+          authTagForDek: 'DDDDDDDDDDDDDDDDDDDDDD==', // maps from auth_tag_for_dek
+          kdfSalt: 'EEEEEEEEEEEEEEEEEEEEEE==', // maps from kdf_salt
+          kdfParameters: { // maps from kdf_parameters
+            iterations: 100000,
+            hash: 'SHA-256',
+          },
+          password: 'user-password',
+        });
+
+        expect(result).toBe('Password protected content');
+      });
+
+      it('should handle empty DEK from URL hash', async () => {
+        // This simulates the case where window.location.hash.substring(1) returns empty string
+        await expect(
+          decryptSnippet({
+            encryptedContent: 'SGVsbG8=',
+            iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            dek: '', // Empty DEK from URL
+          }),
+        ).rejects.toThrow();
+      });
+
+      it('should handle decryption with special characters in content', async () => {
+        const mockKey = { type: 'secret' };
+        const specialContent = '{"code": "console.log(\'Hello, World!\');", "emoji": "🚀"}';
+        const decryptedData = new TextEncoder().encode(specialContent);
+
+        mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
+        mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
+
+        const result = await decryptSnippet({
+          encryptedContent: 'eyJjb2RlIjogImNvbnNvbGU=',
+          iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+          authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+          dek: 'test-dek',
+        });
+
+        expect(result).toBe(specialContent);
+      });
+
+      it('should handle multi-line code snippets', async () => {
+        const mockKey = { type: 'secret' };
+        const multilineCode = `function hello() {
+  console.log('Hello');
+  return 'World';
+}`;
+        const decryptedData = new TextEncoder().encode(multilineCode);
+
+        mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
+        mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
+
+        const result = await decryptSnippet({
+          encryptedContent: 'ZnVuY3Rpb24gaGVsbG8=',
+          iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+          authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+          dek: 'test-dek',
+        });
+
+        expect(result).toBe(multilineCode);
+      });
+    });
+
+    describe('edge cases and error scenarios', () => {
+      it('should handle malformed base64 in various fields', async () => {
+        const testCases = [
+          {
+            name: 'malformed encrypted content',
+            params: {
+              encryptedContent: '!!!invalid-base64!!!',
+              iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+              authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+              dek: 'test-dek',
+            },
+          },
+          {
+            name: 'malformed IV',
+            params: {
+              encryptedContent: 'SGVsbG8=',
+              iv: '!!!invalid-base64!!!',
+              authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+              dek: 'test-dek',
+            },
+          },
+          {
+            name: 'malformed auth tag',
+            params: {
+              encryptedContent: 'SGVsbG8=',
+              iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+              authTag: '!!!invalid-base64!!!',
+              dek: 'test-dek',
+            },
+          },
+        ];
+
+        for (const testCase of testCases) {
+          await expect(
+            decryptSnippet(testCase.params),
+          ).rejects.toThrow();
+        }
+      });
+
+      it('should handle decryption failure for password-protected snippet at DEK stage', async () => {
+        mockCrypto.subtle.importKey
+          .mockResolvedValueOnce({ type: 'password' })
+          .mockResolvedValueOnce({ type: 'secret' });
+
+        mockCrypto.subtle.deriveBits.mockResolvedValue(new ArrayBuffer(32));
+
+        // Fail at DEK decryption stage
+        mockCrypto.subtle.decrypt.mockRejectedValueOnce(new Error('Failed to decrypt DEK'));
+
+        await expect(
+          decryptSnippet({
+            encryptedContent: 'U2VjcmV0',
+            iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            encryptedDek: 'BBBBBBBBBBBBBBBBBBBBBB==',
+            ivForDek: 'CCCCCCCCCCCCCCCCCCCCCC==',
+            authTagForDek: 'DDDDDDDDDDDDDDDDDDDDDD==',
+            kdfSalt: 'EEEEEEEEEEEEEEEEEEEEEE==',
+            kdfParameters: {
+              iterations: 100000,
+              hash: 'SHA-256',
+            },
+            password: 'test-password',
+          }),
+        ).rejects.toThrow();
+      });
+
+      it('should handle decryption failure for password-protected snippet at content stage', async () => {
+        const mockKek = { type: 'secret' };
+        const mockDekKey = { type: 'secret' };
+        const decryptedDek = new Uint8Array(32).buffer;
+
+        mockCrypto.subtle.importKey
+          .mockResolvedValueOnce({ type: 'password' })
+          .mockResolvedValueOnce(mockKek)
+          .mockResolvedValueOnce(mockDekKey);
+
+        mockCrypto.subtle.deriveBits.mockResolvedValue(new ArrayBuffer(32));
+
+        mockCrypto.subtle.decrypt
+          .mockResolvedValueOnce(decryptedDek) // DEK decryption succeeds
+          .mockRejectedValueOnce(new Error('Failed to decrypt content')); // Content decryption fails
+
+        await expect(
+          decryptSnippet({
+            encryptedContent: 'U2VjcmV0',
+            iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            encryptedDek: 'BBBBBBBBBBBBBBBBBBBBBB==',
+            ivForDek: 'CCCCCCCCCCCCCCCCCCCCCC==',
+            authTagForDek: 'DDDDDDDDDDDDDDDDDDDDDD==',
+            kdfSalt: 'EEEEEEEEEEEEEEEEEEEEEE==',
+            kdfParameters: {
+              iterations: 100000,
+              hash: 'SHA-256',
+            },
+            password: 'test-password',
+          }),
+        ).rejects.toThrow('Failed to decrypt content');
+      });
+
+      it('should handle very short DEK', async () => {
+        await expect(
+          decryptSnippet({
+            encryptedContent: 'SGVsbG8=',
+            iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+            dek: 'a', // Very short DEK
+          }),
+        ).rejects.toThrow();
+      });
+
+      it('should handle Unicode content correctly', async () => {
+        const mockKey = { type: 'secret' };
+        const unicodeContent = '你好世界 🌍 Здравствуй мир';
+        const decryptedData = new TextEncoder().encode(unicodeContent);
+
+        mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
+        mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
+
+        const result = await decryptSnippet({
+          encryptedContent: '5L2g5aW95LiW55WM',
+          iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
+          authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
+          dek: 'test-dek',
+        });
+
+        expect(result).toBe(unicodeContent);
+      });
+    });
   });
 });
