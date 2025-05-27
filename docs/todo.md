@@ -1,2 +1,3 @@
 - [x] Encrypt the code before storing it
 - [ ] Snippet shared page
+- [ ] Add proper file extensions based on language for download functionality
