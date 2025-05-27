@@ -9,9 +9,9 @@ import {
   ShieldIcon,
   Wand2Icon,
 } from 'lucide-react';
+import { withErrorBoundary } from 'react-error-boundary';
 import { toast } from 'sonner';
 
-import { withErrorBoundary } from '@/components/error-boundary';
 import { FormErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -373,5 +373,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
 }
 
 export const SnippetForm = withErrorBoundary(SnippetFormComponent, {
-  fallback: FormErrorFallback,
+  FallbackComponent: ({ error, resetErrorBoundary }) => (
+    <FormErrorFallback error={error} resetError={resetErrorBoundary} />
+  ),
 });

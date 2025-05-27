@@ -1,7 +1,7 @@
 import { CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
 import { useState } from 'react';
+import { withErrorBoundary } from 'react-error-boundary';
 
-import { withErrorBoundary } from '@/components/error-boundary';
 import { CodeEditorErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -124,5 +124,7 @@ function CodeEditorComponent({
 }
 
 export const CodeEditor = withErrorBoundary(CodeEditorComponent, {
-  fallback: CodeEditorErrorFallback,
+  FallbackComponent: ({ error, resetErrorBoundary }) => (
+    <CodeEditorErrorFallback error={error} resetError={resetErrorBoundary} />
+  ),
 });
