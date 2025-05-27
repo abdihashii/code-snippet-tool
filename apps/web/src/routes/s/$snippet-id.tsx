@@ -397,6 +397,7 @@ function RouteComponent() {
                               codeClassName={codeClassName}
                               MAX_CODE_LENGTH={MAX_CODE_LENGTH}
                               isReadOnly={true}
+                              title={title ?? 'Untitled Snippet'}
                             />
                           )
                         : (
