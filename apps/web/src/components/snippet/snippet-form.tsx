@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { withErrorBoundary } from '@/components/error-boundary';
+import { FormErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -39,7 +41,7 @@ interface SnippetFormProps {
   ) => void;
 }
 
-export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
+function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
   const {
     // Form field states and setters
     code,
@@ -369,3 +371,7 @@ export function SnippetForm({ onSnippetCreated }: SnippetFormProps) {
     </Card>
   );
 }
+
+export const SnippetForm = withErrorBoundary(SnippetFormComponent, {
+  fallback: FormErrorFallback,
+});
