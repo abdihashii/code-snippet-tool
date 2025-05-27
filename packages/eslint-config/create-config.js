@@ -11,7 +11,7 @@ export default function createConfig(options, ...userConfigs) {
       semi: true,
       quotes: 'single',
     },
-    ignores: ['.pnpm-store/*', '**/*.md', '**/tsconfig.json'],
+    ignores: ['.pnpm-store/*', '**/tsconfig.json'],
     ...options,
   }, {
     rules: {
