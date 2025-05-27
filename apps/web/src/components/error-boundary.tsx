@@ -1,27 +1,14 @@
+import type { ErrorInfo } from 'react';
+import type { FallbackProps } from 'react-error-boundary';
+
 import { useRouter } from '@tanstack/react-router';
 import React from 'react';
+import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error?: Error;
-  errorInfo?: React.ErrorInfo;
-}
-
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-  fallback?: React.ComponentType<ErrorFallbackProps>;
-  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
-}
-
-interface ErrorFallbackProps {
-  error: Error;
-  resetError: () => void;
-}
-
-function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
+function DefaultErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const router = useRouter();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50">
@@ -49,7 +36,7 @@ function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
             )}
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <Button
-                onClick={resetError}
+                onClick={resetErrorBoundary}
                 variant="outline"
                 className="border-red-600 text-red-600 hover:bg-red-50"
               >
@@ -69,70 +56,19 @@ function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
   );
 }
 
-export class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return {
-      hasError: true,
-      error,
-    };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    this.setState({
-      error,
-      errorInfo,
-    });
-
-    // Call custom error handler if provided
-    if (this.props.onError) {
-      this.props.onError(error, errorInfo);
-    }
-
-    // Log error in development
-    if (import.meta.env.DEV) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
-  }
-
-  resetError = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-  };
-
-  render() {
-    if (this.state.hasError && this.state.error) {
-      const FallbackComponent = this.props.fallback || DefaultErrorFallback;
-      return (
-        <FallbackComponent
-          error={this.state.error}
-          resetError={this.resetError}
-        />
-      );
-    }
-
-    return this.props.children;
-  }
+export interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ComponentType<FallbackProps>;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
-// Higher-order component for easier usage
-export function withErrorBoundary<P extends object>(
-  Component: React.ComponentType<P>,
-  errorBoundaryProps?: Omit<ErrorBoundaryProps, 'children'>,
-) {
-  const WrappedComponent = (props: P) => (
-    <ErrorBoundary {...errorBoundaryProps}>
-      <Component {...props} />
-    </ErrorBoundary>
+export function ErrorBoundary({ children, fallback, onError }: ErrorBoundaryProps) {
+  return (
+    <ReactErrorBoundary
+      FallbackComponent={fallback || DefaultErrorFallback}
+      onError={onError}
+    >
+      {children}
+    </ReactErrorBoundary>
   );
-
-  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-
-  return WrappedComponent;
 }
