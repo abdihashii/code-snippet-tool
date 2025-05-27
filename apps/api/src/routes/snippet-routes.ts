@@ -9,15 +9,7 @@ import { Hono } from 'hono';
 import { Buffer } from 'node:buffer';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
-import type { EncryptedTextOutput } from '@/utils/encryption-utils';
 
-import {
-  decryptText,
-
-  encryptText,
-  generateInitializationVector,
-  getEncryptionKey,
-} from '@/utils/encryption-utils';
 import { getSupabaseClient } from '@/utils/supabase-client';
 
 export const snippets = new Hono<{ Bindings: CloudflareBindings }>();
@@ -62,16 +54,26 @@ function postgresByteaStringToBuffer(
 // Create a new snippet
 snippets.post('/', async (c) => {
   const {
-    content,
+    encrypted_content, // Comes in as a base64 encoded string
+    initialization_vector, // Comes in as a base64 encoded string
+    auth_tag, // Comes in as a base64 encoded string
     title,
     language,
     name,
     max_views,
     expires_at, // This will be a string like '1h', '24h', '7d', or null
+
+    // Optional password protection fields
+    encrypted_dek,
+    iv_for_dek,
+    auth_tag_for_dek,
+    kdf_salt,
+    kdf_parameters,
   } = await c.req.json<CreateSnippetPayload>();
 
   let expires_at_timestamp: string | null = null;
 
+  // Convert expires_at from a relative time string to a timestamp if it exists
   if (expires_at) {
     const now = new Date();
     if (expires_at === '1h') {
@@ -88,41 +90,64 @@ snippets.post('/', async (c) => {
   }
 
   try {
-    // Get the encryption key
-    const key = getEncryptionKey(c.env.ENCRYPTION_KEY);
-
-    // Generate a unique, cryptographically secure IV for this content
-    const ivBuffer = generateInitializationVector();
-
-    // Encrypt the plaintext content
-    const encryptedOutput: EncryptedTextOutput = encryptText(
-      content,
-      key,
-      ivBuffer,
-    );
-
     // Get the supabase client
     const supabase = getSupabaseClient(c.env);
 
-    // Save the snippet to the database with the encrypted content
-    // Convert Buffers to PostgreSQL bytea hex string format for storage
+    // Prepare the encrypted content and related crypto params to be converted
+    // to PostgreSQL bytea hex strings by first converting them to Buffers.
+    const encryptedContentBuffer = Buffer.from(encrypted_content, 'base64');
+    const ivBuffer = Buffer.from(initialization_vector, 'base64');
+    const authTagBuffer = Buffer.from(auth_tag, 'base64');
+
+    // Prepare the base insert data
+    const insertData: Record<string, any> = {
+      // Unencrypted, required fields
+      title,
+      language,
+      name,
+      max_views,
+      expires_at: expires_at_timestamp,
+
+      // Encrypted content and related crypto params converted to PostgreSQL
+      // bytea hex strings from Buffers.
+      encrypted_content: bufferToPostgresByteaString(encryptedContentBuffer),
+      initialization_vector: bufferToPostgresByteaString(ivBuffer),
+      auth_tag: bufferToPostgresByteaString(authTagBuffer),
+    };
+
+    // Add password protection fields if they exist
+    if (
+      encrypted_dek
+      && iv_for_dek
+      && auth_tag_for_dek
+      && kdf_salt
+      && kdf_parameters
+    ) {
+      // Prepare the password protection fields to be converted to PostgreSQL
+      // bytea hex strings from Buffers.
+      const encryptedDekBuffer = Buffer.from(encrypted_dek, 'base64');
+      const ivForDekBuffer = Buffer.from(iv_for_dek, 'base64');
+      const authTagForDekBuffer = Buffer.from(auth_tag_for_dek, 'base64');
+      const kdfSaltBuffer = Buffer.from(kdf_salt, 'base64');
+
+      Object.assign(insertData, {
+        // Encrypted DEK and related crypto params converted to PostgreSQL
+        // bytea hex strings from Buffers.
+        encrypted_dek: bufferToPostgresByteaString(encryptedDekBuffer),
+        iv_for_dek: bufferToPostgresByteaString(ivForDekBuffer),
+        auth_tag_for_dek: bufferToPostgresByteaString(authTagForDekBuffer),
+        kdf_salt: bufferToPostgresByteaString(kdfSaltBuffer),
+
+        kdf_parameters,
+      });
+    }
+
+    // Save the items to the database, including the encrypted content and
+    // related crypto params converted to PostgreSQL bytea hex strings.
     const { data, error } = await supabase
       .from('snippets')
-      .insert({
-        encrypted_content: bufferToPostgresByteaString(
-          encryptedOutput.ciphertext,
-        ),
-        initialization_vector: bufferToPostgresByteaString(
-          encryptedOutput.initialization_vector,
-        ),
-        auth_tag: bufferToPostgresByteaString(encryptedOutput.auth_tag),
-        title,
-        language,
-        name,
-        max_views,
-        expires_at: expires_at_timestamp,
-      })
-      .select('id') // Only select the ID, or whatever minimal data is needed
+      .insert(insertData)
+      .select('id')
       .single();
 
     if (error) {
@@ -130,16 +155,17 @@ snippets.post('/', async (c) => {
       return c.json(
         {
           error: `Failed to create snippet: ${error.message}`,
+          success: false,
         },
         500,
       );
     }
 
     return c.json({
-      id: data.id,
+      data: { id: data.id },
       success: true,
       message: 'Snippet created successfully',
-    });
+    }, 201);
   } catch (e) {
     const err = e as Error;
     console.error('Error during snippet creation:', err);
@@ -147,6 +173,7 @@ snippets.post('/', async (c) => {
     return c.json(
       {
         error: `An unexpected error occurred: ${err.message}`,
+        success: false,
       },
       500,
     );
@@ -158,7 +185,10 @@ snippets.get('/:id', async (c) => {
   const snippetId = c.req.param('id');
 
   if (!snippetId) {
-    return c.json({ error: 'Snippet ID is required' }, 400);
+    return c.json({
+      error: 'Snippet ID is required',
+      success: false,
+    }, 400);
   }
 
   // Get the supabase client
@@ -167,7 +197,7 @@ snippets.get('/:id', async (c) => {
   // 1. Fetch the snippet data from the database
   const { data: snippet, error: fetchError } = await supabase
     .from('snippets')
-    .select('*') // Select all columns needed for decryption and display
+    .select('*')
     .eq('id', snippetId)
     .single();
 
@@ -176,12 +206,14 @@ snippets.get('/:id', async (c) => {
     return c.json(
       {
         error: 'Snippet not found or access denied',
+        success: false,
       },
       404,
     ); // More generic error message for security
   }
 
-  // Cast to the Snippet type (ensure this type expects string for bytea fields)
+  // Cast to the Snippet type
+  // (ensure this type expects string for bytea fields)
   const typedSnippet = snippet as Snippet;
 
   // 2. Check for expiration
@@ -189,6 +221,7 @@ snippets.get('/:id', async (c) => {
     // Optional: implement deletion logic here or via a scheduled task
     return c.json({
       error: 'Snippet expired',
+      success: false,
       message: 'This snippet has expired and is no longer available.',
     }, 410);
   }
@@ -201,6 +234,7 @@ snippets.get('/:id', async (c) => {
     if (typedSnippet.current_views >= typedSnippet.max_views) {
       return c.json({
         error: 'Snippet has reached its maximum view limit.',
+        success: false,
         message: 'This snippet has been viewed the maximum number of times and is no longer available.',
       }, 403); // 403 Forbidden
     }
@@ -221,52 +255,74 @@ snippets.get('/:id', async (c) => {
     }
   }
 
-  // 4. Decrypt the content
+  // 4. Convert bytea hex strings to Base64 for client-side decryption
   try {
-    const key = getEncryptionKey(c.env.ENCRYPTION_KEY);
-
-    // Convert stored bytea hex strings back to Buffers
-    // The 'as string' cast assumes your Snippet type correctly defines these
-    // as strings
-    const ciphertext = postgresByteaStringToBuffer(
-      typedSnippet.encrypted_content as string,
-    );
-    const initializationVector = postgresByteaStringToBuffer(
-      typedSnippet.initialization_vector as string,
-    );
-    const authTag = postgresByteaStringToBuffer(
-      typedSnippet.auth_tag as string,
-    );
-
-    const decryptedContent = decryptText(
-      ciphertext,
-      key,
-      initializationVector,
-      authTag,
-    );
-
     const response: GetSnippetByIdResponse = {
+      // Unencrypted, required fields
       id: typedSnippet.id,
       title: typedSnippet.title,
       language: typedSnippet.language,
       name: typedSnippet.name,
-      content: decryptedContent,
-      created_at: typedSnippet.created_at,
-      expires_at: typedSnippet.expires_at,
       max_views: typedSnippet.max_views,
       current_views: typedSnippet.current_views,
+      created_at: typedSnippet.created_at,
+      expires_at: typedSnippet.expires_at,
+
+      // Convert bytea hex strings to Base64 for client-side decryption
+      encrypted_content: Buffer.from(
+        postgresByteaStringToBuffer(typedSnippet.encrypted_content as string),
+      ).toString('base64'),
+      initialization_vector: Buffer.from(
+        postgresByteaStringToBuffer(
+          typedSnippet.initialization_vector as string,
+        ),
+      ).toString('base64'),
+      auth_tag: Buffer.from(
+        postgresByteaStringToBuffer(typedSnippet.auth_tag as string),
+      ).toString('base64'),
     };
 
-    // 5. Return the decrypted content and relevant metadata
-    return c.json(response);
-  } catch (decryptionOrConversionError) {
-    const err = decryptionOrConversionError as Error;
+    // Add password protection fields if they exist
+    if (
+      typedSnippet.encrypted_dek
+      && typedSnippet.iv_for_dek
+      && typedSnippet.auth_tag_for_dek
+      && typedSnippet.kdf_salt
+      && typedSnippet.kdf_parameters
+    ) {
+      Object.assign(response, {
+        // Encrypted DEK and related crypto params converted to Base64
+        // for client-side decryption.
+        encrypted_dek: Buffer.from(postgresByteaStringToBuffer(
+          typedSnippet.encrypted_dek as string,
+        )).toString('base64'),
+        iv_for_dek: Buffer.from(postgresByteaStringToBuffer(
+          typedSnippet.iv_for_dek as string,
+        )).toString('base64'),
+        auth_tag_for_dek: Buffer.from(postgresByteaStringToBuffer(
+          typedSnippet.auth_tag_for_dek as string,
+        )).toString('base64'),
+        kdf_salt: Buffer.from(postgresByteaStringToBuffer(
+          typedSnippet.kdf_salt as string,
+        )).toString('base64'),
+
+        kdf_parameters: typedSnippet.kdf_parameters,
+      });
+    }
+
+    return c.json({
+      data: response,
+      success: true,
+    });
+  } catch (conversionError) {
+    const err = conversionError as Error;
     console.error(`Processing failed for snippet ${snippetId}:`, err.message);
     return c.json(
       {
         error: 'Failed to process snippet. It may be corrupted or the link is invalid.',
+        success: false,
       },
-      500, // Internal Server Error for decryption/conversion failures
+      500, // Internal Server Error for conversion failures
     );
   }
 });

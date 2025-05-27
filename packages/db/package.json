@@ -5,10 +5,11 @@
   "description": "Database for snippet-share",
   "author": "Abdirahman Haji",
   "license": "MIT",
-  "keywords": [],
   "scripts": {
-    "start": "supabase start",
-    "stop": "supabase stop"
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "clean": "rm -rf node_modules"
   },
   "devDependencies": {
     "supabase": "^2.22.12"

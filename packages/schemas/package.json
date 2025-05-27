@@ -1,0 +1,23 @@
+{
+  "name": "@snippet-share/schemas",
+  "type": "module",
+  "version": "0.0.1",
+  "packageManager": "pnpm@10.11.0",
+  "description": "Shared schemas for the snippet-share project",
+  "author": "Abdirahman Haji <abdirahman.haji.13@gmail.com>",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf node_modules dist"
+  },
+  "dependencies": {
+    "zod": "*"
+  }
+}

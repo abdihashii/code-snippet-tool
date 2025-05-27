@@ -1,13 +1,16 @@
 {
   "name": "snippet-share",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@10.11.0",
   "description": "Snippet Share Monorepo",
   "author": "Abdirahman Haji",
   "license": "ISC",
   "keywords": [],
   "scripts": {
     "build:types": "pnpm --filter @snippet-share/types build",
+    "build:schemas": "pnpm --filter @snippet-share/schemas build",
+    "dev:web": "pnpm --filter @snippet-share/web dev",
+    "dev:api": "pnpm --filter @snippet-share/api dev",
     "clean": "rm -rf node_modules dist",
     "clean:all": "pnpm clean && pnpm -r clean"
   },

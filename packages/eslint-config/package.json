@@ -1,13 +1,16 @@
 {
   "name": "@snippet-share/eslint-config",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "ESLint config for this monorepo and its apps + packages",
   "author": "Abdirahman Haji",
   "license": "MIT",
   "exports": {
     ".": "./eslint.config.js",
     "./create-config": "./create-config.js"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.0"

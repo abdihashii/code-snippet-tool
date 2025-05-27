@@ -1,7 +1,6 @@
 import type {
-  ApiErrorResponse,
+  ApiResponse,
   CreateSnippetPayload,
-  CreateSnippetResponse,
   GetSnippetByIdResponse,
 } from '@snippet-share/types';
 
@@ -9,7 +8,7 @@ const API_URL = 'http://localhost:8787';
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,
-): Promise<CreateSnippetResponse> {
+): Promise<ApiResponse<{ id: string }>> {
   const response = await fetch(`${API_URL}/snippets`, {
     method: 'POST',
     body: JSON.stringify(snippet),
@@ -18,33 +17,40 @@ export async function createSnippet(
     },
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to create snippet');
+  const responseData: ApiResponse<{ id: string }> = await response.json();
+
+  if (!response.ok || !responseData.success) {
+    // Return error response instead of throwing
+    return {
+      error: 'error' in responseData
+        ? responseData.error
+        : `HTTP ${response.status}: Failed to create snippet`,
+      success: false,
+      message: 'error' in responseData ? responseData.message : undefined,
+    };
   }
 
-  return response.json() as Promise<CreateSnippetResponse>;
+  return responseData; // Return the full ApiResponse<{ id: string }>
 }
 
 export async function getSnippetById(
   id: string,
-): Promise<GetSnippetByIdResponse | ApiErrorResponse> {
+): Promise<ApiResponse<GetSnippetByIdResponse>> {
   const response = await fetch(`${API_URL}/snippets/${id}`);
+  const responseData: ApiResponse<GetSnippetByIdResponse> = await response.json();
 
-  if (!response.ok) {
-    // If the snippet has expired (410), reached max views (403), or is not
-    // found (404), the API returns a JSON error object. We want to pass this
-    // to the component.
-    if (
-      response.status === 410
-      || response.status === 403
-      || response.status === 404
-    ) {
-      return response.json() as Promise<ApiErrorResponse>;
-    }
-    // For other unexpected errors, throw an error to be caught by router's
-    // error boundary
-    throw new Error('Failed to get snippet');
+  if (!response.ok || !responseData.success) {
+    // Return error response instead of throwing or mixing types
+    return {
+      error: responseData.success === false
+        ? responseData.error
+        : 'Snippet not available',
+      success: false,
+      message: responseData.success === false
+        ? responseData.message
+        : 'This snippet could not be retrieved.',
+    };
   }
 
-  return response.json() as Promise<GetSnippetByIdResponse>;
+  return responseData; // Return the full ApiResponse<GetSnippetByIdResponse>
 }

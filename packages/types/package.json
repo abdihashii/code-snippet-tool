@@ -1,11 +1,10 @@
 {
   "name": "@snippet-share/types",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "packageManager": "pnpm@10.10.0",
   "description": "Types for the snippet-share project",
   "author": "Abdirahman Haji",
   "license": "MIT",
-  "keywords": [],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

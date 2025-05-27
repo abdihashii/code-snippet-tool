@@ -1,10 +1,22 @@
-import type { ApiErrorResponse, GetSnippetByIdResponse, Language } from '@snippet-share/types';
+import type {
+  ApiResponse,
+  GetSnippetByIdResponse,
+  Language,
+} from '@snippet-share/types';
 
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowLeftIcon, ClockIcon, EyeIcon, ShieldIcon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  ClockIcon,
+  EyeIcon,
+  Loader2,
+  LockIcon,
+  ShieldIcon,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { getSnippetById } from '@/api/snippets-api';
-import { Header } from '@/components/layout/header';
+import { AppLayout } from '@/components/layout/app-layout';
 import { CodeEditor } from '@/components/snippet/code-editor';
 import {
   SnippetExpiredMessage,
@@ -18,7 +30,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
+import { decryptSnippet } from '@/lib/crypto';
 import {
   formatExpiryTimestamp,
   formatTimestamp,
@@ -26,31 +40,45 @@ import {
   hasReachedMaxViews,
 } from '@/lib/utils';
 
+type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
+
 export const Route = createFileRoute('/s/$snippet-id')({
   component: RouteComponent,
   loader: async ({ params }) => {
     const snippetId = params['snippet-id'];
-    // The return type of getSnippetById needs to accommodate ApiErrorResponse
     const snippet = await getSnippetById(snippetId);
-    // APIErrorResponse is casted to the snippet response in case of 410 Gone
-    return snippet as GetSnippetByIdResponse | ApiErrorResponse;
+    return snippet as LoaderResponse;
   },
 });
 
 function RouteComponent() {
-  // At this point, the loader data is either GetSnippetByIdResponse or
-  // ApiErrorResponse because the response is either the snippet or an error
-  // response
-  const loadedData
-  = Route.useLoaderData() as GetSnippetByIdResponse | ApiErrorResponse;
+  const [password, setPassword] = useState('');
+  const [
+    decryptedContent,
+    setDecryptedContent,
+  ] = useState<string | null>(null);
+  const [decryptionError, setDecryptionError] = useState<string | null>(null);
+  const [isDecrypting, setIsDecrypting] = useState(false);
 
-  // Prepare props for useSnippetForm, defaulting if loadedData is an error
-  const initialCodeForHook = ('error' in loadedData)
-    ? ''
-    : loadedData.content;
-  const initialLanguageForHook = ('error' in loadedData)
-    ? 'PLAINTEXT' as Language
-    : loadedData.language;
+  // Get the loader data as ApiResponse<GetSnippetByIdResponse>
+  const loadedData = Route.useLoaderData() as LoaderResponse;
+
+  // Extract data for successful responses, or use defaults for error cases
+  const snippetData = loadedData.success ? loadedData.data : null;
+
+  // Check if this is a password-protected snippet
+  const isPasswordProtected = snippetData?.encrypted_dek
+    && snippetData?.iv_for_dek
+    && snippetData?.auth_tag_for_dek
+    && snippetData?.kdf_salt
+    && snippetData?.kdf_parameters;
+
+  // Prepare props for useSnippetForm
+  const initialCodeForHook = decryptedContent
+    || snippetData?.encrypted_content
+    || '';
+  const initialLanguageForHook = snippetData?.language
+    || ('PLAINTEXT' as Language);
 
   const {
     // Form field states and setters
@@ -67,17 +95,90 @@ function RouteComponent() {
     initialLanguage: initialLanguageForHook,
   });
 
-  // Dummy onCodeChange for read-only editor
-  // TODO: see if needed, or can be removed if useSnippetForm doesn't return it
-  // when read-only
-  const handleCodeChange = () => {};
+  // Handle password submission
+  const handlePasswordSubmit = async () => {
+    if (!password || !snippetData) return;
+    setIsDecrypting(true);
+    setDecryptionError(null);
 
-  // Now, check for error and return error UI if necessary
-  if ('error' in loadedData && loadedData.error) {
-    // Check for specific API error messages that indicate the snippet is not
-    // available
+    try {
+      const decrypted = await decryptSnippet({
+        encryptedContent: snippetData.encrypted_content,
+        iv: snippetData.initialization_vector,
+        authTag: snippetData.auth_tag,
+        encryptedDek: snippetData.encrypted_dek!,
+        ivForDek: snippetData.iv_for_dek!,
+        authTagForDek: snippetData.auth_tag_for_dek!,
+        kdfSalt: snippetData.kdf_salt!,
+        kdfParameters: snippetData.kdf_parameters!,
+        password,
+      });
+
+      setDecryptedContent(decrypted);
+      setDecryptionError(null);
+    } catch (err) {
+      console.error('Failed to decrypt with password:', err);
+      setDecryptionError('Invalid password. Please try again.');
+    } finally {
+      setIsDecrypting(false);
+    }
+  };
+
+  // Handle regular snippet decryption (with DEK from URL fragment)
+  const handleRegularDecryption = useCallback(async () => {
+    if (!snippetData) return;
+    setIsDecrypting(true);
+    setDecryptionError(null);
+
+    try {
+      const dek = window.location.hash.substring(1);
+
+      if (!dek) {
+        console.error('No decryption key found in URL');
+        throw new Error('No decryption key found in URL');
+      }
+
+      const decrypted = await decryptSnippet({
+        encryptedContent: snippetData.encrypted_content,
+        iv: snippetData.initialization_vector,
+        authTag: snippetData.auth_tag,
+        dek,
+      });
+
+      setDecryptedContent(decrypted);
+      setDecryptionError(null);
+    } catch (err) {
+      console.error('Failed to decrypt snippet:', err);
+      setDecryptionError(
+        'Failed to decrypt snippet. The link may be invalid or corrupted.',
+      );
+    } finally {
+      setIsDecrypting(false);
+    }
+  }, [snippetData, setDecryptedContent, setDecryptionError, setIsDecrypting]);
+
+  // Attempt decryption when component mounts
+  useEffect(() => {
+    if (!snippetData) return;
+
+    // If not password protected, and not yet decrypted or decrypting, try to
+    // decrypt.
+    if (!isPasswordProtected && !decryptedContent && !isDecrypting) {
+      handleRegularDecryption();
+    }
+    // For password-protected snippets, decryption is now user-triggered.
+  }, [
+    snippetData,
+    isPasswordProtected,
+    decryptedContent,
+    isDecrypting,
+    handleRegularDecryption,
+  ]);
+
+  // Now handle error cases after all hooks are called
+  if (!loadedData.success) {
     const errorTitle = loadedData.error;
-    const errorMessage = (loadedData as ApiErrorResponse).message
+    const errorMessage = loadedData.message
       || 'This snippet could not be retrieved.';
 
     if (
@@ -100,10 +201,11 @@ function RouteComponent() {
       );
     }
 
-    // For other, unexpected errors that still have the 'error' property
-    // structure, display the error message returned from the response
+    // For other, unexpected errors
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50">
+      <main
+        className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50"
+      >
         <div className="w-full max-w-xl mx-auto text-center">
           <ShieldIcon className="h-12 w-12 mx-auto mb-4 text-red-500" />
           <h1 className="text-2xl font-semibold text-slate-800 mb-2">
@@ -127,8 +229,7 @@ function RouteComponent() {
     );
   }
 
-  // If we are here, loadedData is GetSnippetByIdResponse. We can use its
-  // properties directly
+  // At this point we know snippetData exists (success case)
   const {
     title,
     expires_at,
@@ -136,7 +237,7 @@ function RouteComponent() {
     current_views,
     name,
     created_at,
-  } = loadedData as GetSnippetByIdResponse; // Safe cast as error case is handled
+  } = snippetData!; // Non-null assertion since we're in success case
 
   const isExpired = hasExpiredByTime(expires_at);
   // Client-side check for max views, in case API doesn't return 403 for some
@@ -146,100 +247,182 @@ function RouteComponent() {
     : false;
 
   return (
-    <main
-      className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-6 md:p-8 bg-slate-50"
-    >
-      <div className="w-full max-w-3xl mx-auto">
-        <Header />
-
-        <div className="transition-all duration-300 ease-in-out">
-          <Card className="w-full shadow-md border-slate-200 bg-white">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl text-slate-800 dark:text-slate-100">
-                  {title || 'Untitled Snippet'}
-                </CardTitle>
-                <div className="flex space-x-2">
-                  <Badge variant="outline" className="flex items-center gap-1 text-xs">
-                    <ClockIcon className="h-3 w-3" />
-                    Expires:
-                    {' '}
-                    {formatExpiryTimestamp(expires_at)}
-                  </Badge>
+    <AppLayout>
+      <div className="transition-all duration-300 ease-in-out">
+        <Card className="w-full shadow-md border-slate-200 bg-white">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl text-slate-800 dark:text-slate-100">
+                {title || 'Untitled Snippet'}
+              </CardTitle>
+              <div className="flex space-x-2">
+                {isPasswordProtected && (
                   <Badge
                     variant="outline"
                     className="flex items-center gap-1 text-xs"
                   >
-                    <EyeIcon className="h-3 w-3" />
-                    {max_views === 1
-                      ? 'Burns after reading'
-                      : 'Multiple views'}
+                    <LockIcon className="h-3 w-3" />
+                    Password Protected
                   </Badge>
-                </div>
-              </div>
-              {name && (
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Shared by:
+                )}
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 text-xs"
+                >
+                  <ClockIcon className="h-3 w-3" />
+                  Expires:
                   {' '}
-                  {name}
-                </p>
-              )}
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                Created:
+                  {formatExpiryTimestamp(expires_at)}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 text-xs"
+                >
+                  <EyeIcon className="h-3 w-3" />
+                  {max_views === 1
+                    ? 'Burns after reading'
+                    : 'Multiple views'}
+                </Badge>
+              </div>
+            </div>
+            {name && (
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Shared by:
                 {' '}
-                {formatTimestamp(created_at)}
+                {name}
               </p>
-            </CardHeader>
+            )}
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+              Created:
+              {' '}
+              {formatTimestamp(created_at)}
+            </p>
+          </CardHeader>
 
-            <CardContent>
-              {isExpired
+          <CardContent>
+            {isExpired
+              ? (
+                  <SnippetExpiredMessage
+                    title="Snippet Expired"
+                    message="This snippet has expired based on its set expiry time and is no longer viewable."
+                  />
+                )
+              : hasReachedDisplayLimit
                 ? (
                     <SnippetExpiredMessage
-                      title="Snippet Expired"
-                      message="This snippet has expired based on its set expiry time and is no longer viewable."
+                      title="View Limit Reached"
+                      message="This snippet has reached its maximum view limit and is no longer available."
                     />
                   )
-                : hasReachedDisplayLimit
+                : isDecrypting
                   ? (
-                      <SnippetExpiredMessage
-                        title="View Limit Reached"
-                        message="This snippet has reached its maximum view limit and is no longer available."
-                      />
+                      <div className="text-center py-8">
+                        <Loader2
+                          className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600"
+                        />
+                        <h3 className="text-lg font-semibold text-slate-800">
+                          Decrypting...
+                        </h3>
+                      </div>
                     )
-                  : (
-                      <CodeEditor
-                        code={code}
-                        onCodeChange={handleCodeChange} // no-op for read-only editor
-                        highlightedHtml={highlightedHtml}
-                        codeClassName={codeClassName}
-                        MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-                        isReadOnly={true}
-                      />
-                    )}
-            </CardContent>
-            <CardFooter className="flex justify-center">
-              <Link to="/new">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <ArrowLeftIcon className="h-4 w-4" />
-                  Back to Home
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </div>
-      </div>
+                  : isPasswordProtected && !decryptedContent
+                    ? (
+                        <div>
+                          <div
+                            className="rounded-md border bg-muted/50 px-6 py-8 space-y-4"
+                          >
+                            <div className="mb-2">
+                              <h3
+                                className="text-lg font-semibold leading-none tracking-tight"
+                              >
+                                Password Protected Snippet
+                              </h3>
+                              <p
+                                className="text-sm text-muted-foreground mt-1"
+                              >
+                                This snippet is password protected. Please enter the password to view its contents.
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              <Input
+                                type="password"
+                                placeholder="Enter password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handlePasswordSubmit();
+                                  }
+                                }}
+                              />
+                              {decryptionError && (
+                                <p
+                                  className="text-sm text-red-500"
+                                >
+                                  {decryptionError}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex justify-end mt-2">
+                              <Button
+                                onClick={handlePasswordSubmit}
+                                disabled={isDecrypting}
+                                className="bg-teal-600 hover:bg-teal-700"
+                              >
+                                {isDecrypting ? 'Decrypting...' : 'Decrypt'}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    : decryptionError
+                      ? (
+                          <div className="text-center py-8">
+                            <ShieldIcon
+                              className="h-12 w-12 mx-auto mb-4 text-red-500"
+                            />
+                            <h3
+                              className="text-lg font-semibold text-slate-800 mb-2"
+                            >
+                              {decryptionError}
+                            </h3>
+                          </div>
+                        )
+                      : decryptedContent
+                        ? (
+                            <CodeEditor
+                              code={code}
+                              onCodeChange={() => {}}
+                              highlightedHtml={highlightedHtml}
+                              codeClassName={codeClassName}
+                              MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                              isReadOnly={true}
+                            />
+                          )
+                        : (
+                            <div className="text-center py-8">
+                              <Loader2
+                                className="h-6 w-6 mx-auto animate-spin text-slate-500"
+                              />
+                              <p className="text-sm text-slate-500 mt-2">Loading snippet...</p>
+                            </div>
+                          )}
+          </CardContent>
 
-      <footer className="mt-auto py-4 text-center text-sm text-slate-500">
-        ©
-        {' '}
-        {new Date().getFullYear()}
-        {' '}
-        Secure Snippet Sharer
-      </footer>
-    </main>
+          <CardFooter className="flex justify-center">
+            <Link to="/new">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    </AppLayout>
   );
 }
