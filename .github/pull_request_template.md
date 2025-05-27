@@ -5,7 +5,7 @@
 ## Type of change
 
 - [ ] 🐛 Bug fix
-- [ ] ✨ New feature  
+- [ ] ✨ New feature
 - [ ] 🔧 Refactor
 - [ ] 📝 Documentation
 - [ ] ✅ Tests
