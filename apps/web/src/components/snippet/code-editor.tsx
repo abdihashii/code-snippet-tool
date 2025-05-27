@@ -1,3 +1,7 @@
+import { CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
@@ -9,6 +13,7 @@ export interface CodeEditorProps {
   isReadOnly?: boolean;
   MAX_CODE_LENGTH: number;
   placeholder?: string;
+  title?: string;
 }
 
 export function CodeEditor({
@@ -19,9 +24,71 @@ export function CodeEditor({
   isReadOnly = false,
   MAX_CODE_LENGTH,
   placeholder = 'Paste your code here...',
+  title,
 }: CodeEditorProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy code: ', err);
+    }
+  };
+
+  const handleDownload = () => {
+    // Sanitize title for safe filename by removing special characters and converting to lowercase
+    const fileName = title ? `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : 'snippet';
+    // TODO: Add proper file extensions based on language
+    const blob = new Blob([code], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
   return (
     <div className="relative w-full">
+      {isReadOnly && (
+        <div className="absolute top-2 right-2 z-20 flex gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="bg-white/90 hover:bg-white shadow-sm"
+            onClick={handleCopy}
+          >
+            {copied
+              ? (
+                  <>
+                    <CopyCheckIcon className="h-4 w-4 mr-1 text-green-500" />
+                    Copied!
+                  </>
+                )
+              : (
+                  <>
+                    <CopyIcon className="h-4 w-4 mr-1" />
+                    Copy
+                  </>
+                )}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="bg-white/90 hover:bg-white shadow-sm"
+            onClick={handleDownload}
+          >
+            <DownloadIcon className="h-4 w-4 mr-1" />
+            Download
+          </Button>
+        </div>
+      )}
       <pre
         aria-hidden="true"
         className={cn(
