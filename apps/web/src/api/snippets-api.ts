@@ -42,9 +42,7 @@ export async function getSnippetById(
   if (!response.ok || !responseData.success) {
     // Return error response instead of throwing or mixing types
     return {
-      error: responseData.success === false
-        ? responseData.error
-        : 'Snippet not available',
+      error: responseData.success === false ? responseData.error : 'Snippet not available',
       success: false,
       message: responseData.success === false
         ? responseData.message
