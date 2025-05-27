@@ -126,6 +126,12 @@ describe('password-strength', () => {
         expect(result.strength).toBe(PasswordStrength.Weak);
         expect(result.score).toBe(1); // Only uppercase character type
       });
+
+      it('should return Weak with score 0 for password with no recognized character types', () => {
+        const result = checkPasswordStrength('        '); // 8 spaces
+        expect(result.strength).toBe(PasswordStrength.Weak);
+        expect(result.score).toBe(0); // No uppercase, lowercase, numbers, or symbols
+      });
     });
 
     describe('medium strength', () => {
