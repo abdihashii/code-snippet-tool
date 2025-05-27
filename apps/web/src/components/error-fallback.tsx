@@ -1,3 +1,4 @@
+import { useRouter } from '@tanstack/react-router';
 import { AlertTriangleIcon, HomeIcon, RefreshCwIcon } from 'lucide-react';
 import React from 'react';
 
@@ -23,6 +24,7 @@ export function ErrorFallback({
   showHomeButton = true,
   showErrorDetails = import.meta.env.DEV,
 }: ErrorFallbackProps) {
+  const router = useRouter();
   const defaultTitle = 'Something went wrong';
   const defaultDescription = 'An unexpected error occurred. Please try refreshing the page or contact support if the problem persists.';
 
@@ -135,7 +137,7 @@ export function ErrorFallback({
               </details>
             )}
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
-              <Button 
+              <Button
                 onClick={resetError}
                 variant="outline"
                 className="border-red-600 text-red-600 hover:bg-red-50"
@@ -144,8 +146,8 @@ export function ErrorFallback({
                 Try Again
               </Button>
               {showHomeButton && (
-                <Button 
-                  onClick={() => window.location.href = '/'}
+                <Button
+                  onClick={() => router.navigate({ to: '/' })}
                   className="bg-teal-600 hover:bg-teal-700"
                 >
                   <HomeIcon className="h-4 w-4 mr-2" />
@@ -162,8 +164,8 @@ export function ErrorFallback({
 
 // Specialized fallback components for different use cases
 export const SnippetErrorFallback: React.FC<Omit<ErrorFallbackProps, 'variant'>> = (props) => (
-  <ErrorFallback 
-    {...props} 
+  <ErrorFallback
+    {...props}
     variant="component"
     title="Snippet Error"
     description="Unable to load or display this snippet. Please check the link and try again."
@@ -171,8 +173,8 @@ export const SnippetErrorFallback: React.FC<Omit<ErrorFallbackProps, 'variant'>>
 );
 
 export const CodeEditorErrorFallback: React.FC<Omit<ErrorFallbackProps, 'variant'>> = (props) => (
-  <ErrorFallback 
-    {...props} 
+  <ErrorFallback
+    {...props}
     variant="inline"
     title="Code Editor Error"
     description="The code editor could not be loaded properly."
@@ -180,8 +182,8 @@ export const CodeEditorErrorFallback: React.FC<Omit<ErrorFallbackProps, 'variant
 );
 
 export const FormErrorFallback: React.FC<Omit<ErrorFallbackProps, 'variant'>> = (props) => (
-  <ErrorFallback 
-    {...props} 
+  <ErrorFallback
+    {...props}
     variant="component"
     title="Form Error"
     description="There was an error with the form. Please refresh and try again."

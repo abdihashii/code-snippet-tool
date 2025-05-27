@@ -1,3 +1,4 @@
+import { useRouter } from '@tanstack/react-router';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ interface ErrorFallbackProps {
 }
 
 function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
+  const router = useRouter();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50">
       <div className="w-full max-w-md mx-auto">
@@ -54,7 +56,7 @@ function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
                 Try Again
               </Button>
               <Button
-                onClick={() => window.location.href = '/'}
+                onClick={() => router.navigate({ to: '/' })}
                 className="bg-teal-600 hover:bg-teal-700"
               >
                 Go Home
