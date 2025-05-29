@@ -25,4 +25,4 @@ dist-ssr
 
 
 # Coverage
-coverage
+src/__tests__/coverage
