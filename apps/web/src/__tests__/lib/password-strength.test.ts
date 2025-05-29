@@ -5,7 +5,7 @@ import {
   PasswordCriterionKey,
   PasswordSchema,
   PasswordStrength,
-} from './password-strength';
+} from '@/lib/password-strength';
 
 describe('password-strength', () => {
   describe('passwordSchema', () => {

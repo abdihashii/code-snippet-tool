@@ -13,7 +13,7 @@ import {
   formatExpiryTimestamp,
   hasExpiredByTime,
   hasReachedMaxViews,
-} from './utils';
+} from '@/lib/utils';
 
 // Tests for formatExpiryTimestamp
 describe('formatExpiryTimestamp', () => {
