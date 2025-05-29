@@ -11,9 +11,52 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   formatExpiryTimestamp,
+  formatTimestamp,
   hasExpiredByTime,
   hasReachedMaxViews,
 } from '@/lib/utils';
+
+// Tests for formatTimestamp
+describe('formatTimestamp', () => {
+  const testDate = new Date(2035, 11, 31, 0, 0, 0); // December 31, 2035, 12:00:00 AM
+  const expectedFormat = '12/31/2035 12:00 AM';
+
+  it('should return "Never" for null input', () => {
+    expect(formatTimestamp(null)).toBe('Never');
+  });
+
+  it('should return "Never" for undefined input', () => {
+    expect(formatTimestamp(undefined)).toBe('Never');
+  });
+
+  it('should format a Date object correctly', () => {
+    expect(formatTimestamp(testDate)).toBe(expectedFormat);
+  });
+
+  it('should format an ISO string correctly', () => {
+    expect(formatTimestamp(testDate.toISOString())).toBe(expectedFormat);
+  });
+
+  it('should handle noon correctly', () => {
+    const noonDate = new Date(2024, 5, 15, 12, 0, 0);
+    expect(formatTimestamp(noonDate)).toBe('06/15/2024 12:00 PM');
+  });
+
+  it('should handle afternoon time correctly', () => {
+    const afternoonDate = new Date(2024, 5, 15, 14, 30, 0);
+    expect(formatTimestamp(afternoonDate)).toBe('06/15/2024 02:30 PM');
+  });
+
+  it('should handle single digit minutes correctly', () => {
+    const singleDigitMinute = new Date(2024, 5, 15, 14, 5, 0);
+    expect(formatTimestamp(singleDigitMinute)).toBe('06/15/2024 02:05 PM');
+  });
+
+  it('should handle different years correctly', () => {
+    const differentYear = new Date(2025, 11, 31, 23, 59, 0);
+    expect(formatTimestamp(differentYear)).toBe('12/31/2025 11:59 PM');
+  });
+});
 
 // Tests for formatExpiryTimestamp
 describe('formatExpiryTimestamp', () => {
