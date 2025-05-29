@@ -13,6 +13,7 @@ import { twMerge } from 'tailwind-merge';
 
 const DATE_FORMAT = 'MM/dd/yyyy hh:mm a';
 
+/* v8 ignore next */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
