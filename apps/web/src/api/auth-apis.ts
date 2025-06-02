@@ -1,6 +1,6 @@
 import type { ApiResponse } from '@snippet-share/types';
 
-const API_URL = 'http://localhost:8787';
+import { API_URL } from '@/lib/constants';
 
 export async function signUp(
   email: string,
