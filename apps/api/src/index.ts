@@ -2,17 +2,19 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
 
+import type { CloudflareBindings } from '@/types/hono-bindings';
+
 import { auth } from '@/routes/auth-routes';
 import { snippets } from '@/routes/snippet-routes';
 
-const app = new Hono();
+const app = new Hono<{ Bindings: CloudflareBindings }>();
 
 app.use('*', cors({
-  origin: 'http://localhost:3000', // Frontend URL
+  origin: (_, c) => c.env.FRONTEND_URL,
 }));
 
 app.use('*', csrf({
-  origin: 'http://localhost:3000',
+  origin: (_, c) => c.env.FRONTEND_URL,
 }));
 
 app.get('/ping', () => {
