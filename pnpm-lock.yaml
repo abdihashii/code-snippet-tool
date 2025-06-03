@@ -52,6 +52,9 @@ importers:
         specifier: ^4.7.9
         version: 4.7.9
     devDependencies:
+      '@snippet-share/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       wrangler:
         specifier: ^4.4.0
         version: 4.15.0
