@@ -1,0 +1,38 @@
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/api/**' # Only deploy API if there are changes to the API code
+      - 'packages/**' # Or deploy API if there are changes to the shared packages
+      - '.github/workflows/**' # Or deploy API if there are changes to the GitHub workflows
+
+jobs:
+  deploy:
+    name: Deploy API to Cloudflare Workers
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Build required dependencies
+        run: |
+          pnpm build:types
+          pnpm build:schemas
+      - name: Deploy API using wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        working-directory: apps/api
+        run: pnpm deploy
