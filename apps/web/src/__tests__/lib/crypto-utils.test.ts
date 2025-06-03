@@ -167,6 +167,51 @@ describe('arrayBufferToBase64', () => {
     expect(mockBtoa).toHaveBeenCalled();
     expect(result).toBe('mock-all-bytes-base64');
   });
+
+  it('should handle btoa throwing an error', () => {
+    mockBtoa.mockImplementation(() => {
+      throw new Error('btoa failed');
+    });
+
+    const buffer = new ArrayBuffer(1);
+    const view = new Uint8Array(buffer);
+    view[0] = 65;
+
+    expect(() => arrayBufferToBase64(buffer)).toThrow('btoa failed');
+  });
+
+  it('should handle very large buffers without memory issues', () => {
+    mockBtoa.mockReturnValue('mock-very-large-result');
+
+    const size = 100000; // 100KB
+    const buffer = new ArrayBuffer(size);
+    const view = new Uint8Array(buffer);
+
+    // Fill with repeating pattern
+    for (let i = 0; i < size; i++) {
+      view[i] = (i % 256);
+    }
+
+    const result = arrayBufferToBase64(buffer);
+
+    expect(mockBtoa).toHaveBeenCalled();
+    expect(result).toBe('mock-very-large-result');
+  });
+
+  it('should handle buffer with null bytes correctly', () => {
+    mockBtoa.mockReturnValue('AAAA');
+
+    const buffer = new ArrayBuffer(3);
+    const view = new Uint8Array(buffer);
+    view[0] = 0;
+    view[1] = 0;
+    view[2] = 0;
+
+    const result = arrayBufferToBase64(buffer);
+
+    expect(mockBtoa).toHaveBeenCalledWith('\x00\x00\x00');
+    expect(result).toBe('AAAA');
+  });
 });
 
 describe('exportKeyToUrlSafeBase64', () => {
@@ -362,5 +407,55 @@ describe('exportKeyToUrlSafeBase64', () => {
     // Should be usable in URL
     const testUrl = `https://example.com/s/snippet-id#${shareableLinkFragment}`;
     expect(() => new URL(testUrl)).not.toThrow();
+  });
+
+  it('should handle crypto.subtle.exportKey with different error types', async () => {
+    // Test with DOMException (common in crypto operations)
+    const domException = new DOMException('Operation not supported', 'NotSupportedError');
+    mockCrypto.subtle.exportKey.mockRejectedValue(domException);
+
+    const mockKey = { type: 'secret' } as CryptoKey;
+
+    await expect(exportKeyToUrlSafeBase64(mockKey)).rejects.toThrow('Operation not supported');
+  });
+
+  it('should handle arrayBufferToBase64 throwing an error', async () => {
+    const mockKeyData = new ArrayBuffer(1);
+    mockCrypto.subtle.exportKey.mockResolvedValue(mockKeyData);
+
+    // Mock btoa to throw an error
+    mockBtoa.mockImplementation(() => {
+      throw new Error('btoa encoding failed');
+    });
+
+    const mockKey = { type: 'secret' } as CryptoKey;
+
+    await expect(exportKeyToUrlSafeBase64(mockKey)).rejects.toThrow('btoa encoding failed');
+  });
+
+  it('should handle multiple consecutive URL-unsafe character replacements', async () => {
+    // Create a base64 string with multiple consecutive +, /, and = characters
+    const mockKeyData = new ArrayBuffer(16);
+    mockCrypto.subtle.exportKey.mockResolvedValue(mockKeyData);
+    mockBtoa.mockReturnValue('++//++//=='); // Multiple consecutive unsafe chars
+
+    const mockKey = { type: 'secret' } as CryptoKey;
+    const result = await exportKeyToUrlSafeBase64(mockKey);
+
+    expect(result).toBe('--__--__'); // All replaced correctly
+    expect(result).not.toMatch(/[+/=]/);
+  });
+
+  it('should maintain correct length after URL-safe conversion', async () => {
+    const mockKeyData = new ArrayBuffer(24); // Will produce base64 with padding
+    mockCrypto.subtle.exportKey.mockResolvedValue(mockKeyData);
+    mockBtoa.mockReturnValue('SGVsbG8gV29ybGQgVGVzdCBTdHJpbmc='); // 32 chars with padding
+
+    const mockKey = { type: 'secret' } as CryptoKey;
+    const result = await exportKeyToUrlSafeBase64(mockKey);
+
+    // Should be shorter due to padding removal
+    expect(result.length).toBe(31); // 32 - 1 padding char
+    expect(result).not.toContain('=');
   });
 });
