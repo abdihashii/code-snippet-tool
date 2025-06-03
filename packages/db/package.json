@@ -9,7 +9,8 @@
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
-    "clean": "rm -rf node_modules"
+    "clean": "rm -rf node_modules",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "supabase": "^2.22.12"

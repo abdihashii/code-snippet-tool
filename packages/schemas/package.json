@@ -15,7 +15,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf node_modules dist"
+    "clean": "rm -rf node_modules dist",
+    "lint": "eslint ."
   },
   "dependencies": {
     "zod": "*"

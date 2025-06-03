@@ -10,7 +10,8 @@
     "./create-config": "./create-config.js"
   },
   "scripts": {
-    "clean": "rm -rf node_modules"
+    "clean": "rm -rf node_modules",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.13.0"
