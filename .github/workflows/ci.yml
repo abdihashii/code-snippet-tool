@@ -134,14 +134,10 @@ jobs:
           node-version: 22.x
           cache: 'pnpm'
       - run: pnpm install
-      - name: Build dependencies if needed
+      - name: Build required dependencies
         run: |
-          if [[ "${{ needs.detect-changes.outputs.types }}" == "true" ]]; then
-            pnpm build:types
-          fi
-          if [[ "${{ needs.detect-changes.outputs.schemas }}" == "true" ]]; then
-            pnpm build:schemas
-          fi
+          pnpm build:types
+          pnpm build:schemas
       - name: Run web tests
         working-directory: apps/web
         run: pnpm test
@@ -162,14 +158,10 @@ jobs:
           node-version: 22.x
           cache: 'pnpm'
       - run: pnpm install
-      - name: Build dependencies if needed
+      - name: Build required dependencies
         run: |
-          if [[ "${{ needs.detect-changes.outputs.types }}" == "true" ]]; then
-            pnpm build:types
-          fi
-          if [[ "${{ needs.detect-changes.outputs.schemas }}" == "true" ]]; then
-            pnpm build:schemas
-          fi
+          pnpm build:types
+          pnpm build:schemas
       - name: Build api
         working-directory: apps/api
         run: pnpm run build
@@ -199,14 +191,10 @@ jobs:
           node-version: 22.x
           cache: 'pnpm'
       - run: pnpm install
-      - name: Build dependencies if needed
+      - name: Build required dependencies
         run: |
-          if [[ "${{ needs.detect-changes.outputs.types }}" == "true" ]]; then
-            pnpm build:types
-          fi
-          if [[ "${{ needs.detect-changes.outputs.schemas }}" == "true" ]]; then
-            pnpm build:schemas
-          fi
+          pnpm build:types
+          pnpm build:schemas
       - name: Build web
         working-directory: apps/web
         run: pnpm build
