@@ -207,7 +207,11 @@ importers:
         specifier: '*'
         version: 3.24.4
 
-  packages/types: {}
+  packages/types:
+    dependencies:
+      '@snippet-share/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
 
 packages:
 
