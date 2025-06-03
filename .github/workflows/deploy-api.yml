@@ -13,6 +13,7 @@ jobs:
   deploy:
     name: Deploy API to Cloudflare Workers
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +31,7 @@ jobs:
         run: |
           pnpm build:types
           pnpm build:schemas
-      - name: Deploy API using wrangler
+      - name: Build and deploy API using wrangler
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
