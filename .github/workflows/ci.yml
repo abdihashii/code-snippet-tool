@@ -52,6 +52,28 @@ jobs:
       - run: pnpm install
       - run: pnpm lint
 
+  test-web:
+    needs: [detect-changes, lint, build-types, build-schemas]
+    if: ${{ needs.detect-changes.outputs.web == 'true' && needs.build-types.outputs.types == 'true' && needs.build-schemas.outputs.schemas == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm build:types
+      - run: pnpm build:schemas
+      - name: Run web tests
+        working-directory: apps/web
+        run: pnpm test
+
   build-types:
     needs: [detect-changes, lint]
     if: ${{ needs.detect-changes.outputs.types == 'true' }}
@@ -121,6 +143,9 @@ jobs:
       - name: Build api
         working-directory: apps/api
         run: pnpm run build
+      - name: Type check api
+        working-directory: apps/api
+        run: pnpm run typecheck
       - name: Check build output
         run: |
           if [ ! -d "apps/api/dist" ]; then
@@ -155,26 +180,4 @@ jobs:
             echo "Web package build output not found"
             exit 1
           fi
-
-  test-web:
-    needs: [detect-changes, lint]
-    if: ${{ needs.detect-changes.outputs.web == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.11.0
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: 'pnpm'
-      - run: pnpm install
-      - run: pnpm build:types
-      - run: pnpm build:schemas
-      - name: Run web tests
-        working-directory: apps/web
-        run: pnpm test
       
