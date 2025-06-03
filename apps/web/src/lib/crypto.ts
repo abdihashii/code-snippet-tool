@@ -76,11 +76,8 @@ function base64urlToBase64(base64url: string): string {
  * tag for the encrypted DEK.
  * @param params.kdfSalt - Optional. The Base64 encoded salt used for Key
  * Derivation Function (KDF) when deriving KEK from password.
- * @param params.kdfParameters - Optional. Parameters for the KDF.
- * @param params.kdfParameters.iterations - The number of iterations for
- * PBKDF2.
- * @param params.kdfParameters.hash - The hash algorithm used for PBKDF2
- * (e.g., 'SHA-256').
+ * @param params.kdfParameters - Optional. Parameters for the KDF with properties: iterations
+ * (number of iterations for PBKDF2) and hash (hash algorithm used for PBKDF2, e.g., 'SHA-256').
  * @param params.password - Optional. The password to derive the Key Encryption
  * Key (KEK) for password-protected snippets.
  * @returns A promise that resolves to the decrypted content as a string.
