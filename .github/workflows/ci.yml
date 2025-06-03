@@ -18,6 +18,7 @@ jobs:
       schemas: ${{ steps.filter.outputs.schemas }}
       web: ${{ steps.filter.outputs.web }}
       api: ${{ steps.filter.outputs.api }}
+      code: ${{ steps.filter.outputs.code }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -34,9 +35,18 @@ jobs:
               - 'apps/web/**'
             api:
               - 'apps/api/**'
+            code:
+              - 'apps/**'
+              - 'packages/**'
+              - '*.json'
+              - '*.js'
+              - '*.ts'
+              - '.eslintrc*'
+              - 'tsconfig*.json'
 
   lint:
     needs: [detect-changes]
+    if: ${{ needs.detect-changes.outputs.code == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,32 +62,12 @@ jobs:
       - run: pnpm install
       - run: pnpm lint
 
-  test-web:
-    needs: [detect-changes, lint, build-types, build-schemas]
-    if: ${{ needs.detect-changes.outputs.web == 'true' && needs.build-types.outputs.types == 'true' && needs.build-schemas.outputs.schemas == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.11.0
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: 'pnpm'
-      - run: pnpm install
-      - run: pnpm build:types
-      - run: pnpm build:schemas
-      - name: Run web tests
-        working-directory: apps/web
-        run: pnpm test
-
   build-types:
     needs: [detect-changes, lint]
     if: ${{ needs.detect-changes.outputs.types == 'true' }}
     runs-on: ubuntu-latest
+    outputs:
+      built: ${{ steps.build-check.outputs.built }}
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -92,16 +82,20 @@ jobs:
       - run: pnpm install
       - run: pnpm build:types
       - name: Check build output
+        id: build-check
         run: |
           if [ ! -d "packages/types/dist" ]; then
             echo "Type package build output not found"
             exit 1
           fi
+          echo "built=true" >> $GITHUB_OUTPUT
 
   build-schemas: 
     needs: [detect-changes, lint]
     if: ${{ needs.detect-changes.outputs.schemas == 'true' }}
     runs-on: ubuntu-latest
+    outputs:
+      built: ${{ steps.build-check.outputs.built }}
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -116,15 +110,17 @@ jobs:
       - run: pnpm install
       - run: pnpm build:schemas
       - name: Check build output
+        id: build-check
         run: |
           if [ ! -d "packages/schemas/dist" ]; then
             echo "Schema package build output not found"
             exit 1
           fi
+          echo "built=true" >> $GITHUB_OUTPUT
 
-  build-api:
-    needs: [detect-changes, lint]
-    if: ${{ needs.detect-changes.outputs.api == 'true' }}
+  test-web:
+    needs: [detect-changes, lint, build-types, build-schemas]
+    if: ${{ always() && needs.detect-changes.outputs.web == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -138,8 +134,42 @@ jobs:
           node-version: 22.x
           cache: 'pnpm'
       - run: pnpm install
-      - run: pnpm build:types
-      - run: pnpm build:schemas
+      - name: Build dependencies if needed
+        run: |
+          if [[ "${{ needs.detect-changes.outputs.types }}" == "true" ]]; then
+            pnpm build:types
+          fi
+          if [[ "${{ needs.detect-changes.outputs.schemas }}" == "true" ]]; then
+            pnpm build:schemas
+          fi
+      - name: Run web tests
+        working-directory: apps/web
+        run: pnpm test
+
+  build-api:
+    needs: [detect-changes, lint, build-types, build-schemas]
+    if: ${{ always() && needs.detect-changes.outputs.api == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Build dependencies if needed
+        run: |
+          if [[ "${{ needs.detect-changes.outputs.types }}" == "true" ]]; then
+            pnpm build:types
+          fi
+          if [[ "${{ needs.detect-changes.outputs.schemas }}" == "true" ]]; then
+            pnpm build:schemas
+          fi
       - name: Build api
         working-directory: apps/api
         run: pnpm run build
@@ -154,8 +184,8 @@ jobs:
           fi
 
   build-web:
-    needs: [detect-changes, lint]
-    if: ${{ needs.detect-changes.outputs.web == 'true' }}
+    needs: [detect-changes, lint, build-types, build-schemas]
+    if: ${{ always() && needs.detect-changes.outputs.web == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -169,8 +199,14 @@ jobs:
           node-version: 22.x
           cache: 'pnpm'
       - run: pnpm install
-      - run: pnpm build:types
-      - run: pnpm build:schemas
+      - name: Build dependencies if needed
+        run: |
+          if [[ "${{ needs.detect-changes.outputs.types }}" == "true" ]]; then
+            pnpm build:types
+          fi
+          if [[ "${{ needs.detect-changes.outputs.schemas }}" == "true" ]]; then
+            pnpm build:schemas
+          fi
       - name: Build web
         working-directory: apps/web
         run: pnpm build
