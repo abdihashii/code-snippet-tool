@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
+    "build": "tsc --noEmit",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "clean": "rm -rf node_modules .wrangler",
     "lint": "eslint ."
