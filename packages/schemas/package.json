@@ -19,6 +19,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@snippet-share/eslint-config": "workspace:*",
     "zod": "*"
   }
 }
