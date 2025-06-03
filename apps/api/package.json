@@ -3,8 +3,11 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "typecheck": "tsc --noEmit",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "clean": "rm -rf node_modules .wrangler"
+    "clean": "rm -rf node_modules .wrangler",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@snippet-share/schemas": "workspace:*",
@@ -13,6 +16,7 @@
     "hono": "^4.7.9"
   },
   "devDependencies": {
+    "@snippet-share/eslint-config": "workspace:*",
     "wrangler": "^4.4.0"
   }
 }

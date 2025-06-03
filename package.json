@@ -13,7 +13,8 @@
     "dev:api": "pnpm --filter @snippet-share/api dev",
     "build:web": "pnpm run build:types && pnpm run build:schemas && pnpm --filter @snippet-share/web build",
     "clean": "rm -rf node_modules dist",
-    "clean:all": "pnpm clean && pnpm -r clean"
+    "clean:all": "pnpm clean && pnpm -r clean",
+    "lint": "pnpm run -r --parallel lint"
   },
   "dependencies": {
     "zod": "^3.24.4"

@@ -9,6 +9,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf node_modules dist"
+    "clean": "rm -rf node_modules dist",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@snippet-share/eslint-config": "workspace:*"
   }
 }

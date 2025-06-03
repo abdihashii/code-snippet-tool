@@ -1,0 +1,207 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      eslintconfig: ${{ steps.filter.outputs.eslintconfig }}
+      types: ${{ steps.filter.outputs.types }}
+      schemas: ${{ steps.filter.outputs.schemas }}
+      web: ${{ steps.filter.outputs.web }}
+      api: ${{ steps.filter.outputs.api }}
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            eslintconfig:
+              - 'apps/eslint-config/**'
+            types:
+              - 'apps/types/**'
+            schemas:
+              - 'apps/schemas/**'
+            web:
+              - 'apps/web/**'
+            api:
+              - 'apps/api/**'
+            code:
+              - 'apps/**'
+              - 'packages/**'
+              - '*.json'
+              - '*.js'
+              - '*.ts'
+              - '.eslintrc*'
+              - 'tsconfig*.json'
+
+  lint:
+    needs: [detect-changes]
+    if: ${{ needs.detect-changes.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm lint
+
+  build-types:
+    needs: [detect-changes, lint]
+    if: ${{ needs.detect-changes.outputs.types == 'true' }}
+    runs-on: ubuntu-latest
+    outputs:
+      built: ${{ steps.build-check.outputs.built }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm build:types
+      - name: Check build output
+        id: build-check
+        run: |
+          if [ ! -d "packages/types/dist" ]; then
+            echo "Type package build output not found"
+            exit 1
+          fi
+          echo "built=true" >> $GITHUB_OUTPUT
+
+  build-schemas: 
+    needs: [detect-changes, lint]
+    if: ${{ needs.detect-changes.outputs.schemas == 'true' }}
+    runs-on: ubuntu-latest
+    outputs:
+      built: ${{ steps.build-check.outputs.built }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm build:schemas
+      - name: Check build output
+        id: build-check
+        run: |
+          if [ ! -d "packages/schemas/dist" ]; then
+            echo "Schema package build output not found"
+            exit 1
+          fi
+          echo "built=true" >> $GITHUB_OUTPUT
+
+  test-web:
+    needs: [detect-changes, lint, build-types, build-schemas]
+    if: ${{ always() && needs.detect-changes.outputs.web == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Build required dependencies
+        run: |
+          pnpm build:types
+          pnpm build:schemas
+      - name: Run web tests
+        working-directory: apps/web
+        run: pnpm test
+
+  build-api:
+    needs: [detect-changes, lint, build-types, build-schemas]
+    if: ${{ always() && needs.detect-changes.outputs.api == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Build required dependencies
+        run: |
+          pnpm build:types
+          pnpm build:schemas
+      - name: Build api
+        working-directory: apps/api
+        run: pnpm run build
+      - name: Type check api
+        working-directory: apps/api
+        run: pnpm run typecheck
+      - name: Check build output
+        run: |
+          if [ ! -d "apps/api/dist" ]; then
+            echo "API package build output not found"
+            exit 1
+          fi
+
+  build-web:
+    needs: [detect-changes, lint, build-types, build-schemas]
+    if: ${{ always() && needs.detect-changes.outputs.web == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Build required dependencies
+        run: |
+          pnpm build:types
+          pnpm build:schemas
+      - name: Build web
+        working-directory: apps/web
+        run: pnpm build
+      - name: Check build output
+        run: |
+          if [ ! -d "apps/web/dist" ]; then
+            echo "Web package build output not found"
+            exit 1
+          fi
+      
