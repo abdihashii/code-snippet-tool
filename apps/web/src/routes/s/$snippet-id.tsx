@@ -188,7 +188,7 @@ function RouteComponent() {
     ) {
       return (
         <main
-          className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50"
+          className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-background"
         >
           <div className="w-full max-w-xl mx-auto">
             <SnippetExpiredMessage
@@ -204,21 +204,21 @@ function RouteComponent() {
     // For other, unexpected errors
     return (
       <main
-        className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50"
+        className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-background"
       >
         <div className="w-full max-w-xl mx-auto text-center">
-          <ShieldIcon className="h-12 w-12 mx-auto mb-4 text-red-500" />
-          <h1 className="text-2xl font-semibold text-slate-800 mb-2">
+          <ShieldIcon className="h-12 w-12 mx-auto mb-4 text-destructive" />
+          <h1 className="text-2xl font-semibold text-foreground mb-2">
             {loadedData.error}
           </h1>
-          <p className="text-slate-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             {loadedData.message}
           </p>
           <Link to="/new">
             <Button
               variant="outline"
               size="sm"
-              className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 flex items-center gap-2 mx-auto"
+              className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 flex items-center gap-2 mx-auto"
             >
               <ArrowLeftIcon className="h-4 w-4" />
               Back to Home
@@ -249,10 +249,10 @@ function RouteComponent() {
   return (
     <AppLayout>
       <div className="transition-all duration-300 ease-in-out">
-        <Card className="w-full shadow-md border-slate-200 bg-white">
+        <Card className="w-full shadow-md">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xl text-slate-800 dark:text-slate-100">
+              <CardTitle className="text-xl text-foreground">
                 {title || 'Untitled Snippet'}
               </CardTitle>
               <div className="flex space-x-2">
@@ -286,13 +286,13 @@ function RouteComponent() {
               </div>
             </div>
             {name && (
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Shared by:
                 {' '}
                 {name}
               </p>
             )}
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Created:
               {' '}
               {formatTimestamp(created_at)}
@@ -318,9 +318,9 @@ function RouteComponent() {
                   ? (
                       <div className="text-center py-8">
                         <Loader2
-                          className="h-12 w-12 mx-auto mb-4 animate-spin text-teal-600"
+                          className="h-12 w-12 mx-auto mb-4 animate-spin text-primary"
                         />
-                        <h3 className="text-lg font-semibold text-slate-800">
+                        <h3 className="text-lg font-semibold text-foreground">
                           Decrypting...
                         </h3>
                       </div>
@@ -357,7 +357,7 @@ function RouteComponent() {
                               />
                               {decryptionError && (
                                 <p
-                                  className="text-sm text-red-500"
+                                  className="text-sm text-destructive"
                                 >
                                   {decryptionError}
                                 </p>
@@ -367,7 +367,7 @@ function RouteComponent() {
                               <Button
                                 onClick={handlePasswordSubmit}
                                 disabled={isDecrypting}
-                                className="bg-teal-600 hover:bg-teal-700"
+                                className="bg-primary hover:bg-primary/90"
                               >
                                 {isDecrypting ? 'Decrypting...' : 'Decrypt'}
                               </Button>
@@ -379,10 +379,10 @@ function RouteComponent() {
                       ? (
                           <div className="text-center py-8">
                             <ShieldIcon
-                              className="h-12 w-12 mx-auto mb-4 text-red-500"
+                              className="h-12 w-12 mx-auto mb-4 text-destructive"
                             />
                             <h3
-                              className="text-lg font-semibold text-slate-800 mb-2"
+                              className="text-lg font-semibold text-foreground mb-2"
                             >
                               {decryptionError}
                             </h3>
@@ -403,9 +403,9 @@ function RouteComponent() {
                         : (
                             <div className="text-center py-8">
                               <Loader2
-                                className="h-6 w-6 mx-auto animate-spin text-slate-500"
+                                className="h-6 w-6 mx-auto animate-spin text-muted-foreground"
                               />
-                              <p className="text-sm text-slate-500 mt-2">Loading snippet...</p>
+                              <p className="text-sm text-muted-foreground mt-2">Loading snippet...</p>
                             </div>
                           )}
           </CardContent>
@@ -415,7 +415,7 @@ function RouteComponent() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+                className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
                 Back to Home

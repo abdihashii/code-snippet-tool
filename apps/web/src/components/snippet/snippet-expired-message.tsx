@@ -18,11 +18,11 @@ export function SnippetExpiredMessage({
 }: SnippetExpiredMessageProps) {
   return (
     <div className={containerClassName}>
-      <ShieldAlertIcon className="h-12 w-12 mx-auto mb-4 text-orange-500" />
-      <h2 className="text-xl font-semibold text-slate-700 mb-2">
+      <ShieldAlertIcon className="h-12 w-12 mx-auto mb-4 text-warning" />
+      <h2 className="text-xl font-semibold text-foreground mb-2">
         {title}
       </h2>
-      <p className="text-slate-600 mb-6">
+      <p className="text-muted-foreground mb-6">
         {message}
       </p>
       {showGoHomeButton && (
@@ -30,7 +30,7 @@ export function SnippetExpiredMessage({
           <Button
             variant="outline"
             size="sm"
-            className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 flex items-center gap-2 mx-auto"
+            className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 flex items-center gap-2 mx-auto"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Home
