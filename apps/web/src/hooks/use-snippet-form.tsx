@@ -114,6 +114,13 @@ export function useSnippetForm({
   = useState<PasswordStrengthAnalysis | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<'code' | 'text'>('code');
+
+  // Effect to reset language when switching tabs
+  useEffect(() => {
+    // Always reset to Plain Text when switching between tabs
+    setLanguage('PLAINTEXT');
+  }, [selectedTab]);
 
   const { highlightedHtml, codeClassName } = useCodeHighlighting(
     { code, language },
@@ -417,6 +424,8 @@ export function useSnippetForm({
     setShowPassword,
     passwordCopied,
     setPasswordCopied,
+    selectedTab,
+    setSelectedTab,
 
     // Derived/Computed values for rendering
     highlightedHtml,
