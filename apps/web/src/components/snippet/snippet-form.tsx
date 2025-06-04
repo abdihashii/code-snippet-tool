@@ -25,6 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
   TooltipContent,
@@ -69,6 +71,8 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
     setShowPassword,
     passwordCopied,
     setPasswordCopied,
+    selectedTab,
+    setSelectedTab,
 
     // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
     highlightedHtml,
@@ -89,15 +93,34 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
       <form onSubmit={handleSubmit}>
         <CardContent className="mb-8">
           <div className="flex flex-col gap-4">
-            {/* Code editor */}
-            <CodeEditor
-              code={code}
-              onCodeChange={setCode}
-              highlightedHtml={highlightedHtml}
-              codeClassName={codeClassName}
-              MAX_CODE_LENGTH={MAX_CODE_LENGTH}
-              isReadOnly={isSubmitting}
-            />
+            <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as 'code' | 'text')} className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="code" className="hover:cursor-pointer">Code</TabsTrigger>
+                <TabsTrigger value="text" className="hover:cursor-pointer">Text</TabsTrigger>
+              </TabsList>
+              <TabsContent value="code">
+                <CodeEditor
+                  code={code}
+                  onCodeChange={setCode}
+                  highlightedHtml={highlightedHtml}
+                  codeClassName={codeClassName}
+                  MAX_CODE_LENGTH={MAX_CODE_LENGTH}
+                  isReadOnly={isSubmitting}
+                />
+              </TabsContent>
+              <TabsContent value="text">
+                <div className="flex flex-col gap-2">
+                  <Textarea
+                    id="text-content"
+                    placeholder="Paste your text here..."
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    disabled={isSubmitting}
+                    className="min-h-[150px] font-mono text-sm"
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
 
             <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
               {/* Prettify button */}
@@ -160,6 +183,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                 <Select
                   value={language}
                   onValueChange={(value) => setLanguage(value as Language)}
+                  disabled={selectedTab === 'text'}
                 >
                   <SelectTrigger id="language" className="w-full">
                     <SelectValue placeholder="Select language" />
