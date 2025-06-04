@@ -181,7 +181,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                   Language (for syntax highlighting)
                 </Label>
                 <Select
-                  value={selectedTab === 'text' ? 'PLAINTEXT' : language}
+                  value={language}
                   onValueChange={(value) => setLanguage(value as Language)}
                   disabled={selectedTab === 'text'}
                 >
@@ -189,19 +189,13 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
-                    {selectedTab === 'text'
-                      ? (
-                          <SelectItem value="PLAINTEXT">Plain Text</SelectItem>
-                        )
-                      : (
-                          SUPPORTED_LANGUAGES.map(
-                            (lang) => (
-                              <SelectItem key={lang.value} value={lang.value}>
-                                {lang.label}
-                              </SelectItem>
-                            ),
-                          )
-                        )}
+                    {SUPPORTED_LANGUAGES.map(
+                      (lang) => (
+                        <SelectItem key={lang.value} value={lang.value}>
+                          {lang.label}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </Select>
               </div>
