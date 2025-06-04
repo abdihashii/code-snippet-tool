@@ -20,14 +20,14 @@ function Index() {
             <Link to="/new" className="w-full">
               <Button
                 variant="outline"
-                className="w-full border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer"
+                className="w-full border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
               >
                 Start Sharing
               </Button>
             </Link>
             {/* <Link to="/signup" className="w-full">
               <Button
-                className="w-full bg-teal-600 hover:bg-teal-700 hover:cursor-pointer"
+                className="w-full bg-primary hover:bg-primary/90 hover:cursor-pointer"
               >
                 Create an Account
               </Button>

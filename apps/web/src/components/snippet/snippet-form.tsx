@@ -89,7 +89,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
   } = useSnippetForm({ onSnippetCreated });
 
   return (
-    <Card className="w-full shadow-md border-slate-200 bg-white">
+    <Card className="w-full shadow-md">
       <form onSubmit={handleSubmit}>
         <CardContent className="mb-8">
           <div className="flex flex-col gap-4">
@@ -122,7 +122,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
               </TabsContent>
             </Tabs>
 
-            <div className="flex justify-between items-center gap-4 text-right text-sm text-slate-500">
+            <div className="flex justify-between items-center gap-4 text-right text-sm text-muted-foreground">
               {/* Prettify button */}
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
@@ -134,7 +134,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                         size="sm"
                         onClick={prettifyCode}
                         disabled={isPrettifying || (!code.trim()) || !canPrettifyCurrentLanguage}
-                        className="border-teal-600 text-teal-600 hover:text-teal-700 hover:border-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+                        className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
                       >
                         <Wand2Icon className="h-4 w-4" />
                         {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
@@ -217,7 +217,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
 
             <div className="flex flex-col gap-2">
               <h3
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground"
               >
                 Link Settings
               </h3>
@@ -285,7 +285,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                       variant="outline"
                       size="sm"
                       onClick={handleGeneratePassword}
-                      className="text-xs px-2 py-1 h-auto border-slate-300 hover:bg-slate-50 flex items-center gap-1"
+                      className="text-xs px-2 py-1 h-auto hover:bg-muted flex items-center gap-1"
                     >
                       <RefreshCwIcon className="h-3 w-3" />
                       Generate
@@ -324,7 +324,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                           passwordCopied
                             ? (
                                 <CopyCheckIcon
-                                  className="h-4 w-4 text-teal-600"
+                                  className="h-4 w-4 text-primary"
                                 />
                               )
                             : <CopyIcon className="h-4 w-4" />
@@ -351,7 +351,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                       {passwordStrengthAnalysis.criteria.length > 0 && (
                         <div>
                           <span
-                            className="font-medium text-slate-600"
+                            className="font-medium text-muted-foreground"
                           >
                             We suggest:
                           </span>
@@ -359,7 +359,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                             {passwordStrengthAnalysis.criteria.map((criterion) => (
                               <li
                                 key={criterion.key}
-                                className={criterion.isMet ? 'text-teal-600' : 'text-slate-500'}
+                                className={criterion.isMet ? 'text-primary' : 'text-muted-foreground'}
                               >
                                 {/* Simple checkmark or cross, or just rely on color */}
                                 {criterion.isMet ? '✓' : '-'}
@@ -382,7 +382,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
           <Button
             type="submit"
             size="lg"
-            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-primary hover:bg-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
             disabled={!code.trim() || isSubmitting}
           >
             <ShieldIcon className="h-4 w-4" />

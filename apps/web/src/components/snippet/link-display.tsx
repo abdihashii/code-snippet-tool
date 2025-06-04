@@ -34,10 +34,10 @@ export function LinkDisplay(
 
   return (
     <div className="animate-fadeIn">
-      <Card className="w-full shadow-md border-slate-200 bg-white">
+      <Card className="w-full shadow-md">
         <CardHeader className="pb-4">
           <CardTitle
-            className="text-center text-teal-600 flex items-center justify-center"
+            className="text-center text-primary flex items-center justify-center"
           >
             <ShieldIcon className="mr-2 h-5 w-5" />
             Your Secure Link is Ready!
@@ -50,30 +50,30 @@ export function LinkDisplay(
               <Input
                 value={link}
                 readOnly
-                className="pr-10 font-mono text-sm bg-slate-50"
+                className="pr-10 font-mono text-sm bg-muted"
               />
               <Button
                 type="button"
                 size="sm"
                 variant="ghost"
-                className="absolute right-[1.5rem] text-slate-500 hover:text-teal-600"
+                className="absolute right-[1.5rem] text-muted-foreground hover:text-primary"
                 onClick={handleCopy}
               >
                 {copied
-                  ? <CopyCheckIcon className="h-4 w-4 text-green-500" />
+                  ? <CopyCheckIcon className="h-4 w-4 text-emerald-500" />
                   : <CopyIcon className="h-4 w-4" />}
               </Button>
             </div>
             {copied
               && (
-                <p className="text-xs text-green-600 ml-1">
+                <p className="text-xs text-emerald-600 ml-1">
                   Copied to clipboard!
                 </p>
               )}
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
-            <p className="text-sm text-amber-800">
+          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-md p-4">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
               <strong>Important:</strong>
               {' '}
               Share this link with your recipient(s). This link is secret and will not be
@@ -91,7 +91,7 @@ export function LinkDisplay(
           <Button
             size="lg"
             onClick={onCreateAnother}
-            className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+            className="w-full sm:w-auto bg-primary hover:bg-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Create Another Snippet

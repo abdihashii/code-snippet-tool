@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './index.css';
+import { ThemeProvider } from './components/theme-provider';
 import { routeTree } from './routeTree.gen';
 
 const router = createRouter({ routeTree });
@@ -18,7 +19,14 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </StrictMode>,
   );
 }

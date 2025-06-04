@@ -62,13 +62,13 @@ function CodeEditorComponent({
             type="button"
             size="sm"
             variant="outline"
-            className="bg-white/90 hover:bg-white shadow-sm"
+            className="bg-background/90 hover:bg-background shadow-sm"
             onClick={handleCopy}
           >
             {copied
               ? (
                   <>
-                    <CopyCheckIcon className="h-4 w-4 mr-1 text-green-500" />
+                    <CopyCheckIcon className="h-4 w-4 mr-1 text-emerald-500" />
                     Copied!
                   </>
                 )
@@ -83,7 +83,7 @@ function CodeEditorComponent({
             type="button"
             size="sm"
             variant="outline"
-            className="bg-white/90 hover:bg-white shadow-sm"
+            className="bg-background/90 hover:bg-background shadow-sm"
             onClick={handleDownload}
           >
             <DownloadIcon className="h-4 w-4 mr-1" />
@@ -105,7 +105,7 @@ function CodeEditorComponent({
       </pre>
       <Textarea
         placeholder={placeholder}
-        className="relative z-10 bg-transparent text-transparent caret-gray-800 dark:caret-gray-100 min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         value={code}
         onChange={(e) => {
           const newCode = e.target.value;
