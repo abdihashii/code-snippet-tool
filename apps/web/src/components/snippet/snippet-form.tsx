@@ -34,6 +34,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
+import { cn } from '@/lib/utils';
 
 import { CodeEditor } from './code-editor';
 
@@ -109,14 +110,23 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                 />
               </TabsContent>
               <TabsContent value="text">
-                <div className="flex flex-col gap-2">
+                <div className="relative w-full">
+                  <pre
+                    aria-hidden="true"
+                    className={cn(
+                      'absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground',
+                      isSubmitting ? 'bg-accent' : 'bg-background',
+                    )}
+                  >
+                    <code>{`${code}\n`}</code>
+                  </pre>
                   <Textarea
                     id="text-content"
                     placeholder="Paste your text here..."
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     disabled={isSubmitting}
-                    className="min-h-[150px] font-mono text-sm"
+                    className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y"
                   />
                 </div>
               </TabsContent>
