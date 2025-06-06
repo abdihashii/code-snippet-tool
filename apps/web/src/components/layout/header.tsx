@@ -5,25 +5,24 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 export function Header() {
   return (
-    <header
-      className="flex items-center flex-col justify-center mb-6 mt-4 relative"
-    >
-      <div className="absolute top-0 right-0">
-        <ThemeToggle />
+    <header className="w-full mb-8 mt-6">
+      <div className="flex flex-col justify-center items-center space-y-6">
+        <div className="flex flex-col items-center">
+          <Link to="/" className="flex items-center justify-center mb-3">
+            <ShieldIcon className="h-7 w-7 mr-3 text-primary" />
+            <h1 className="text-3xl font-bold text-foreground">
+              Secure Snippet Sharer
+            </h1>
+          </Link>
+          <p className="text-center text-muted-foreground text-lg">
+            Share code snippets securely and simply
+          </p>
+        </div>
+
+        <div className="flex justify-end">
+          <ThemeToggle />
+        </div>
       </div>
-      <Link to="/" className="flex items-center justify-center">
-        <ShieldIcon className="h-6 w-6 mr-2 text-primary" />
-        <h1
-          className="text-2xl font-semibold text-foreground"
-        >
-          Secure Snippet Sharer
-        </h1>
-      </Link>
-      <p
-        className="text-center text-muted-foreground mb-8"
-      >
-        Share code snippets securely and simply
-      </p>
     </header>
   );
 }
