@@ -1,9 +1,18 @@
+import type { Language } from '@snippet-share/types';
+
 import { CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
 import { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 
 import { CodeEditorErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +25,10 @@ export interface CodeEditorProps {
   MAX_CODE_LENGTH: number;
   placeholder?: string;
   title?: string;
+  language: Language;
+  onLanguageChange: (language: Language) => void;
+  supportedLanguages: readonly { value: Language; label: string }[];
+  isLanguageSelectDisabled?: boolean;
 }
 
 function CodeEditorComponent({
@@ -27,6 +40,10 @@ function CodeEditorComponent({
   MAX_CODE_LENGTH,
   placeholder = 'Paste your code here...',
   title,
+  language,
+  onLanguageChange,
+  supportedLanguages,
+  isLanguageSelectDisabled,
 }: CodeEditorProps) {
   const [copied, setCopied] = useState(false);
 
@@ -56,41 +73,59 @@ function CodeEditorComponent({
   };
   return (
     <div className="relative w-full">
-      {isReadOnly && (
-        <div className="absolute top-2 right-2 z-20 flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="bg-background/90 hover:bg-background shadow-sm"
-            onClick={handleCopy}
-          >
-            {copied
-              ? (
-                  <>
-                    <CopyCheckIcon className="h-4 w-4 mr-1 text-emerald-500" />
-                    Copied!
-                  </>
-                )
-              : (
-                  <>
-                    <CopyIcon className="h-4 w-4 mr-1" />
-                    Copy
-                  </>
-                )}
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="bg-background/90 hover:bg-background shadow-sm"
-            onClick={handleDownload}
-          >
-            <DownloadIcon className="h-4 w-4 mr-1" />
-            Download
-          </Button>
-        </div>
-      )}
+      <div className="absolute top-2 right-2 z-20 flex gap-2">
+        {isReadOnly && (
+          <>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="bg-background/90 hover:bg-background shadow-sm"
+              onClick={handleCopy}
+            >
+              {copied
+                ? (
+                    <>
+                      <CopyCheckIcon className="h-4 w-4 mr-1 text-emerald-500" />
+                      Copied!
+                    </>
+                  )
+                : (
+                    <>
+                      <CopyIcon className="h-4 w-4 mr-1" />
+                      Copy
+                    </>
+                  )}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="bg-background/90 hover:bg-background shadow-sm"
+              onClick={handleDownload}
+            >
+              <DownloadIcon className="h-4 w-4 mr-1" />
+              Download
+            </Button>
+          </>
+        )}
+        <Select
+          value={language}
+          onValueChange={onLanguageChange}
+          disabled={isLanguageSelectDisabled || isReadOnly}
+        >
+          <SelectTrigger className="w-auto min-w-[140px] bg-background/90 hover:bg-background shadow-sm">
+            <SelectValue placeholder="Select language" />
+          </SelectTrigger>
+          <SelectContent>
+            {supportedLanguages.map((lang) => (
+              <SelectItem key={lang.value} value={lang.value}>
+                {lang.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <pre
         aria-hidden="true"
         className={cn(

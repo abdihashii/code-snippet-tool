@@ -117,6 +117,10 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                   codeClassName={codeClassName}
                   MAX_CODE_LENGTH={MAX_CODE_LENGTH}
                   isReadOnly={isSubmitting}
+                  language={language}
+                  onLanguageChange={(value) => setLanguage(value as Language)}
+                  supportedLanguages={SUPPORTED_LANGUAGES}
+                  isLanguageSelectDisabled={selectedTab === 'text'}
                 />
               </TabsContent>
               <TabsContent value="text">
@@ -181,32 +185,6 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                 {' '}
                 characters
               </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label
-                htmlFor="language"
-              >
-                Language (for syntax highlighting)
-              </Label>
-              <Select
-                value={language}
-                onValueChange={(value) => setLanguage(value as Language)}
-                disabled={selectedTab === 'text'}
-              >
-                <SelectTrigger id="language" className="w-full">
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SUPPORTED_LANGUAGES.map(
-                    (lang) => (
-                      <SelectItem key={lang.value} value={lang.value}>
-                        {lang.label}
-                      </SelectItem>
-                    ),
-                  )}
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="flex flex-col gap-2">
