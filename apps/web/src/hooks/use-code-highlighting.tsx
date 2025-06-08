@@ -13,18 +13,18 @@ interface LanguageOption {
 
 // Single source of truth for supported languages, primarily for hljsId here
 export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
-  { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
-  { value: 'JSON', label: 'JSON', hljsId: 'json' },
   { value: 'JAVASCRIPT', label: 'JavaScript / JSX', hljsId: 'javascript' },
+  { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript' },
   { value: 'PYTHON', label: 'Python', hljsId: 'python' },
   // HTML uses the 'xml' grammar in hljs
   { value: 'HTML', label: 'HTML', hljsId: 'xml' },
   { value: 'CSS', label: 'CSS', hljsId: 'css' },
-  { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript' },
   { value: 'JAVA', label: 'Java', hljsId: 'java' },
-  { value: 'BASH', label: 'Bash', hljsId: 'bash' },
-  { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
   { value: 'CSHARP', label: 'C#', hljsId: 'csharp' },
+  { value: 'BASH', label: 'Bash', hljsId: 'bash' },
+  { value: 'JSON', label: 'JSON', hljsId: 'json' },
+  { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
+  { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
 ];
 
 // languageLoaders: keys are hljsId, ensure they match

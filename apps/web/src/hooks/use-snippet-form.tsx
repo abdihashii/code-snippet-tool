@@ -95,10 +95,7 @@ export function useSnippetForm({
   const [code, setCode] = useState(initialCode ?? '');
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState<Language>(
-    initialLanguage
-    || SUPPORTED_LANGUAGES_FOR_FORM.find(
-      (l) => l.value === 'PLAINTEXT',
-    )?.value || SUPPORTED_LANGUAGES_FOR_FORM[0].value,
+    initialLanguage || SUPPORTED_LANGUAGES_FOR_FORM[0].value,
   );
   const [uploaderInfo, setUploaderInfo] = useState('');
   const [expiresAfter, setExpiresAfter] = useState('24h');
@@ -118,9 +115,14 @@ export function useSnippetForm({
 
   // Effect to reset language when switching tabs
   useEffect(() => {
-    // Always reset to Plain Text when switching between tabs
-    setLanguage('PLAINTEXT');
-  }, [selectedTab]);
+    if (selectedTab === 'text') {
+      setLanguage('PLAINTEXT');
+    } else if (language === 'PLAINTEXT') {
+      // When switching back to 'code' tab from 'text' tab, default to a
+      // sensible language for code.
+      setLanguage(SUPPORTED_LANGUAGES_FOR_FORM[0].value);
+    }
+  }, [selectedTab, language]);
 
   const { highlightedHtml, codeClassName } = useCodeHighlighting(
     { code, language },
