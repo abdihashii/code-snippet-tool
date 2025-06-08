@@ -80,7 +80,7 @@ function CodeEditorComponent({
               type="button"
               size="sm"
               variant="outline"
-              className="bg-background/90 hover:bg-background shadow-sm"
+              className="bg-background/90 hover:bg-background shadow-sm hover:cursor-pointer"
               onClick={handleCopy}
             >
               {copied
@@ -101,7 +101,7 @@ function CodeEditorComponent({
               type="button"
               size="sm"
               variant="outline"
-              className="bg-background/90 hover:bg-background shadow-sm"
+              className="bg-background/90 hover:bg-background shadow-sm hover:cursor-pointer"
               onClick={handleDownload}
             >
               <DownloadIcon className="h-4 w-4 mr-1" />
