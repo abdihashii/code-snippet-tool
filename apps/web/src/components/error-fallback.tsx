@@ -30,14 +30,16 @@ export function ErrorFallback({
 
   if (variant === 'inline') {
     return (
-      <div className="p-4 border border-red-200 bg-red-50 rounded-md">
+      <div
+        className="p-4 border border-destructive/30 bg-destructive/10 text-destructive rounded-md"
+      >
         <div className="flex items-start space-x-3">
-          <AlertTriangleIcon className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
+          <AlertTriangleIcon className="h-5 w-5 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <h3 className="text-sm font-medium text-red-800">
+            <h3 className="text-sm font-medium">
               {title || 'Error loading component'}
             </h3>
-            <p className="text-sm text-red-700 mt-1">
+            <p className="text-sm mt-1 opacity-90">
               {description || 'This section could not be loaded properly.'}
             </p>
             <div className="mt-3">
@@ -45,7 +47,7 @@ export function ErrorFallback({
                 onClick={resetError}
                 size="sm"
                 variant="outline"
-                className="border-red-300 text-red-700 hover:bg-red-100"
+                className="border-destructive/50 text-destructive hover:bg-destructive/20"
               >
                 <RefreshCwIcon className="h-3 w-3 mr-1" />
                 Retry
@@ -54,11 +56,11 @@ export function ErrorFallback({
           </div>
         </div>
         {showErrorDetails && (
-          <details className="mt-4 text-xs text-red-600">
+          <details className="mt-4 text-xs">
             <summary className="cursor-pointer font-medium">
               Error Details (Development)
             </summary>
-            <pre className="mt-2 whitespace-pre-wrap break-words bg-white p-2 rounded border">
+            <pre className="mt-2 whitespace-pre-wrap break-words bg-background p-2 rounded border">
               {error.message}
               {error.stack && `\n\n${error.stack}`}
             </pre>
@@ -70,15 +72,15 @@ export function ErrorFallback({
 
   if (variant === 'component') {
     return (
-      <Card className="border-red-200 bg-red-50">
+      <Card className="border-destructive/30 bg-destructive/10">
         <CardHeader className="pb-3">
-          <CardTitle className="text-red-800 flex items-center space-x-2">
+          <CardTitle className="text-destructive flex items-center space-x-2">
             <AlertTriangleIcon className="h-5 w-5" />
             <span>{title || 'Component Error'}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-red-700 text-sm">
+          <p className="text-destructive/90 text-sm">
             {description || 'This component encountered an error and could not be displayed.'}
           </p>
           <div className="flex space-x-2">
@@ -86,18 +88,20 @@ export function ErrorFallback({
               onClick={resetError}
               size="sm"
               variant="outline"
-              className="border-red-300 text-red-700 hover:bg-red-100"
+              className="border-destructive/50 text-destructive hover:bg-destructive/20"
             >
               <RefreshCwIcon className="h-3 w-3 mr-1" />
               Retry
             </Button>
           </div>
           {showErrorDetails && (
-            <details className="text-xs text-red-600">
+            <details className="text-xs text-destructive">
               <summary className="cursor-pointer font-medium">
                 Error Details (Development)
               </summary>
-              <pre className="mt-2 whitespace-pre-wrap break-words bg-white p-2 rounded border text-xs">
+              <pre
+                className="mt-2 whitespace-pre-wrap break-words bg-background p-2 rounded border text-xs"
+              >
                 {error.message}
                 {error.stack && `\n\n${error.stack}`}
               </pre>
@@ -110,23 +114,29 @@ export function ErrorFallback({
 
   // Default 'page' variant
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-50">
+    <div
+      className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-muted"
+    >
       <div className="w-full max-w-md mx-auto">
-        <Card className="shadow-md border-red-200 bg-white">
+        <Card className="shadow-md border-destructive/30 bg-card">
           <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <AlertTriangleIcon className="h-6 w-6 text-red-600" />
+            <div
+              className="mx-auto w-12 h-12 bg-destructive/20 rounded-full flex items-center justify-center mb-4"
+            >
+              <AlertTriangleIcon className="h-6 w-6 text-destructive" />
             </div>
-            <CardTitle className="text-xl text-red-600">
+            <CardTitle className="text-xl text-destructive">
               {title || defaultTitle}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-center">
-            <p className="text-slate-600">
+            <p className="text-muted-foreground">
               {description || defaultDescription}
             </p>
             {showErrorDetails && (
-              <details className="text-left text-sm text-slate-500 bg-slate-50 p-3 rounded border">
+              <details
+                className="text-left text-sm text-muted-foreground bg-muted p-3 rounded border"
+              >
                 <summary className="cursor-pointer font-medium mb-2">
                   Error Details (Development Only)
                 </summary>
@@ -140,7 +150,7 @@ export function ErrorFallback({
               <Button
                 onClick={resetError}
                 variant="outline"
-                className="border-red-600 text-red-600 hover:bg-red-50"
+                className="border-destructive text-destructive hover:bg-destructive/10"
               >
                 <RefreshCwIcon className="h-4 w-4 mr-2" />
                 Try Again
@@ -148,7 +158,7 @@ export function ErrorFallback({
               {showHomeButton && (
                 <Button
                   onClick={() => router.navigate({ to: '/' })}
-                  className="bg-teal-600 hover:bg-teal-700"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   <HomeIcon className="h-4 w-4 mr-2" />
                   Go Home
