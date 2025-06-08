@@ -1,4 +1,5 @@
 import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { PostHogProvider } from 'posthog-js/react';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -19,14 +20,23 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
+      <PostHogProvider
+        apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+        options={{
+          api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+          capture_exceptions: true, // This enables capturing exceptions using Error Tracking
+          debug: import.meta.env.MODE === 'development',
+        }}
       >
-        <RouterProvider router={router} />
-      </ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </PostHogProvider>
     </StrictMode>,
   );
 }
