@@ -114,12 +114,15 @@ function CodeEditorComponent({
           onValueChange={onLanguageChange}
           disabled={isLanguageSelectDisabled || isReadOnly}
         >
-          <SelectTrigger className="w-auto min-w-[140px] bg-background/90 hover:bg-background shadow-sm">
+          <SelectTrigger
+            size="sm"
+            className="w-[145px] bg-background/90 hover:bg-background shadow-sm text-xs h-8 hover:cursor-pointer"
+          >
             <SelectValue placeholder="Select language" />
           </SelectTrigger>
           <SelectContent>
             {supportedLanguages.map((lang) => (
-              <SelectItem key={lang.value} value={lang.value}>
+              <SelectItem key={lang.value} value={lang.value} className="text-xs hover:cursor-pointer">
                 {lang.label}
               </SelectItem>
             ))}
