@@ -110,8 +110,18 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="code" className="hover:cursor-pointer">Code</TabsTrigger>
-                <TabsTrigger value="text" className="hover:cursor-pointer">Text</TabsTrigger>
+                <TabsTrigger
+                  value="code"
+                  className="data-[state=active]:text-primary hover:cursor-pointer"
+                >
+                  Code
+                </TabsTrigger>
+                <TabsTrigger
+                  value="text"
+                  className="data-[state=active]:text-primary hover:cursor-pointer"
+                >
+                  Text
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="code">
                 <CodeEditor
@@ -225,7 +235,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
               <CollapsibleTrigger asChild>
                 <Button
                   variant="link"
-                  className="text-sm text-muted-foreground flex items-center gap-2 hover:cursor-pointer !p-0"
+                  className="flex items-center gap-2 !p-0 text-sm text-primary hover:cursor-pointer hover:text-primary/90"
                 >
                   {isOptionsOpen
                     ? (
@@ -290,7 +300,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                           variant="outline"
                           size="sm"
                           onClick={handleGeneratePassword}
-                          className="text-xs px-2 py-1 h-auto hover:bg-muted flex items-center gap-1"
+                          className="flex h-auto items-center gap-1 border border-primary px-2 py-1 text-xs text-primary hover:border-primary/90 hover:text-primary/90 hover:cursor-pointer"
                         >
                           <RefreshCwIcon className="h-3 w-3" />
                           Generate
@@ -369,7 +379,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                                       key={criterion.key}
                                       className={
                                         criterion.isMet
-                                          ? 'text-primary'
+                                          ? 'text-success'
                                           : 'text-muted-foreground'
                                       }
                                     >
