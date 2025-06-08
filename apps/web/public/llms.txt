@@ -1,0 +1,29 @@
+# Snippet Share
+
+> A secure, zero-knowledge code snippet sharing platform built for developers. Your code is encrypted in your browser before it reaches our servers.
+
+## Core Pages
+
+- [Homepage](https://snippet-share.com/) - Main landing page with features and security information
+- [Create Snippet](https://snippet-share.com/new) - Code snippet creation interface with encryption
+
+## What We Do
+
+Share code snippets instantly and securely. Perfect for developers who need to:
+- Share code with teammates or clients
+- Send code samples during interviews
+- Collaborate on debugging sessions
+- Share sensitive code without exposing it to third parties
+
+## Key Benefits
+
+- **Completely Private**: Your code is encrypted before it leaves your browser
+- **No Sign-up Required**: Start sharing immediately
+- **Auto-Delete**: Set snippets to expire after time or views
+- **Beautiful Code Display**: Syntax highlighting for all major languages
+- **Free to Use**: Core features available at no cost
+- **Fast & Reliable**: Global performance via Cloudflare
+
+## Security Promise
+
+We use zero-knowledge encryption - even we can't read your code. All encryption happens in your browser using military-grade AES-256 encryption. Your encryption keys never touch our servers.
