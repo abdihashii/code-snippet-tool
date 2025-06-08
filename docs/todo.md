@@ -25,7 +25,16 @@ Medium Priority
 12. Better Mobile Experience - Basic responsive design but could be improved
 13. Accessibility (a11y) - Missing ARIA labels, keyboard navigation, screen reader support
 14. Performance Optimizations - No code splitting, lazy loading, or caching strategies
-15. SEO & Meta Tags - Missing proper meta tags for sharing
+15. SEO & Discoverability Improvements:
+    - [x] Basic meta tags (title, description, OG, Twitter cards) 
+    - [x] robots.txt file
+    - [x] sitemap.xml file  
+    - [x] llms.txt file for AI discoverability
+    - [ ] Create social media images (og-image.png, twitter-image.png) - 1200x630px
+    - [ ] Add JSON-LD structured data for SoftwareApplication schema
+    - [ ] Create manifest.json for PWA features
+    - [ ] Add security.txt file
+    - [ ] Consider humans.txt file (optional)
 
 Low Priority
 
