@@ -73,26 +73,26 @@ function CodeEditorComponent({
   };
   return (
     <div className="relative w-full">
-      <div className="absolute top-2 right-2 z-20 flex gap-2">
+      <div className="absolute right-2 top-2 z-20 flex gap-2">
         {isReadOnly && (
           <>
             <Button
               type="button"
               size="sm"
               variant="outline"
-              className="bg-background/90 hover:bg-background shadow-sm hover:cursor-pointer"
+              className="shadow-sm border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
               onClick={handleCopy}
             >
               {copied
                 ? (
                     <>
-                      <CopyCheckIcon className="h-4 w-4 mr-1 text-emerald-500" />
+                      <CopyCheckIcon className="mr-1 h-4 w-4 text-success" />
                       Copied!
                     </>
                   )
                 : (
                     <>
-                      <CopyIcon className="h-4 w-4 mr-1" />
+                      <CopyIcon className="mr-1 h-4 w-4" />
                       Copy
                     </>
                   )}
@@ -101,10 +101,10 @@ function CodeEditorComponent({
               type="button"
               size="sm"
               variant="outline"
-              className="bg-background/90 hover:bg-background shadow-sm hover:cursor-pointer"
+              className="shadow-sm border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
               onClick={handleDownload}
             >
-              <DownloadIcon className="h-4 w-4 mr-1" />
+              <DownloadIcon className="mr-1 h-4 w-4" />
               Download
             </Button>
           </>
@@ -119,7 +119,7 @@ function CodeEditorComponent({
           >
             <SelectTrigger
               size="sm"
-              className="w-[145px] bg-background/90 hover:bg-background shadow-sm text-xs h-8 hover:cursor-pointer"
+              className="h-8 w-[145px] bg-background/90 text-xs shadow-sm hover:cursor-pointer hover:bg-background"
             >
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
