@@ -102,9 +102,13 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
   return (
     <Card className="w-full shadow-md">
       <form onSubmit={handleSubmit}>
-        <CardContent className="mb-8">
-          <div className="flex flex-col gap-4">
-            <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(value as 'code' | 'text')} className="w-full">
+        <CardContent className="p-6">
+          <div className="space-y-6">
+            <Tabs
+              value={selectedTab}
+              onValueChange={(value) => setSelectedTab(value as 'code' | 'text')}
+              className="w-full"
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="code" className="hover:cursor-pointer">Code</TabsTrigger>
                 <TabsTrigger value="text" className="hover:cursor-pointer">Text</TabsTrigger>
@@ -187,39 +191,33 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="expires-after">Expires After</Label>
-                  <Select value={expiresAfter} onValueChange={setExpiresAfter}>
-                    <SelectTrigger id="expires-after" className="w-full">
-                      <SelectValue placeholder="Select expiration" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1h">1 Hour</SelectItem>
-                      <SelectItem value="24h">24 Hours</SelectItem>
-                      <SelectItem value="7d">7 Days</SelectItem>
-                      <SelectItem value="never">Never</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="expires-after">Expires After</Label>
+                <Select value={expiresAfter} onValueChange={setExpiresAfter}>
+                  <SelectTrigger id="expires-after" className="w-full">
+                    <SelectValue placeholder="Select expiration" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1h">1 Hour</SelectItem>
+                    <SelectItem value="24h">24 Hours</SelectItem>
+                    <SelectItem value="7d">7 Days</SelectItem>
+                    <SelectItem value="never">Never</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="max-views">Max Views</Label>
-                  <Select value={maxViews} onValueChange={setMaxViews}>
-                    <SelectTrigger id="max-views" className="w-full">
-                      <SelectValue placeholder="Select max views" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unlimited">Unlimited</SelectItem>
-                      <SelectItem
-                        value="1"
-                      >
-                        1 View (Burn after reading)
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="max-views">Max Views</Label>
+                <Select value={maxViews} onValueChange={setMaxViews}>
+                  <SelectTrigger id="max-views" className="w-full">
+                    <SelectValue placeholder="Select max views" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unlimited">Unlimited</SelectItem>
+                    <SelectItem value="1">1 View (Burn after reading)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -230,16 +228,20 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                   className="text-sm text-muted-foreground flex items-center gap-2 hover:cursor-pointer !p-0"
                 >
                   {isOptionsOpen
-                    ? <ChevronDownIcon className="h-4 w-4" />
-                    : <ChevronRightIcon className="h-4 w-4" />}
+                    ? (
+                        <ChevronDownIcon className="h-4 w-4" />
+                      )
+                    : (
+                        <ChevronRightIcon className="h-4 w-4" />
+                      )}
                   Optional Settings
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <div className="flex flex-col gap-4 mt-4">
+                <div className="space-y-6 pt-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Snippet Title */}
-                    <div className="flex flex-col gap-2">
+                    <div className="space-y-2">
                       <Label htmlFor="title">Snippet Title (Optional)</Label>
                       <Input
                         id="title"
@@ -250,10 +252,8 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                     </div>
 
                     {/* Uploader Info */}
-                    <div className="flex flex-col gap-2">
-                      <Label
-                        htmlFor="uploader-info"
-                      >
+                    <div className="space-y-2">
+                      <Label htmlFor="uploader-info">
                         Your Name/Note (Optional, shown to recipient)
                       </Label>
                       <Input
@@ -265,154 +265,135 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
-                    {/* Password Protection Toggle */}
-                    <div className="flex items-center space-x-2 my-4">
-                      <Checkbox
-                        id="enablePassword"
-                        checked={isPasswordProtectionEnabled}
-                        onCheckedChange={
-                          (checked) => setIsPasswordProtectionEnabled(
-                            checked === 'indeterminate'
-                              ? false
-                              : checked,
-                          )
-                        }
-                      />
-                      <Label
-                        htmlFor="enablePassword"
-                        className="cursor-pointer"
-                      >
-                        Enable Password Protection (Premium Feature)
-                      </Label>
-                    </div>
-
-                    {/* Password Input Field (conditional) */}
-                    {isPasswordProtectionEnabled && (
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="snippet-password">Password</Label>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleGeneratePassword}
-                            className="text-xs px-2 py-1 h-auto hover:bg-muted flex items-center gap-1"
-                          >
-                            <RefreshCwIcon className="h-3 w-3" />
-                            Generate
-                          </Button>
-                        </div>
-                        <div className="relative">
-                          <Input
-                            id="snippet-password"
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Enter a strong password"
-                            value={snippetPassword}
-                            onChange={
-                              (e) => setSnippetPassword(e.target.value)
-                            }
-                            disabled={isSubmitting}
-                          />
-                          <div
-                            className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-3"
-                          >
-                            <span
-                              className="cursor-pointer"
-                              onClick={() => setShowPassword(!showPassword)}
-                            >
-                              {showPassword
-                                ? <EyeIcon className="h-4 w-4" />
-                                : <EyeOffIcon className="h-4 w-4" />}
-                            </span>
-                            <span
-                              className="cursor-pointer"
-                              onClick={() => {
-                                navigator.clipboard.writeText(
-                                  snippetPassword,
-                                );
-                                setPasswordCopied(true);
-                                toast.success(
-                                  'Password copied to clipboard',
-                                );
-                                setTimeout(
-                                  () => setPasswordCopied(false),
-                                  1500,
-                                );
-                              }}
-                            >
-                              {
-                                passwordCopied
-                                  ? (
-                                      <CopyCheckIcon
-                                        className="h-4 w-4 text-primary"
-                                      />
-                                    )
-                                  : <CopyIcon className="h-4 w-4" />
-                              }
-                            </span>
-                          </div>
-                        </div>
-                        {/* Password strength and suggestions display */}
-                        {isPasswordProtectionEnabled
-                          && passwordStrengthAnalysis && (
-                          <div className="mt-2 text-xs">
-                            {/* Overall Strength */}
-                            <div className="mb-1">
-                              <span className="font-medium">
-                                Strength:
-                                {' '}
-                              </span>
-                              <span
-                                className={getPasswordStrengthColor(
-                                  passwordStrengthAnalysis.strength,
-                                )}
-                              >
-                                {passwordStrengthAnalysis.strength}
-                              </span>
-                            </div>
-
-                            {/* Suggestions List */}
-                            {passwordStrengthAnalysis.criteria.length > 0 && (
-                              <div>
-                                <span
-                                  className="font-medium text-muted-foreground"
-                                >
-                                  We suggest:
-                                </span>
-                                <ul className="list-none pl-0 mt-1 space-y-0.5">
-                                  {passwordStrengthAnalysis.criteria.map(
-                                    (criterion) => (
-                                      <li
-                                        key={criterion.key}
-                                        className={
-                                          criterion.isMet
-                                            ? 'text-primary'
-                                            : 'text-muted-foreground'
-                                        }
-                                      >
-                                        {/* Simple checkmark or cross, or just rely on color */}
-                                        {criterion.isMet ? '✓' : '-'}
-                                        {' '}
-                                        {criterion.label}
-                                      </li>
-                                    ),
-                                  )}
-                                </ul>
-                              </div>
-                            )}
-                          </div>
+                  {/* Password Protection Toggle */}
+                  <div className="flex items-center space-x-2 pt-4">
+                    <Checkbox
+                      id="enablePassword"
+                      checked={isPasswordProtectionEnabled}
+                      onCheckedChange={(checked) =>
+                        setIsPasswordProtectionEnabled(
+                          checked === 'indeterminate' ? false : checked,
                         )}
-                      </div>
-                    )}
+                    />
+                    <Label htmlFor="enablePassword" className="cursor-pointer">
+                      Enable Password Protection (Premium Feature)
+                    </Label>
                   </div>
+
+                  {/* Password Input Field (conditional) */}
+                  {isPasswordProtectionEnabled && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="snippet-password">Password</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleGeneratePassword}
+                          className="text-xs px-2 py-1 h-auto hover:bg-muted flex items-center gap-1"
+                        >
+                          <RefreshCwIcon className="h-3 w-3" />
+                          Generate
+                        </Button>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          id="snippet-password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="Enter a strong password"
+                          value={snippetPassword}
+                          onChange={(e) => setSnippetPassword(e.target.value)}
+                          disabled={isSubmitting}
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-3">
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword
+                              ? (
+                                  <EyeIcon className="h-4 w-4" />
+                                )
+                              : (
+                                  <EyeOffIcon className="h-4 w-4" />
+                                )}
+                          </span>
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => {
+                              navigator.clipboard.writeText(snippetPassword);
+                              setPasswordCopied(true);
+                              toast.success('Password copied to clipboard');
+                              setTimeout(() => setPasswordCopied(false), 1500);
+                            }}
+                          >
+                            {passwordCopied
+                              ? (
+                                  <CopyCheckIcon className="h-4 w-4 text-primary" />
+                                )
+                              : (
+                                  <CopyIcon className="h-4 w-4" />
+                                )}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Password strength and suggestions display */}
+                      {isPasswordProtectionEnabled
+                        && passwordStrengthAnalysis && (
+                        <div className="pt-2 text-xs">
+                          {/* Overall Strength */}
+                          <div className="mb-1">
+                            <span className="font-medium">
+                              Strength:
+                              {' '}
+                            </span>
+                            <span
+                              className={getPasswordStrengthColor(
+                                passwordStrengthAnalysis.strength,
+                              )}
+                            >
+                              {passwordStrengthAnalysis.strength}
+                            </span>
+                          </div>
+
+                          {/* Suggestions List */}
+                          {passwordStrengthAnalysis.criteria.length > 0 && (
+                            <div>
+                              <span className="font-medium text-muted-foreground">
+                                We suggest:
+                              </span>
+                              <ul className="list-none pl-0 pt-1 space-y-0.5">
+                                {passwordStrengthAnalysis.criteria.map(
+                                  (criterion) => (
+                                    <li
+                                      key={criterion.key}
+                                      className={
+                                        criterion.isMet
+                                          ? 'text-primary'
+                                          : 'text-muted-foreground'
+                                      }
+                                    >
+                                      {/* Simple checkmark or cross, or just rely on color */}
+                                      {criterion.isMet ? '✓' : '-'}
+                                      {' '}
+                                      {criterion.label}
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex justify-center p-6 pt-0">
           <Button
             type="submit"
             size="lg"
