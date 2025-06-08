@@ -108,7 +108,10 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
           <div className="space-y-6">
             <Tabs
               value={selectedTab}
-              onValueChange={(value) => setSelectedTab(value as 'code' | 'text')}
+              onValueChange={(value) => {
+                posthog.capture('snippet_tab_change', { tab: value });
+                setSelectedTab(value as 'code' | 'text');
+              }}
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-2">
