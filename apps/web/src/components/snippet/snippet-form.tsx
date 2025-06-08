@@ -283,7 +283,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                       id="enablePassword"
                       checked={isPasswordProtectionEnabled}
                       onCheckedChange={(checked) => {
-                        posthog.capture('password_protection_checked', { checked });
+                        posthog.capture('password_protection_checkbox_click', { checked });
 
                         setIsPasswordProtectionEnabled(
                           checked === 'indeterminate' ? false : checked,
