@@ -26,11 +26,11 @@ function Index() {
               <span className="block text-primary">Securely & Instantly</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-              The secure, zero-knowledge code snippet sharing platform built for developers. 
+              The secure, zero-knowledge code snippet sharing platform built for developers.
               Your code is encrypted in your browser before it reaches our servers.
             </p>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md sm:max-w-none mx-auto">
             <Link to="/new" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto min-h-[48px] bg-primary hover:bg-primary/90 flex items-center gap-2 justify-center font-semibold">
@@ -55,7 +55,7 @@ function Index() {
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold">Zero-Knowledge Security</h2>
               </div>
               <p className="text-muted-foreground text-lg">
-                Your code is encrypted with AES-256-GCM in your browser before transmission. 
+                Your code is encrypted with AES-256-GCM in your browser before transmission.
                 We never see your plaintext code - even if we wanted to, we couldn't read it.
               </p>
             </CardContent>
@@ -74,7 +74,7 @@ function Index() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  All encryption happens in your browser using the Web Crypto API. 
+                  All encryption happens in your browser using the Web Crypto API.
                   Your encryption keys never leave your device.
                 </p>
               </CardContent>
@@ -89,7 +89,7 @@ function Index() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Support for popular programming languages with beautiful syntax highlighting 
+                  Support for popular programming languages with beautiful syntax highlighting
                   and code prettification features.
                 </p>
               </CardContent>
@@ -104,7 +104,7 @@ function Index() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Set time-based or view-based limits. From 1 hour to never, 
+                  Set time-based or view-based limits. From 1 hour to never,
                   or burn-after-reading for maximum security.
                 </p>
               </CardContent>
@@ -217,7 +217,7 @@ function Index() {
         <section className="text-center space-y-8 py-16 lg:py-20 px-4 lg:px-6">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Ready to Share Securely?</h2>
           <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-            Join thousands of developers who trust Snippet Share for secure code sharing. 
+            Join thousands of developers who trust Snippet Share for secure code sharing.
             Start sharing your code snippets today - no account required.
           </p>
           <div className="flex justify-center">
