@@ -11,6 +11,7 @@ import {
   ShieldIcon,
   Wand2Icon,
 } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 import { toast } from 'sonner';
@@ -98,6 +99,7 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
     SUPPORTED_LANGUAGES,
     MAX_CODE_LENGTH,
   } = useSnippetForm({ onSnippetCreated });
+  const posthog = usePostHog();
 
   return (
     <Card className="w-full shadow-md">
@@ -280,10 +282,14 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
                     <Checkbox
                       id="enablePassword"
                       checked={isPasswordProtectionEnabled}
-                      onCheckedChange={(checked) =>
+                      onCheckedChange={(checked) => {
+                        posthog.capture('password_protection_checked', { checked });
+
                         setIsPasswordProtectionEnabled(
                           checked === 'indeterminate' ? false : checked,
-                        )}
+                        );
+                      }}
+                      className="hover:cursor-pointer"
                     />
                     <Label htmlFor="enablePassword" className="cursor-pointer">
                       Enable Password Protection (Premium Feature)
