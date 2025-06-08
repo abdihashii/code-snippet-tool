@@ -60,19 +60,19 @@ export function LinkDisplay(
                 onClick={handleCopy}
               >
                 {copied
-                  ? <CopyCheckIcon className="h-4 w-4 text-emerald-500" />
+                  ? <CopyCheckIcon className="h-4 w-4 text-success" />
                   : <CopyIcon className="h-4 w-4" />}
               </Button>
             </div>
             {copied
               && (
-                <p className="text-xs text-emerald-600 ml-1">
+                <p className="ml-1 text-xs text-success">
                   Copied to clipboard!
                 </p>
               )}
           </div>
 
-          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-md p-4">
+          <div className="rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/20">
             <p className="text-sm text-amber-800 dark:text-amber-200">
               <strong>Important:</strong>
               {' '}
