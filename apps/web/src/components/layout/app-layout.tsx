@@ -20,7 +20,7 @@ export function AppLayout({ children }: {
         {' '}
         {new Date().getFullYear()}
         {' '}
-        Secure Snippet Sharer
+        Secure Snippet Share
       </footer>
     </main>
   );

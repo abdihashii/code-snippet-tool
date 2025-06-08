@@ -11,7 +11,7 @@ export function Header() {
           <Link to="/" className="flex items-center justify-center mb-3">
             <ShieldIcon className="h-7 w-7 mr-3 text-primary" />
             <h1 className="text-3xl font-bold text-foreground">
-              Secure Snippet Sharer
+              Secure Snippet Share
             </h1>
           </Link>
           <p className="text-center text-muted-foreground text-lg">
