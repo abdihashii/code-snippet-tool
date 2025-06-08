@@ -4,10 +4,11 @@
 
 Critical Priority
 
-1. Copy to Clipboard Functionality - The snippet view page shows decrypted code but lacks copy functionality
-   (referenced in PRD FR4.5)
+1. Copy to Clipboard Functionality - The snippet view page shows decrypted code but lacks copy
+   functionality (referenced in PRD FR4.5)
 2. Download Snippet Feature - Missing download capability for decrypted content (PRD FR4.6)
-3. Error Boundaries & Better Error Handling - No React error boundaries for graceful failure handling
+3. Error Boundaries & Better Error Handling - No React error boundaries for graceful failure
+   handling
 4. Rate Limiting - No protection against abuse for snippet creation/viewing
 5. CSRF Protection - Missing CSRF tokens for state-changing operations
 
@@ -26,9 +27,9 @@ Medium Priority
 13. Accessibility (a11y) - Missing ARIA labels, keyboard navigation, screen reader support
 14. Performance Optimizations - No code splitting, lazy loading, or caching strategies
 15. SEO & Discoverability Improvements:
-    - [x] Basic meta tags (title, description, OG, Twitter cards) 
+    - [x] Basic meta tags (title, description, OG, Twitter cards)
     - [x] robots.txt file
-    - [x] sitemap.xml file  
+    - [x] sitemap.xml file
     - [x] llms.txt file for AI discoverability
     - [ ] Create social media images (og-image.png, twitter-image.png) - 1200x630px
     - [ ] Add JSON-LD structured data for SoftwareApplication schema
@@ -42,5 +43,5 @@ Low Priority
 17. Dark Mode - Not implemented despite UI components supporting it
 18. Analytics/Telemetry - No usage tracking (though this aligns with privacy-first approach)
 
-The most critical gaps are copy/download functionality and security hardening (CSP, rate limiting, CSRF). These
-should be addressed before any production deployment.
+The most critical gaps are copy/download functionality and security hardening (CSP, rate limiting,
+CSRF). These should be addressed before any production deployment.
