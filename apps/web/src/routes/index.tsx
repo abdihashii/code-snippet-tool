@@ -38,11 +38,11 @@ function Index() {
                 Start Sharing Now
               </Button>
             </Link>
-            <Link to="/signup" className="w-full sm:w-auto">
+            {/* <Link to="/signup" className="w-full sm:w-auto">
               <Button variant="outline" size="lg" className="w-full sm:w-auto min-h-[48px] border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:bg-primary/5">
                 Create Free Account
               </Button>
-            </Link>
+            </Link> */}
           </div>
         </section>
 
