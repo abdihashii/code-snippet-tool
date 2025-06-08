@@ -367,7 +367,7 @@ function RouteComponent() {
                               <Button
                                 onClick={handlePasswordSubmit}
                                 disabled={isDecrypting}
-                                className="bg-primary hover:bg-primary/90"
+                                className="w-full sm:w-auto bg-primary hover:bg-primary/90"
                               >
                                 {isDecrypting ? 'Decrypting...' : 'Decrypt'}
                               </Button>

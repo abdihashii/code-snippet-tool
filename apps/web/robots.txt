@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /new
+
+# Disallow snippet viewing routes (private/temporary content)
+Disallow: /s/
+
+# Block common non-essential paths
+Disallow: /__tests__/
+Disallow: /coverage/
+
+# Sitemap
+Sitemap: https://snippet-share.com/sitemap.xml
