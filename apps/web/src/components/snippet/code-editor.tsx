@@ -25,9 +25,9 @@ export interface CodeEditorProps {
   MAX_CODE_LENGTH: number;
   placeholder?: string;
   title?: string;
-  language: Language;
-  onLanguageChange: (language: Language) => void;
-  supportedLanguages: readonly { value: Language; label: string }[];
+  language?: Language;
+  onLanguageChange?: (language: Language) => void;
+  supportedLanguages?: readonly { value: Language; label: string }[];
   isLanguageSelectDisabled?: boolean;
 }
 
@@ -109,25 +109,29 @@ function CodeEditorComponent({
             </Button>
           </>
         )}
-        <Select
-          value={language}
-          onValueChange={onLanguageChange}
-          disabled={isLanguageSelectDisabled || isReadOnly}
-        >
-          <SelectTrigger
-            size="sm"
-            className="w-[145px] bg-background/90 hover:bg-background shadow-sm text-xs h-8 hover:cursor-pointer"
+
+        {/* Language Selection dropdown (only visible in edit mode) */}
+        {supportedLanguages && onLanguageChange && language && (
+          <Select
+            value={language}
+            onValueChange={onLanguageChange}
+            disabled={isLanguageSelectDisabled || isReadOnly}
           >
-            <SelectValue placeholder="Select language" />
-          </SelectTrigger>
-          <SelectContent>
-            {supportedLanguages.map((lang) => (
-              <SelectItem key={lang.value} value={lang.value} className="text-xs hover:cursor-pointer">
-                {lang.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectTrigger
+              size="sm"
+              className="w-[145px] bg-background/90 hover:bg-background shadow-sm text-xs h-8 hover:cursor-pointer"
+            >
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              {supportedLanguages.map((lang) => (
+                <SelectItem key={lang.value} value={lang.value} className="text-xs hover:cursor-pointer">
+                  {lang.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
       <pre
         aria-hidden="true"
