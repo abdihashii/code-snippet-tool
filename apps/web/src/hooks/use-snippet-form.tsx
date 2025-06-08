@@ -1,5 +1,6 @@
 import type { CreateSnippetPayload, Language } from '@snippet-share/types';
 
+import { usePostHog } from 'posthog-js/react';
 import prettierPluginJava from 'prettier-plugin-java';
 import parserBabel from 'prettier/plugins/babel';
 import parserEstree from 'prettier/plugins/estree';
@@ -113,6 +114,8 @@ export function useSnippetForm({
   const [passwordCopied, setPasswordCopied] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'code' | 'text'>('code');
 
+  const posthog = usePostHog();
+
   // Effect to reset language when switching tabs
   useEffect(() => {
     if (selectedTab === 'text') {
@@ -148,6 +151,8 @@ export function useSnippetForm({
   }, [snippetPassword, isPasswordProtectionEnabled]);
 
   const handleGeneratePassword = useCallback(() => {
+    posthog.capture('password_generate_button_click');
+
     const newPassword = generateStrongPassword();
     setSnippetPassword(newPassword);
 
