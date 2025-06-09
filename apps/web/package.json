@@ -8,6 +8,7 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "start": "vinxi start",
+    "deploy": "wrangler --cwd dist/ pages deploy",
     "lint": "eslint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
