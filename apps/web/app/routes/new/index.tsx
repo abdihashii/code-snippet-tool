@@ -19,23 +19,33 @@ function LoadingFallback() {
                 <Skeleton className="h-8 rounded-sm" />
                 <Skeleton className="h-8 rounded-sm" />
               </div>
-              
+
               {/* Code editor area - matches TabsContent */}
               <div className="mt-6">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Skeleton className="h-4 w-16" /> {/* Language label */}
-                    <Skeleton className="h-10 w-32" /> {/* Language select */}
+                    <Skeleton className="h-4 w-16" />
+                    {' '}
+                    {/* Language label */}
+                    <Skeleton className="h-10 w-32" />
+                    {' '}
+                    {/* Language select */}
                   </div>
-                  <Skeleton className="h-[200px] w-full rounded-md" /> {/* Code editor */}
+                  <Skeleton className="h-[200px] w-full rounded-md" />
+                  {' '}
+                  {/* Code editor */}
                 </div>
               </div>
             </div>
 
             {/* Prettify button and character count - matches the actual layout */}
             <div className="flex justify-between items-center gap-4 text-right text-sm text-muted-foreground">
-              <Skeleton className="h-9 w-36" /> {/* Prettify button */}
-              <Skeleton className="h-4 w-40" /> {/* Character count */}
+              <Skeleton className="h-9 w-36" />
+              {' '}
+              {/* Prettify button */}
+              <Skeleton className="h-4 w-40" />
+              {' '}
+              {/* Character count */}
             </div>
 
             {/* Expires After and Max Views - matches grid layout */}
@@ -52,8 +62,12 @@ function LoadingFallback() {
 
             {/* Optional Settings collapsible trigger */}
             <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-4" /> {/* Chevron icon */}
-              <Skeleton className="h-4 w-28" /> {/* "Optional Settings" text */}
+              <Skeleton className="h-4 w-4" />
+              {' '}
+              {/* Chevron icon */}
+              <Skeleton className="h-4 w-28" />
+              {' '}
+              {/* "Optional Settings" text */}
             </div>
           </div>
         </CardContent>
