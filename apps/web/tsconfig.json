@@ -13,5 +13,5 @@
     "verbatimModuleSyntax": false,
     "skipLibCheck": true
   },
-  "exclude": ["app/__tests__/coverage/**/*", "eslint.config.mjs"]
+  "exclude": ["app/__tests__/coverage/**/*", "eslint.config.mjs", "dist"]
 }
