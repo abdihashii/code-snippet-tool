@@ -11,5 +11,6 @@
     },
     "strictNullChecks": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["app/__tests__/coverage/**/*", "eslint.config.mjs"]
 }
