@@ -12,7 +12,8 @@ import { PostHogProvider } from 'posthog-js/react';
 import { Toaster } from 'sonner';
 
 import { ErrorBoundary } from '@/components/error-boundary';
-import { ThemeProvider, useTheme } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/theme-provider';
+import { useTheme } from '@/hooks/use-theme';
 import { getThemeServerFn } from '@/lib/theme';
 
 import { NotFound } from './404';
