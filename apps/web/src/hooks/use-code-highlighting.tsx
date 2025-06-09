@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
 import plaintext from 'highlight.js/lib/languages/plaintext';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import 'highlight.js/styles/atom-one-dark.css';
 
 interface LanguageOption {
   value: Language;
