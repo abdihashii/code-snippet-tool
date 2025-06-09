@@ -1,7 +1,7 @@
-import type { Theme } from '@/components/theme-provider';
-
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie, setCookie } from '@tanstack/react-start/server';
+
+import type { Theme } from '@/components/theme-provider';
 
 const storageKey = 'ui-theme';
 
