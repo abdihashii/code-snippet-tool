@@ -10,7 +10,7 @@ export function getThemeFromCookieValue(cookieValue: string | null | undefined):
   return (cookieValue || 'light') as Theme;
 }
 
-// Pure function - no server APIs, fully testable  
+// Pure function - no server APIs, fully testable
 export function validateTheme(data: unknown): Theme {
   if (typeof data !== 'string' || (data !== 'dark' && data !== 'light')) {
     throw new Error('Invalid theme provided');

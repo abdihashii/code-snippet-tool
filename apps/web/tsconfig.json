@@ -10,6 +10,7 @@
       "@/*": ["./app/*"]
     },
     "strictNullChecks": true,
+    "verbatimModuleSyntax": false,
     "skipLibCheck": true
   },
   "exclude": ["app/__tests__/coverage/**/*", "eslint.config.mjs"]
