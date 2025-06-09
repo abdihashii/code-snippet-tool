@@ -176,7 +176,7 @@ jobs:
           fi
 
   build-web:
-    needs: [detect-changes, lint, build-types, build-schemas]
+    needs: [detect-changes, lint, test-web, build-types, build-schemas]
     if: ${{ always() && needs.detect-changes.outputs.web == 'true' && (needs.lint.result == 'success' || needs.lint.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
