@@ -14,15 +14,10 @@ import { Toaster } from 'sonner';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ThemeProvider } from '@/components/theme-provider';
 import { useTheme } from '@/hooks/use-theme';
+import { DESCRIPTION, KEYWORDS, TITLE, URL } from '@/lib/constants';
 import { getThemeServerFn } from '@/lib/theme';
 
 import { NotFound } from './404';
-
-const TITLE = 'Snippet Share - Securely Share Code Snippets';
-const DESCRIPTION
-= 'A secure and easy way to share code snippets with others. Create self-destructing, password-protected snippets with end-to-end encryption.';
-const KEYWORDS = 'snippet, share, code, developer, tools, secure, encrypted, self-destructing';
-const URL = 'https://snippet-share.com';
 
 export const Route = createRootRoute({
   head: () => ({
