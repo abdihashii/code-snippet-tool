@@ -1,0 +1,40 @@
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/web/**' # Only deploy Web if there are changes to the Web code
+      - 'packages/**' # Or deploy Web if there are changes to the shared packages
+      - '.github/workflows/**' # Or deploy Web if there are changes to the GitHub workflows
+
+jobs:
+  deploy:
+    name: Deploy Web to Cloudflare Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Build required dependencies
+        run: |
+          pnpm build:types
+          pnpm build:schemas
+      - name: Build and deploy Web using wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/web
+          command: deploy --cwd dist/ pages deploy --minify
