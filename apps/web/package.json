@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "clean": "rm -rf node_modules dist"
+    "clean": "rm -rf node_modules dist .wrangler .vinxi"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
