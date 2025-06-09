@@ -1,8 +1,5 @@
 import type { ReactNode } from 'react';
 
-import { ErrorBoundary } from '@/components/error-boundary';
-import { ThemeProvider, useTheme } from '@/components/theme-provider';
-import { getThemeServerFn } from '@/lib/theme';
 import appCss from '@/styles/app.css?url';
 import {
   createRootRoute,
@@ -13,6 +10,10 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { PostHogProvider } from 'posthog-js/react';
 import { Toaster } from 'sonner';
+
+import { ErrorBoundary } from '@/components/error-boundary';
+import { ThemeProvider, useTheme } from '@/components/theme-provider';
+import { getThemeServerFn } from '@/lib/theme';
 
 import { NotFound } from './404';
 
@@ -47,22 +48,22 @@ function RootComponent() {
 
   return (
     <ThemeProvider theme={data}>
-    <RootDocument>
-      <ErrorBoundary>
-        <PostHogProvider
-          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-          options={{
-            api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-            capture_exceptions: true, // This enables capturing exceptions using Error Tracking
-            debug: import.meta.env.MODE === 'development',
-          }}
-        >
-        <Outlet />
-        <Toaster richColors />
-        <TanStackRouterDevtools />
-        </PostHogProvider>
-      </ErrorBoundary>
-    </RootDocument>
+      <RootDocument>
+        <ErrorBoundary>
+          <PostHogProvider
+            apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+            options={{
+              api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+              capture_exceptions: true, // This enables capturing exceptions using Error Tracking
+              debug: import.meta.env.MODE === 'development',
+            }}
+          >
+            <Outlet />
+            <Toaster richColors />
+            <TanStackRouterDevtools />
+          </PostHogProvider>
+        </ErrorBoundary>
+      </RootDocument>
     </ThemeProvider>
   );
 }
