@@ -1,88 +1,37 @@
-import { getCookie, setCookie } from '@tanstack/react-start/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getThemeFromCookie, setThemeCookie, validateTheme } from '@/lib/theme';
-
-// Mock TanStack Start server functions
-vi.mock('@tanstack/react-start/server', () => ({
-  getCookie: vi.fn(),
-  setCookie: vi.fn(),
-}));
-
-const mockGetCookie = vi.mocked(getCookie);
-const mockSetCookie = vi.mocked(setCookie);
-
-beforeEach(() => {
-  mockGetCookie.mockReset();
-  mockSetCookie.mockReset();
-});
-
-afterEach(() => {
-  vi.clearAllMocks();
-});
+import { getThemeFromCookieValue, validateTheme } from '@/lib/theme';
 
 describe('theme functions', () => {
-  describe('getThemeFromCookie', () => {
+  describe('getThemeFromCookieValue', () => {
     it('should return "light" when no cookie exists', () => {
-      mockGetCookie.mockReturnValue(undefined);
-
-      const result = getThemeFromCookie();
-
-      expect(mockGetCookie).toHaveBeenCalledWith('ui-theme');
+      const result = getThemeFromCookieValue(undefined);
       expect(result).toBe('light');
     });
 
     it('should return "light" when cookie is null', () => {
-      mockGetCookie.mockReturnValue(null as any);
-
-      const result = getThemeFromCookie();
-
-      expect(mockGetCookie).toHaveBeenCalledWith('ui-theme');
+      const result = getThemeFromCookieValue(null);
       expect(result).toBe('light');
     });
 
     it('should return "light" when cookie is empty string', () => {
-      mockGetCookie.mockReturnValue('');
-
-      const result = getThemeFromCookie();
-
-      expect(mockGetCookie).toHaveBeenCalledWith('ui-theme');
+      const result = getThemeFromCookieValue('');
       expect(result).toBe('light');
     });
 
     it('should return "dark" when cookie value is "dark"', () => {
-      mockGetCookie.mockReturnValue('dark');
-
-      const result = getThemeFromCookie();
-
-      expect(mockGetCookie).toHaveBeenCalledWith('ui-theme');
+      const result = getThemeFromCookieValue('dark');
       expect(result).toBe('dark');
     });
 
     it('should return "light" when cookie value is "light"', () => {
-      mockGetCookie.mockReturnValue('light');
-
-      const result = getThemeFromCookie();
-
-      expect(mockGetCookie).toHaveBeenCalledWith('ui-theme');
+      const result = getThemeFromCookieValue('light');
       expect(result).toBe('light');
     });
 
     it('should return invalid cookie value as-is (type coercion)', () => {
-      mockGetCookie.mockReturnValue('invalid-theme');
-
-      const result = getThemeFromCookie();
-
-      expect(mockGetCookie).toHaveBeenCalledWith('ui-theme');
+      const result = getThemeFromCookieValue('invalid-theme');
       expect(result).toBe('invalid-theme');
-    });
-
-    it('should throw error when getCookie throws', () => {
-      mockGetCookie.mockImplementation(() => {
-        throw new Error('Cookie access failed');
-      });
-
-      expect(() => getThemeFromCookie()).toThrow('Cookie access failed');
     });
   });
 
@@ -142,77 +91,36 @@ describe('theme functions', () => {
     });
   });
 
-  describe('setThemeCookie', () => {
-    it('should set cookie with "dark" theme', () => {
-      setThemeCookie('dark');
-
-      expect(mockSetCookie).toHaveBeenCalledWith('ui-theme', 'dark');
-      expect(mockSetCookie).toHaveBeenCalledTimes(1);
-    });
-
-    it('should set cookie with "light" theme', () => {
-      setThemeCookie('light');
-
-      expect(mockSetCookie).toHaveBeenCalledWith('ui-theme', 'light');
-      expect(mockSetCookie).toHaveBeenCalledTimes(1);
-    });
-
-    it('should handle setCookie throwing an error', () => {
-      mockSetCookie.mockImplementation(() => {
-        throw new Error('Cookie setting failed');
-      });
-
-      expect(() => setThemeCookie('dark')).toThrow('Cookie setting failed');
-    });
-  });
-
   describe('integration scenarios', () => {
-    it('should validate and set valid theme correctly', () => {
+    it('should validate and process theme correctly', () => {
       const validTheme = 'dark';
       const validatedTheme = validateTheme(validTheme);
 
       expect(validatedTheme).toBe('dark');
 
-      setThemeCookie(validatedTheme);
-
-      expect(mockSetCookie).toHaveBeenCalledWith('ui-theme', 'dark');
+      // Test the cookie value processing
+      const processedTheme = getThemeFromCookieValue(validatedTheme);
+      expect(processedTheme).toBe('dark');
     });
 
     it('should throw during validation before reaching handler', () => {
       expect(() => {
         validateTheme('invalid');
       }).toThrow('Invalid theme provided');
-
-      expect(mockSetCookie).not.toHaveBeenCalled();
-    });
-
-    it('should use same storage key for both get and set operations', () => {
-      mockGetCookie.mockReturnValue('dark');
-
-      const currentTheme = getThemeFromCookie();
-      setThemeCookie('light');
-
-      expect(mockGetCookie).toHaveBeenCalledWith('ui-theme');
-      expect(mockSetCookie).toHaveBeenCalledWith('ui-theme', 'light');
-      expect(currentTheme).toBe('dark');
     });
 
     it('should handle full theme switching workflow', () => {
       // Get current theme (none exists)
-      mockGetCookie.mockReturnValue(undefined);
-      const currentTheme = getThemeFromCookie();
+      const currentTheme = getThemeFromCookieValue(undefined);
       expect(currentTheme).toBe('light');
 
       // Validate and set new theme
       const newTheme = 'dark';
       const validatedTheme = validateTheme(newTheme);
-      setThemeCookie(validatedTheme);
-
-      expect(mockSetCookie).toHaveBeenCalledWith('ui-theme', 'dark');
+      expect(validatedTheme).toBe('dark');
 
       // Verify retrieval of new theme
-      mockGetCookie.mockReturnValue('dark');
-      const updatedTheme = getThemeFromCookie();
+      const updatedTheme = getThemeFromCookieValue('dark');
       expect(updatedTheme).toBe('dark');
     });
 
@@ -221,8 +129,7 @@ describe('theme functions', () => {
       const falsyValues = [null, undefined, '', 0, false, Number.NaN];
 
       falsyValues.forEach((value) => {
-        mockGetCookie.mockReturnValue(value as any);
-        const result = getThemeFromCookie();
+        const result = getThemeFromCookieValue(value as any);
         expect(result).toBe('light');
       });
     });
@@ -260,6 +167,15 @@ describe('theme functions', () => {
       invalidValues.forEach((value) => {
         expect(() => validateTheme(value)).toThrow('Invalid theme provided');
       });
+    });
+
+    it('should process cookie values consistently', () => {
+      // Test that the same logic applies for different input scenarios
+      expect(getThemeFromCookieValue('dark')).toBe('dark');
+      expect(getThemeFromCookieValue('light')).toBe('light');
+      expect(getThemeFromCookieValue(null)).toBe('light');
+      expect(getThemeFromCookieValue(undefined)).toBe('light');
+      expect(getThemeFromCookieValue('')).toBe('light');
     });
   });
 });

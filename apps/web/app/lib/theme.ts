@@ -5,10 +5,12 @@ import type { Theme } from '@/hooks/use-theme';
 
 const storageKey = 'ui-theme';
 
-export function getThemeFromCookie(): Theme {
-  return (getCookie(storageKey) || 'light') as Theme;
+// Pure function - no server APIs, fully testable
+export function getThemeFromCookieValue(cookieValue: string | null | undefined): Theme {
+  return (cookieValue || 'light') as Theme;
 }
 
+// Pure function - no server APIs, fully testable  
 export function validateTheme(data: unknown): Theme {
   if (typeof data !== 'string' || (data !== 'dark' && data !== 'light')) {
     throw new Error('Invalid theme provided');
@@ -16,13 +18,11 @@ export function validateTheme(data: unknown): Theme {
   return data as Theme;
 }
 
-export function setThemeCookie(theme: Theme): void {
-  setCookie(storageKey, theme);
-}
-
-/* c8 ignore next 3 */
+// Server functions use the pure logic internally
+/* c8 ignore next 4 */
 export const getThemeServerFn = createServerFn().handler(async () => {
-  return getThemeFromCookie();
+  const cookieValue = getCookie(storageKey);
+  return getThemeFromCookieValue(cookieValue);
 });
 
 /* c8 ignore next 7 */
@@ -31,5 +31,5 @@ export const setThemeServerFn = createServerFn({ method: 'POST' })
     return validateTheme(data);
   })
   .handler(async ({ data }) => {
-    setThemeCookie(data);
+    setCookie(storageKey, data);
   });
