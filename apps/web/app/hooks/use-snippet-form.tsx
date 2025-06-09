@@ -96,7 +96,7 @@ export function useSnippetForm({
   const [code, setCode] = useState(initialCode ?? '');
   const [title, setTitle] = useState('');
   const [language, setLanguage] = useState<Language>(
-    initialLanguage || SUPPORTED_LANGUAGES_FOR_FORM[0].value,
+    initialLanguage || SUPPORTED_LANGUAGES_FOR_FORM[0]?.value || 'JAVASCRIPT',
   );
   const [uploaderInfo, setUploaderInfo] = useState('');
   const [expiresAfter, setExpiresAfter] = useState('24h');
@@ -123,7 +123,7 @@ export function useSnippetForm({
     } else if (language === 'PLAINTEXT') {
       // When switching back to 'code' tab from 'text' tab, default to a
       // sensible language for code.
-      setLanguage(SUPPORTED_LANGUAGES_FOR_FORM[0].value);
+      setLanguage(SUPPORTED_LANGUAGES_FOR_FORM[0]?.value || 'JAVASCRIPT');
     }
   }, [selectedTab, language]);
 
@@ -157,7 +157,7 @@ export function useSnippetForm({
     setSnippetPassword(newPassword);
 
     toast.info('Strong password generated and filled!');
-  }, [setSnippetPassword]);
+  }, [setSnippetPassword, posthog]);
 
   const canPrettifyCurrentLanguage = useMemo(() => {
     return !!PRETTIER_SUPPORT_MAP[language];

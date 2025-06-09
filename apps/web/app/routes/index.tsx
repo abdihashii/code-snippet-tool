@@ -4,18 +4,13 @@ import { usePostHog } from 'posthog-js/react';
 
 import { AppLayout } from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const Route = createFileRoute('/')({
-  component: Index,
+  component: Home,
 });
 
-function Index() {
+function Home() {
   const posthog = usePostHog();
 
   return (

@@ -3,28 +3,28 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['src/__tests__/**/*.test.ts'],
+    include: ['app/__tests__/**/*.test.ts'],
     coverage: {
       enabled: true,
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      reportsDirectory: 'src/__tests__/coverage',
+      reportsDirectory: 'app/__tests__/coverage',
       ignoreEmptyLines: true,
-      include: ['src/lib/**'],
+      include: ['app/lib/**'],
       exclude: [
         'node_modules/**',
         'dist/**',
         'build/**',
         '**/*.d.ts',
         '**/*.config.*',
-        'src/**',
-        '!src/lib/**',
+        'app/**',
+        '!app/lib/**',
       ],
     },
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './app'),
     },
   },
 });

@@ -1,14 +1,17 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
     "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./app/*"]
+    },
+    "strictNullChecks": true,
+    "verbatimModuleSyntax": false,
+    "skipLibCheck": true
   },
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "files": []
+  "exclude": ["app/__tests__/coverage/**/*", "eslint.config.mjs", "dist"]
 }
