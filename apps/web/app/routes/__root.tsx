@@ -18,9 +18,16 @@ import { getThemeServerFn } from '@/lib/theme';
 
 import { NotFound } from './404';
 
+const TITLE = 'Snippet Share - Securely Share Code Snippets';
+const DESCRIPTION
+= 'A secure and easy way to share code snippets with others. Create self-destructing, password-protected snippets with end-to-end encryption.';
+const KEYWORDS = 'snippet, share, code, developer, tools, secure, encrypted, self-destructing';
+const URL = 'https://snippet-share.com';
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
+      // General Tags
       {
         charSet: 'utf-8',
       },
@@ -28,14 +35,76 @@ export const Route = createRootRoute({
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
+
+      // SEO Tags
       {
-        title: 'TanStack Start Starter',
+        title: TITLE,
+      },
+      {
+        name: 'description',
+        content: DESCRIPTION,
+      },
+      {
+        name: 'keywords',
+        content: KEYWORDS,
+      },
+
+      // Open Graph Tags (for social sharing)
+      {
+        name: 'og:title',
+        content: TITLE,
+      },
+      {
+        name: 'og:description',
+        content: DESCRIPTION,
+      },
+      {
+        name: 'og:type',
+        content: 'website',
+      },
+      {
+        name: 'og:url',
+        content: URL,
+      },
+      {
+        name: 'og:image',
+        content: `${URL}/og-image.png`,
+      },
+
+      // Twitter Tags (for Twitter sharing)
+      {
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
+      {
+        name: 'twitter:title',
+        content: TITLE,
+      },
+      {
+        name: 'twitter:description',
+        content: DESCRIPTION,
+      },
+      {
+        name: 'twitter:image',
+        content: `${URL}/og-image.png`,
+      },
+      {
+        name: 'twitter:url',
+        content: URL,
       },
     ],
     links: [
       {
+        rel: 'icon',
+        href: '/favicon.svg',
+      },
+      {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'canonical',
+        href: URL,
       },
     ],
   }),
