@@ -137,7 +137,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   const { theme } = useTheme();
 
   return (
-    <html className={theme} suppressHydrationWarning>
+    <html lang="en" className={theme} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
