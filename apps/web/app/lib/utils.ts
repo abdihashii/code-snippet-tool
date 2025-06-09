@@ -1,7 +1,7 @@
-/* v8 ignore start */
+/* c8 ignore start */
 // Ignoring this file from coverage report since it's a barrel file
 export { cn } from './class-name-utils';
 export { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from './crypto-utils';
 export { formatExpiryTimestamp, formatTimestamp } from './date-utils';
 export { hasExpiredByTime, hasReachedMaxViews } from './expiry-utils';
-/* v8 ignore end */
+/* c8 ignore end */
