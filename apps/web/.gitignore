@@ -25,6 +25,6 @@ dist-ssr
 
 
 # Coverage
-src/__tests__/coverage
+app/__tests__/coverage
 
 .env

@@ -1,12 +1,11 @@
 import type { ErrorInfo } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from '@tanstack/react-router';
 import React from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 function DefaultErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const router = useRouter();

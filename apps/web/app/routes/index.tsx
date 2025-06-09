@@ -1,22 +1,16 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { CheckIcon, CodeIcon, LockIcon, ShieldIcon, TimerIcon, ZapIcon } from 'lucide-react';
-import { usePostHog } from 'posthog-js/react';
-
 import { AppLayout } from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { CheckIcon, CodeIcon, LockIcon, ShieldIcon, TimerIcon, ZapIcon } from 'lucide-react';
+// import { usePostHog } from 'posthog-js/react';
 
 export const Route = createFileRoute('/')({
-  component: Index,
+  component: Home,
 });
 
-function Index() {
-  const posthog = usePostHog();
+function Home() {
+  // const posthog = usePostHog();
 
   return (
     <AppLayout>
@@ -39,7 +33,7 @@ function Index() {
               <Button
                 size="lg"
                 className="w-full sm:w-auto min-h-[48px] bg-primary hover:bg-primary/90 flex items-center gap-2 justify-center font-semibold"
-                onClick={() => posthog.capture('landing_cta_click', { button: 'start_sharing_now', location: 'hero' })}
+                // onClick={() => posthog.capture('landing_cta_click', { button: 'start_sharing_now', location: 'hero' })}
               >
                 <ZapIcon className="h-5 w-5" />
                 Start Sharing Now
@@ -232,7 +226,7 @@ function Index() {
               <Button
                 size="lg"
                 className="w-full sm:w-auto min-h-[48px] bg-primary hover:bg-primary/90 flex items-center gap-2 justify-center px-8 font-semibold"
-                onClick={() => posthog.capture('landing_cta_click', { button: 'create_first_snippet', location: 'bottom' })}
+                // onClick={() => posthog.capture('landing_cta_click', { button: 'create_first_snippet', location: 'bottom' })}
               >
                 <ZapIcon className="h-5 w-5" />
                 Create Your First Snippet
