@@ -38,7 +38,7 @@ jobs:
       - name: Deploy Web to Cloudflare Pages
         run: |
           cd apps/web
-          pnpm wrangler deploy --cwd dist/ pages deploy --minify
+          pnpm deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
