@@ -13,5 +13,6 @@ export default defineConfig({
   server: {
     preset: 'cloudflare-pages',
     unenv: cloudflare,
+    static: true,
   },
 });
