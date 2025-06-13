@@ -27,10 +27,6 @@ jobs:
           node-version: 22.x
           cache: 'pnpm'
       - run: pnpm install
-      - name: Build required dependencies
-        run: |
-          pnpm build:types
-          pnpm build:schemas
       - name: Build Web app
         run: pnpm build:web
       - name: Install wrangler
