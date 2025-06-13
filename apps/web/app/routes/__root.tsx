@@ -63,7 +63,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'og:image',
-        content: `${URL}/og-image.png`,
+        content: '/og-image.png',
       },
 
       // Twitter Tags (for Twitter sharing)
@@ -81,7 +81,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'twitter:image',
-        content: `${URL}/og-image.png`,
+        content: '/og-image.png',
       },
       {
         name: 'twitter:url',
