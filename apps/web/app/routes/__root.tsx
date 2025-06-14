@@ -17,7 +17,7 @@ import { useTheme } from '@/hooks/use-theme';
 import {
   DESCRIPTION,
   KEYWORDS,
-  POSTHOG_HOST,
+  POSTHOG_API_HOST,
   POSTHOG_KEY,
   TITLE,
   URL,
@@ -122,12 +122,13 @@ function RootComponent() {
     <ThemeProvider theme={data}>
       <RootDocument>
         <ErrorBoundary>
-          {POSTHOG_KEY && POSTHOG_HOST
+          {POSTHOG_KEY && POSTHOG_API_HOST
             ? (
                 <PostHogProvider
                   apiKey={POSTHOG_KEY}
                   options={{
-                    api_host: POSTHOG_HOST,
+                    api_host: POSTHOG_API_HOST,
+                    ui_host: 'https://us.posthog.com',
                     capture_exceptions: true, // This enables capturing exceptions using Error Tracking
                     debug: import.meta.env.MODE === 'development',
                   }}

@@ -6,5 +6,5 @@ export const DESCRIPTION
 export const KEYWORDS = 'snippet, share, code, developer, tools, secure, encrypted, self-destructing';
 export const URL = 'https://snippet-share.com';
 export const POSTHOG_KEY = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-export const POSTHOG_HOST = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
+export const POSTHOG_API_HOST = import.meta.env.VITE_PUBLIC_POSTHOG_API_HOST;
 /* c8 ignore end */
