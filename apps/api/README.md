@@ -7,10 +7,10 @@ A secure, zero-knowledge code snippet sharing API built with Hono.js and deploye
 The Snippet Share API is the backend service for the secure code snippet sharing platform. It implements:
 
 - **Zero-knowledge encryption** - All code is encrypted client-side before reaching the server
-- **AES-256-GCM encryption** with cryptographically secure random keys
+- **AES-256-GCM encryption** with cryptographically secure random keys *(Note: Current implementation is for development/demo purposes)*
 - **Optional password protection** using PBKDF2 key derivation
 - **Automatic expiration** with time-based and view-based limits
-- **User authentication** for snippet management
+- **User registration** (login and snippet management not yet implemented)
 - **11 programming languages** supported with language detection metadata for client-side syntax highlighting
 
 ### Core Features
@@ -18,7 +18,7 @@ The Snippet Share API is the backend service for the secure code snippet sharing
 - 🔒 **Client-side encryption** - Server never sees plaintext code
 - ⏰ **Auto-expiration** - Snippets expire after set time or view limits
 - 🔑 **Password protection** - Optional zero-knowledge password security
-- 👤 **User accounts** - Optional authentication for snippet management
+- 👤 **User registration** - User signup capability (login/management not yet implemented)
 - 🌍 **Edge deployment** - Fast global access via Cloudflare Workers
 - 📊 **View tracking** - Automatic view counting with limits
 
@@ -60,13 +60,16 @@ The Snippet Share API is the backend service for the secure code snippet sharing
 
 3. **Configure environment variables**
 
-   The API uses Cloudflare Workers environment variables. For local development, these are configured in `wrangler.toml`:
+   The API uses Cloudflare Workers environment variables. For local development, these are configured in `wrangler.jsonc`:
 
-   ```toml
-   [vars]
-   FRONTEND_URL = "http://localhost:3000"
-   SUPABASE_API_URL = "http://localhost:54321"
-   SUPABASE_ANON_KEY = "your-local-anon-key"
+   ```json
+   {
+     "vars": {
+       "FRONTEND_URL": "http://localhost:3000",
+       "SUPABASE_API_URL": "http://localhost:54321",
+       "SUPABASE_ANON_KEY": "your-local-anon-key"
+     }
+   }
    ```
 
    For production, set these as Cloudflare Workers secrets:
@@ -127,11 +130,14 @@ Content-Type: application/json
 
 ```json
 {
+  "data": {
+    "user": {
+      "id": "uuid",
+      "email": "user@example.com"
+    }
+  },
   "success": true,
-  "user": {
-    "id": "uuid",
-    "email": "user@example.com"
-  }
+  "message": "User created successfully"
 }
 ```
 
@@ -168,9 +174,11 @@ Content-Type: application/json
 
 ```json
 {
-  "id": "snippet-uuid",
-  "expires_at": "2024-12-31T23:59:59Z",
-  "max_views": 5
+  "data": {
+    "id": "snippet-uuid"
+  },
+  "success": true,
+  "message": "Snippet created successfully"
 }
 ```
 
@@ -257,14 +265,19 @@ For password-protected snippets:
 ### Snippets Table
 
 ```sql
+CREATE TYPE language AS ENUM (
+  'PLAINTEXT', 'JSON', 'JAVASCRIPT', 'PYTHON', 'HTML', 
+  'CSS', 'TYPESCRIPT', 'JAVA', 'BASH', 'MARKDOWN', 'CSHARP'
+);
+
 CREATE TABLE snippets (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id),
-  encrypted_content BYTEA NOT NULL,
-  initialization_vector BYTEA NOT NULL,
-  auth_tag BYTEA NOT NULL,
+  encrypted_content TEXT NOT NULL,
+  initialization_vector TEXT NOT NULL,
+  auth_tag TEXT NOT NULL,
   title VARCHAR(255),
-  language snippet_language NOT NULL DEFAULT 'PLAINTEXT',
+  language language NOT NULL DEFAULT 'PLAINTEXT',
   name VARCHAR(255),
   max_views INTEGER NOT NULL DEFAULT 1,
   current_views INTEGER NOT NULL DEFAULT 0,
@@ -273,10 +286,10 @@ CREATE TABLE snippets (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
 
   -- Password protection fields (optional)
-  encrypted_dek BYTEA,
-  iv_for_dek BYTEA,
-  auth_tag_for_dek BYTEA,
-  kdf_salt BYTEA,
+  encrypted_dek TEXT,
+  iv_for_dek TEXT,
+  auth_tag_for_dek TEXT,
+  kdf_salt TEXT,
   kdf_parameters JSONB
 );
 ```
@@ -295,13 +308,16 @@ CREATE TABLE snippets (
 
 2. **Configure environment variables**
 
-   Update `wrangler.toml` with production values:
+   Update `wrangler.jsonc` with production values:
 
-   ```toml
-   [vars]
-   FRONTEND_URL = "https://your-frontend-domain.com"
-   SUPABASE_API_URL = "https://your-project.supabase.co"
-   SUPABASE_ANON_KEY = "your-production-anon-key"
+   ```json
+   {
+     "vars": {
+       "FRONTEND_URL": "https://your-frontend-domain.com",
+       "SUPABASE_API_URL": "https://your-project.supabase.co",
+       "SUPABASE_ANON_KEY": "your-production-anon-key"
+     }
+   }
    ```
 
 3. **Deploy**
@@ -311,7 +327,7 @@ CREATE TABLE snippets (
 
 ### Environment Variables
 
-**Public Variables** (wrangler.toml):
+**Public Variables** (wrangler.jsonc):
 
 - `FRONTEND_URL` - Frontend URL for CORS configuration
 - `SUPABASE_API_URL` - Supabase project URL
@@ -341,7 +357,7 @@ pnpm typecheck
 # Generate Cloudflare Workers type definitions
 pnpm cf-typegen
 
-# Clean build artifacts
+# Clean dependencies and Wrangler cache
 pnpm clean
 
 # Lint code
@@ -360,26 +376,18 @@ The API returns consistent error responses:
 }
 ```
 
-Common error codes:
+Common error scenarios:
 
-- `SNIPPET_NOT_FOUND` - Snippet doesn't exist
-- `SNIPPET_EXPIRED` - Snippet has expired
-- `VIEW_LIMIT_REACHED` - Maximum views exceeded
-- `VALIDATION_ERROR` - Invalid request data
-- `UNAUTHORIZED` - Authentication required
+- `404 Not Found` - Snippet doesn't exist, expired, or view limit reached
+- `410 Gone` - Snippet has expired or reached max views  
+- `400 Bad Request` - Invalid request data or validation errors
+- `500 Internal Server Error` - Server processing errors
+
+*Note: Standardized error codes are not yet implemented - errors return generic HTTP status codes with descriptive messages.*
 
 ## 🧪 Testing
 
-```bash
-# Run all tests
-pnpm test
-
-# Run tests with coverage
-pnpm test:coverage
-
-# Run specific test file
-pnpm test snippets.test.ts
-```
+Testing is not yet implemented for this API. This is a planned feature for future development.
 
 ## 📚 Related Documentation
 
