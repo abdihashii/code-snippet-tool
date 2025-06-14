@@ -13,8 +13,8 @@ type Props = PropsWithChildren<{ theme: Theme }>;
 export function ThemeProvider({ children, theme }: Props) {
   const router = useRouter();
 
-  const setTheme = useCallback((val: Theme) => {
-    setThemeServerFn({ data: val });
+  const setTheme = useCallback(async (val: Theme) => {
+    await setThemeServerFn({ data: val });
     router.invalidate();
   }, [router]);
 
