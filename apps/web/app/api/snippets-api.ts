@@ -9,6 +9,7 @@ import { API_URL } from '@/lib/constants';
 export async function createSnippet(
   snippet: CreateSnippetPayload,
 ): Promise<ApiResponse<{ id: string }>> {
+  console.log('API_URL', API_URL);
   const response = await fetch(`${API_URL}/snippets`, {
     method: 'POST',
     body: JSON.stringify(snippet),
