@@ -11,7 +11,7 @@ The Snippet Share API is the backend service for the secure code snippet sharing
 - **Optional password protection** using PBKDF2 key derivation
 - **Automatic expiration** with time-based and view-based limits
 - **User authentication** for snippet management
-- **11 programming languages** supported with syntax highlighting metadata
+- **11 programming languages** supported with language detection metadata for client-side syntax highlighting
 
 ### Core Features
 
