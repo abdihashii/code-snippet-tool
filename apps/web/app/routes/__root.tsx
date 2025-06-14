@@ -14,7 +14,14 @@ import { Toaster } from 'sonner';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ThemeProvider } from '@/components/theme-provider';
 import { useTheme } from '@/hooks/use-theme';
-import { DESCRIPTION, KEYWORDS, TITLE, URL } from '@/lib/constants';
+import {
+  DESCRIPTION,
+  KEYWORDS,
+  POSTHOG_HOST,
+  POSTHOG_KEY,
+  TITLE,
+  URL,
+} from '@/lib/constants';
 import { getThemeServerFn } from '@/lib/theme';
 
 import { NotFound } from './404';
@@ -111,27 +118,16 @@ export const Route = createRootRoute({
 function RootComponent() {
   const data = Route.useLoaderData();
 
-  // Debug PostHog environment variables
-  const posthogKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
-  const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
-
-  if (!posthogKey || !posthogHost) {
-    console.warn('PostHog environment variables are missing:', {
-      key: posthogKey ? 'present' : 'missing',
-      host: posthogHost ? 'present' : 'missing',
-    });
-  }
-
   return (
     <ThemeProvider theme={data}>
       <RootDocument>
         <ErrorBoundary>
-          {posthogKey && posthogHost
+          {POSTHOG_KEY && POSTHOG_HOST
             ? (
                 <PostHogProvider
-                  apiKey={posthogKey}
+                  apiKey={POSTHOG_KEY}
                   options={{
-                    api_host: posthogHost,
+                    api_host: POSTHOG_HOST,
                     capture_exceptions: true, // This enables capturing exceptions using Error Tracking
                     debug: import.meta.env.MODE === 'development',
                   }}
