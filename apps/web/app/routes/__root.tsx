@@ -111,22 +111,43 @@ export const Route = createRootRoute({
 function RootComponent() {
   const data = Route.useLoaderData();
 
+  // Debug PostHog environment variables
+  const posthogKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY;
+  const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST;
+
+  if (!posthogKey || !posthogHost) {
+    console.warn('PostHog environment variables are missing:', {
+      key: posthogKey ? 'present' : 'missing',
+      host: posthogHost ? 'present' : 'missing',
+    });
+  }
+
   return (
     <ThemeProvider theme={data}>
       <RootDocument>
         <ErrorBoundary>
-          <PostHogProvider
-            apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-            options={{
-              api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-              capture_exceptions: true, // This enables capturing exceptions using Error Tracking
-              debug: import.meta.env.MODE === 'development',
-            }}
-          >
-            <Outlet />
-            <Toaster richColors />
-            <TanStackRouterDevtools />
-          </PostHogProvider>
+          {posthogKey && posthogHost
+            ? (
+                <PostHogProvider
+                  apiKey={posthogKey}
+                  options={{
+                    api_host: posthogHost,
+                    capture_exceptions: true, // This enables capturing exceptions using Error Tracking
+                    debug: import.meta.env.MODE === 'development',
+                  }}
+                >
+                  <Outlet />
+                  <Toaster richColors />
+                  <TanStackRouterDevtools />
+                </PostHogProvider>
+              )
+            : (
+                <>
+                  <Outlet />
+                  <Toaster richColors />
+                  <TanStackRouterDevtools />
+                </>
+              )}
         </ErrorBoundary>
       </RootDocument>
     </ThemeProvider>
