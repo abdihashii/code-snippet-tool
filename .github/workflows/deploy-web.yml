@@ -29,6 +29,10 @@ jobs:
       - run: pnpm install
       - name: Build Web app
         run: pnpm build:web
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_PUBLIC_POSTHOG_KEY: ${{ secrets.VITE_PUBLIC_POSTHOG_KEY }}
+          VITE_PUBLIC_POSTHOG_HOST: ${{ secrets.VITE_PUBLIC_POSTHOG_HOST }}
       - name: Deploy Web to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
