@@ -129,7 +129,8 @@ function RootComponent() {
                   options={{
                     api_host: POSTHOG_API_HOST,
                     ui_host: 'https://us.posthog.com',
-                    capture_exceptions: true, // This enables capturing exceptions using Error Tracking
+                    // This enables capturing exceptions using Error Tracking
+                    capture_exceptions: true,
                     debug: import.meta.env.MODE === 'development',
                   }}
                 >
