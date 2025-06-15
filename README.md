@@ -35,16 +35,17 @@ Snippet Share uses **client-side encryption** to ensure your code is encrypted i
 
 This is a monorepo containing:
 
-- **Web App** (`apps/web`) - React frontend with TanStack Router
+- **Web App** (`apps/web`) - React frontend with TanStack React Start
 - **API** (`apps/api`) - Hono backend deployed to Cloudflare Workers
-- **Shared Packages** (`packages/`) - Common types and schemas
+- **Shared Packages** (`packages/`) - Database config, ESLint config, shared types and schemas
 
 ### Tech Stack
 
-- **Frontend**: React, TanStack Router, Tailwind CSS, shadcn/ui
+- **Frontend**: React, TanStack React Start (with SSR), Vinxi, Tailwind CSS, shadcn/ui
 - **Backend**: Hono, Cloudflare Workers
 - **Database**: PostgreSQL via Supabase
 - **Encryption**: Web Crypto API (AES-256-GCM)
+- **Deployment**: Cloudflare Pages (frontend), Cloudflare Workers (API)
 - **Package Manager**: pnpm (workspace)
 
 ## 🚀 Getting Started
@@ -52,7 +53,7 @@ This is a monorepo containing:
 ### Prerequisites
 
 - Node.js 18+
-- pnpm 8+
+- pnpm 10+
 - Git
 
 ### Installation
@@ -100,7 +101,7 @@ pnpm dev:web
 pnpm dev:api
 ```
 
-The web app will be available at `http://localhost:5173` and the API at `http://localhost:8787`.
+The web app will be available at `http://localhost:3000` and the API at `http://localhost:8787`.
 
 ### Building
 
@@ -111,9 +112,14 @@ Build all applications:
 pnpm build:types
 pnpm build:schemas
 
-# Build applications
-cd apps/web && pnpm build
-cd apps/api && pnpm deploy
+# Build and deploy web app to Cloudflare Pages
+cd apps/web
+pnpm run build
+pnpm run deploy
+
+# Build and deploy api app to Cloudflare Workers
+cd apps/api
+pnpm run deploy
 ```
 
 ## 📁 Project Structure
