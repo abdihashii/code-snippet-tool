@@ -18,6 +18,16 @@ Think of our service as providing you with a personal digital safe.
 
 We store the safe for you, but we have absolutely no way to open it. Only the person with the correct link or password can unlock and view the content.
 
+## How Strong Is the Encryption?
+
+The encryption we use is called AES-256. It is the gold standard for securing data and is trusted by governments and security-conscious organizations worldwide.[^1]
+
+So, what would it take for an attacker to break this encryption, even if they stole the encrypted data from our servers?
+
+To put it simply, it's impossible with today's technology. Even if an attacker had the world's fastest supercomputer, it would take them **billions of years** to guess the correct key. The number of possible keys is so vast that it's larger than the number of atoms in the known universe.[^2]
+
+This level of security means you can be confident that your data is protected against brute-force attacks today and for the foreseeable future.
+
 ## What This Means for You (The Benefits)
 
 This security model provides powerful protections:
@@ -25,6 +35,8 @@ This security model provides powerful protections:
 - **True Confidentiality:** Only the people you share the link or password with can see your content. No one else.
 - **Protection from Us:** Our team can't access your content for any reason. Your privacy is structurally guaranteed.
 - **Protection from Breaches:** In the unlikely event of a server breach, your files would remain safely encrypted and unreadable to attackers.
+
+This is the foundation of our promise: we can't see your data, and we can't share it with anyone.
 
 ## The Trade-Offs for a Zero-Knowledge World
 
@@ -43,3 +55,7 @@ Your security is a partnership. Because you hold the key, you have a vital role 
 - **Double-check that you've saved your link or password.** We want to be crystal clear: we cannot help you get it back if you lose it.
 
 Thank you for choosing a service that puts your privacy first. We believe this user-centric security model is the right way to handle sensitive data, and we're glad to have you as part of a more private web.
+
+[^1]: The Advanced Encryption Standard (AES) was established as a U.S. federal standard in 2001. You can view the official publication from the National Institute of Standards and Technology (NIST): [FIPS PUB 197](https://doi.org/10.6028/NIST.FIPS.197-upd1).
+
+[^2]: The AES-256 key space is 2^256, which results in approximately 1.1 x 10^77 possible keys. For context on this astronomically large number, see ["Why we moved to 256-bit AES keys"](https://blog.1password.com/why-we-moved-to-256-bit-aes-keys/). The estimated number of atoms in the observable universe is between 10^78 and 10^82. You can read more about this estimate here: ["How many atoms are in the observable universe?"](https://www.livescience.com/how-many-atoms-in-universe.html).
