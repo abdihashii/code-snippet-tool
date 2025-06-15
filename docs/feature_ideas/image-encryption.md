@@ -47,3 +47,21 @@ To manage costs and ensure service stability, we will introduce tiered limits. T
 - **Pro Tier (Future):**
   - **Increased File Size Limit:** Up to 100 MB per image (or higher).
   - **Requirement:** This tier will only be available after the long-term, streaming architecture is implemented, as it's the only way to handle files of this size reliably.
+
+## 7. Security Considerations & Limitations
+
+While the E2EE model provides strong privacy, it's important to understand its trade-offs and limitations.
+
+- **Image Metadata (EXIF):** Our process encrypts the entire image file, including any embedded metadata like GPS coordinates, camera details, or timestamps (EXIF data). This data remains private and encrypted. The security relies on our client-side code to encrypt the file as-is without inspection.
+
+- **Impossibility of Server-Side Processing:** Because the server only holds encrypted data, certain features are impossible to implement server-side:
+
+  - **Thumbnails:** The server cannot generate thumbnails or previews for encrypted images. Any thumbnail generation must happen on the client-side before encryption. The MVP will not include thumbnails and will display a generic placeholder.
+  - **Content Moderation:** We cannot scan images for abusive, illegal, or malicious content. Our service operates on a zero-knowledge principle, and we must rely on user reports to address content policy violations.
+
+- **User Responsibility for Keys:** The security of the encrypted data is entirely in the user's hands.
+
+  - **Data is Unrecoverable:** If a shareable link (with its key) is lost, or a password is forgotten, the encrypted image is permanently inaccessible. There is no recovery mechanism.
+  - **Secure Sharing:** Users must be careful about how they share links and passwords to prevent unauthorized access.
+
+- **Reliance on Client Integrity:** The security model depends on the integrity of the client-side environment. The user's device or browser being compromised by malware could expose their data before encryption or after decryption.
