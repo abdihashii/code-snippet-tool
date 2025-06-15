@@ -7,7 +7,7 @@ A secure, zero-knowledge code snippet sharing API built with Hono.js and deploye
 The Snippet Share API is the backend service for the secure code snippet sharing platform. It implements:
 
 - **Zero-knowledge encryption** - All code is encrypted client-side before reaching the server
-- **AES-256-GCM encryption** with cryptographically secure random keys *(Note: Current implementation is for development/demo purposes)*
+- **AES-256-GCM encryption** with cryptographically secure random keys _(Note: Current implementation is for development/demo purposes)_
 - **Optional password protection** using PBKDF2 key derivation
 - **Automatic expiration** with time-based and view-based limits
 - **User registration** (login and snippet management not yet implemented)
@@ -266,7 +266,7 @@ For password-protected snippets:
 
 ```sql
 CREATE TYPE language AS ENUM (
-  'PLAINTEXT', 'JSON', 'JAVASCRIPT', 'PYTHON', 'HTML', 
+  'PLAINTEXT', 'JSON', 'JAVASCRIPT', 'PYTHON', 'HTML',
   'CSS', 'TYPESCRIPT', 'JAVA', 'BASH', 'MARKDOWN', 'CSHARP'
 );
 
@@ -379,11 +379,11 @@ The API returns consistent error responses:
 Common error scenarios:
 
 - `404 Not Found` - Snippet doesn't exist, expired, or view limit reached
-- `410 Gone` - Snippet has expired or reached max views  
+- `410 Gone` - Snippet has expired or reached max views
 - `400 Bad Request` - Invalid request data or validation errors
 - `500 Internal Server Error` - Server processing errors
 
-*Note: Standardized error codes are not yet implemented - errors return generic HTTP status codes with descriptive messages.*
+_Note: Standardized error codes are not yet implemented - errors return generic HTTP status codes with descriptive messages._
 
 ## 🧪 Testing
 
