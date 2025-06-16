@@ -6,6 +6,7 @@ import type {
 
 import { addDays, addHours, isPast } from 'date-fns';
 import { Hono } from 'hono';
+import { rateLimiter } from 'hono-rate-limiter';
 import { Buffer } from 'node:buffer';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
@@ -51,8 +52,16 @@ function postgresByteaStringToBuffer(
 
 // --- End of helper functions ---
 
-// Create a new snippet
-snippets.post('/', async (c) => {
+// Create a new snippet. Rate limit to 10 snippet creations per minute per IP.
+snippets.post('/', rateLimiter({
+  windowMs: 60 * 1000, // 1 minute
+  limit: 10, // Limit each IP to 10 snippet creations per minute
+  standardHeaders: 'draft-6',
+  keyGenerator: (c) =>
+    (c.env as CloudflareBindings)?.CF_CONNECTING_IP
+    || c.req.header('x-forwarded-for')
+    || 'anonymous',
+}), async (c) => {
   const {
     encrypted_content, // Comes in as a base64 encoded string
     initialization_vector, // Comes in as a base64 encoded string
@@ -180,8 +189,16 @@ snippets.post('/', async (c) => {
   }
 });
 
-// Get a snippet by ID
-snippets.get('/:id', async (c) => {
+// Get a snippet by ID. Rate limit to 50 snippet retrievals per minute per IP.
+snippets.get('/:id', rateLimiter({
+  windowMs: 60 * 1000, // 1 minute
+  limit: 50, // Limit each IP to 50 snippet retrievals per minute
+  standardHeaders: 'draft-6',
+  keyGenerator: (c) =>
+    (c.env as CloudflareBindings)?.CF_CONNECTING_IP
+    || c.req.header('x-forwarded-for')
+    || 'anonymous',
+}), async (c) => {
   const snippetId = c.req.param('id');
 
   if (!snippetId) {
