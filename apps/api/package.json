@@ -13,7 +13,8 @@
     "@snippet-share/schemas": "workspace:*",
     "@snippet-share/types": "workspace:*",
     "@supabase/supabase-js": "^2.49.4",
-    "hono": "^4.7.9"
+    "hono": "^4.7.9",
+    "hono-rate-limiter": "^0.4.2"
   },
   "devDependencies": {
     "@snippet-share/eslint-config": "workspace:*",
