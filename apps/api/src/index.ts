@@ -19,6 +19,10 @@ app.use('*', csrf({
 }));
 
 // Rate limit all requests to 100 requests per 15 minutes
+// TODO: Implement tiered global rate limiting when user authentication is added:
+// - Anonymous users: 100/15min (current)
+// - Signed-up users: 300/15min
+// - Premium users: 1000/15min or higher
 app.use('*', rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 100, // Limit each IP to 100 requests per windowMs

@@ -52,10 +52,14 @@ function postgresByteaStringToBuffer(
 
 // --- End of helper functions ---
 
-// Create a new snippet. Rate limit to 10 snippet creations per minute per IP.
+// Create a new snippet. Rate limit to 5 snippet creations per day per IP.
+// TODO: Implement tiered rate limiting when user authentication is added:
+// - Anonymous users: 5/day
+// - Signed-up users: 25/day  
+// - Premium users: 100/day
 snippets.post('/', rateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  limit: 10, // Limit each IP to 10 snippet creations per minute
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  limit: 5, // Limit each IP to 5 snippet creations per day
   standardHeaders: 'draft-6',
   keyGenerator: (c) =>
     (c.env as CloudflareBindings)?.CF_CONNECTING_IP
@@ -190,6 +194,10 @@ snippets.post('/', rateLimiter({
 });
 
 // Get a snippet by ID. Rate limit to 50 snippet retrievals per minute per IP.
+// TODO: Consider tiered rate limiting for snippet retrieval when user authentication is added:
+// - Anonymous users: 50/minute (current)
+// - Signed-up users: 100/minute
+// - Premium users: 500/minute or unlimited
 snippets.get('/:id', rateLimiter({
   windowMs: 60 * 1000, // 1 minute
   limit: 50, // Limit each IP to 50 snippet retrievals per minute
