@@ -28,13 +28,13 @@
       "store_id": "51e2c66bd2f3449684a847be7e1ed045",
       "secret_name": "SUPABASE_SERVICE_ROLE_KEY"
     }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMITER_KV",
+      "id": "b3ea027de36a41b98d068b7672938a8f"
+    }
   ]
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
   // "r2_buckets": [
   //   {
   //     "binding": "MY_BUCKET",
