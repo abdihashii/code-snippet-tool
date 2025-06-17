@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@hono-rate-limiter/cloudflare": "^0.2.2",
     "@snippet-share/schemas": "workspace:*",
     "@snippet-share/types": "workspace:*",
     "@supabase/supabase-js": "^2.49.4",
