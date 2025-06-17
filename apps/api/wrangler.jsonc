@@ -8,7 +8,7 @@
     "nodejs_compat_populate_process_env"
   ],
   "vars": {
-    "FRONTEND_URL": "https://code-snippet-tool.pages.dev",
+    "FRONTEND_URL": "https://snippet-share.com",
     "SUPABASE_API_URL": "https://ngbwiofdswafroytqrsk.supabase.co",
     "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nYndpb2Zkc3dhZnJveXRxcnNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1OTIxMjcsImV4cCI6MjA2MzE2ODEyN30.lpHDlyCxYNnDQE-hH8lFx3CwfZu0KM38WbYlY32rCss"
   },
