@@ -1,4 +1,4 @@
-import type { CreateSnippetPayload, Language } from '@snippet-share/types';
+import type { CreateSnippetPayload, Language, RateLimitInfo } from '@snippet-share/types';
 
 import { usePostHog } from 'posthog-js/react';
 import prettierPluginJava from 'prettier-plugin-java';
@@ -23,6 +23,7 @@ import {
   PasswordStrength,
 } from '@/lib/password-strength';
 import { generateStrongPassword } from '@/lib/password-utils';
+import { RateLimitError } from '@/lib/rate-limit-utils';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
 
 const MAX_CODE_LENGTH = 10_000;
@@ -113,6 +114,8 @@ export function useSnippetForm({
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'code' | 'text'>('code');
+  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
 
   const posthog = usePostHog();
 
@@ -169,6 +172,11 @@ export function useSnippetForm({
     }
 
     e.preventDefault();
+
+    // Clear previous rate limit state
+    setRateLimitInfo(null);
+    setIsRateLimited(false);
+
     setIsSubmitting(true);
     try {
       // Generate a unique, cryptographically strong random Data Encryption Key
@@ -359,7 +367,16 @@ export function useSnippetForm({
       });
     } catch (error) {
       console.error('Error creating snippet:', error);
-      toast.error(error instanceof Error ? error.message : 'Unknown error');
+
+      // First, check if the error is a rate limit error
+      if (error instanceof RateLimitError) {
+        setIsRateLimited(true);
+        setRateLimitInfo(error.rateLimitInfo);
+        toast.error(error.message);
+      } else {
+        // If not a rate limit error, handle other errors
+        toast.error(error instanceof Error ? error.message : 'Unknown error');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -439,6 +456,12 @@ export function useSnippetForm({
     codeClassName,
     canPrettifyCurrentLanguage,
     passwordStrengthAnalysis,
+
+    // Rate limiting state
+    rateLimitInfo,
+    setRateLimitInfo,
+    isRateLimited,
+    setIsRateLimited,
 
     // Actions
     handleSubmit,

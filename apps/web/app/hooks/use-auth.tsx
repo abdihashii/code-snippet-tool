@@ -1,12 +1,17 @@
+import type { RateLimitInfo } from '@snippet-share/types';
+
 import { signupSchema } from '@snippet-share/schemas';
 import { useState } from 'react';
 
 import { signUp } from '@/api/auth-apis';
+import { RateLimitError } from '@/lib/rate-limit-utils';
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userDataState, setUserDataState] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [
     showConfirmPassword,
@@ -18,8 +23,10 @@ export function useAuth() {
     password: string,
     confirmPassword: string,
   ) {
-    // Clear previous errors
+    // Clear previous errors and rate limit state
     setError(null);
+    setRateLimitInfo(null);
+    setIsRateLimited(false);
 
     // Second stage input validation
     const validationResult = signupSchema
@@ -44,11 +51,19 @@ export function useAuth() {
     } catch (signupError: any) {
       console.error('Signup error:', signupError);
 
-      const errorMessage = signupError instanceof Error
-        ? signupError.message
-        : 'An unexpected error occurred during signup. Please try again.';
+      // First, check if the error is a rate limit error
+      if (signupError instanceof RateLimitError) {
+        setIsRateLimited(true);
+        setRateLimitInfo(signupError.rateLimitInfo);
+        setError(signupError.message);
+      } else {
+        // If not a rate limit error, handle other errors
+        const errorMessage = signupError instanceof Error
+          ? signupError.message
+          : 'An unexpected error occurred during signup. Please try again.';
 
-      setError(errorMessage);
+        setError(errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -62,6 +77,10 @@ export function useAuth() {
     setUserData: setUserDataState,
     error,
     setError,
+    rateLimitInfo,
+    setRateLimitInfo,
+    isRateLimited,
+    setIsRateLimited,
     showPassword,
     setShowPassword,
     showConfirmPassword,
