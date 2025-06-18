@@ -5,6 +5,11 @@ import type {
 } from '@snippet-share/types';
 
 import { API_URL } from '@/lib/constants';
+import {
+  extractRateLimitInfo,
+  formatRateLimitMessage,
+  RateLimitError,
+} from '@/lib/utils';
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,
@@ -18,6 +23,13 @@ export async function createSnippet(
   });
 
   const responseData: ApiResponse<{ id: string }> = await response.json();
+
+  // Check for rate limiting first
+  if (response.status === 429) {
+    const rateLimitInfo = extractRateLimitInfo(response);
+    const message = formatRateLimitMessage(rateLimitInfo);
+    throw new RateLimitError(rateLimitInfo, message);
+  }
 
   if (!response.ok || !responseData.success) {
     // Return error response instead of throwing
@@ -38,6 +50,13 @@ export async function getSnippetById(
 ): Promise<ApiResponse<GetSnippetByIdResponse>> {
   const response = await fetch(`${API_URL}/snippets/${id}`);
   const responseData: ApiResponse<GetSnippetByIdResponse> = await response.json();
+
+  // Check for rate limiting first
+  if (response.status === 429) {
+    const rateLimitInfo = extractRateLimitInfo(response);
+    const message = formatRateLimitMessage(rateLimitInfo);
+    throw new RateLimitError(rateLimitInfo, message);
+  }
 
   if (!response.ok || !responseData.success) {
     // Return error response instead of throwing or mixing types

@@ -1,6 +1,11 @@
 import type { ApiResponse } from '@snippet-share/types';
 
 import { API_URL } from '@/lib/constants';
+import {
+  extractRateLimitInfo,
+  formatRateLimitMessage,
+  RateLimitError,
+} from '@/lib/utils';
 
 export async function signUp(
   email: string,
@@ -16,6 +21,13 @@ export async function signUp(
   });
 
   const responseData: ApiResponse<{ userData: any }> = await response.json();
+
+  // Check for rate limiting first
+  if (response.status === 429) {
+    const rateLimitInfo = extractRateLimitInfo(response);
+    const message = formatRateLimitMessage(rateLimitInfo);
+    throw new RateLimitError(rateLimitInfo, message);
+  }
 
   // Check if the response indicates an error
   if (!response.ok || !responseData.success) {
