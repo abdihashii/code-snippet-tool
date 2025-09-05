@@ -1,10 +1,17 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { CheckIcon, CodeIcon, LockIcon, ShieldIcon, TimerIcon, ZapIcon } from 'lucide-react';
+import { ClockIcon, CodeIcon, LockIcon, RocketIcon, ShieldIcon, TimerIcon, ZapIcon } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
+import { useEffect } from 'react';
 
+import { ComparisonTable } from '@/components/landing/comparison-table';
+import { InteractiveDemo } from '@/components/landing/interactive-demo';
+import { QuickTemplates } from '@/components/landing/quick-templates';
+import { SocialProof } from '@/components/landing/social-proof';
 import { AppLayout } from '@/components/layout/app-layout';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLandingAnalytics } from '@/hooks/use-landing-analytics';
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -13,39 +20,98 @@ export const Route = createFileRoute('/')({
 function Home() {
   const posthog = usePostHog();
 
+  // Track landing page analytics
+  const { trackFunnelStep } = useLandingAnalytics();
+
+  // Track funnel start
+  useEffect(() => {
+    trackFunnelStep('view_landing');
+  }, []);
+
   return (
     <AppLayout>
-      <div className="space-y-16 lg:space-y-20 py-8 lg:py-12">
+      <div className="space-y-16 lg:space-y-24 py-8 lg:py-12">
         {/* Hero Section */}
         <section className="text-center space-y-8 px-4 lg:px-6">
           <div className="space-y-6">
+            <div className="flex justify-center mb-4">
+              <Badge variant="outline" className="px-3 py-1">
+                <RocketIcon className="h-3 w-3 mr-1" />
+                Share code in 10 seconds - No signup required
+              </Badge>
+            </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
               Share Code Snippets
               <span className="block text-primary">Securely & Instantly</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-              The secure, zero-knowledge code snippet sharing platform built for developers.
-              Your code is encrypted in your browser before it reaches our servers.
+              The
+              {' '}
+              <span className="font-semibold text-foreground">only</span>
+              {' '}
+              code sharing platform with true zero-knowledge encryption.
+              Your code is encrypted
+              {' '}
+              <span className="font-semibold text-foreground">before</span>
+              {' '}
+              it leaves your browser.
             </p>
+
+            {/* Trust indicators */}
+            <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <ShieldIcon className="h-4 w-4 text-green-600" />
+                <span>100% Encrypted</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <ClockIcon className="h-4 w-4 text-blue-600" />
+                <span>&lt; 10s to share</span>
+              </div>
+              {/* <div className="flex items-center gap-1">
+                <CodeIcon className="h-4 w-4 text-purple-600" />
+                <span>12K+ snippets shared</span>
+              </div> */}
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md sm:max-w-none mx-auto">
             <Link to="/new" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto min-h-[48px] bg-primary hover:bg-primary/90 flex items-center gap-2 justify-center font-semibold"
-                onClick={() => posthog.capture('landing_cta_click', { button: 'start_sharing_now', location: 'hero' })}
+                className="w-full sm:w-auto min-h-[48px] bg-primary hover:bg-primary/90 flex items-center gap-2 justify-center font-semibold shadow-lg hover:shadow-xl transition-all"
+                onClick={() => posthog.capture('landing_cta_click', { button: 'start_sharing_instantly', location: 'hero' })}
               >
                 <ZapIcon className="h-5 w-5" />
-                Start Sharing Now
+                Start Sharing Instantly
               </Button>
             </Link>
-            {/* <Link to="/signup" className="w-full sm:w-auto">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto min-h-[48px] border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:bg-primary/5">
-                Create Free Account
-              </Button>
-            </Link> */}
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto min-h-[48px]"
+              onClick={() => {
+                posthog.capture('landing_cta_click', { button: 'scroll_to_demo', location: 'hero' });
+                document.getElementById('demo-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              See How It Works
+            </Button>
           </div>
+        </section>
+
+        {/* Live Social Proof */}
+        {/* <section className="px-4 lg:px-6">
+          <SocialProof />
+        </section> */}
+
+        {/* Interactive Demo Section */}
+        <section id="demo-section" className="px-4 lg:px-6 scroll-mt-20">
+          <InteractiveDemo />
+        </section>
+
+        {/* Quick Templates */}
+        <section className="px-4 lg:px-6">
+          <QuickTemplates />
         </section>
 
         {/* Security Highlight */}
@@ -156,83 +222,48 @@ function Home() {
           </div>
         </section>
 
-        {/* Why Choose Us */}
+        {/* Comparison Table */}
         <section className="px-4 lg:px-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl lg:text-3xl">Why Choose Snippet Share?</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6 lg:p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <CheckIcon className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-medium">No Account Required</h4>
-                      <p className="text-sm text-muted-foreground">Share code instantly without creating an account</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckIcon className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-medium">Open Source</h4>
-                      <p className="text-sm text-muted-foreground">Transparent, auditable code you can trust</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckIcon className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-medium">Fast & Reliable</h4>
-                      <p className="text-sm text-muted-foreground">Powered by Cloudflare Workers for global performance</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <CheckIcon className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-medium">Privacy Focused</h4>
-                      <p className="text-sm text-muted-foreground">Zero-knowledge architecture means we never see your code</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckIcon className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-medium">Developer Friendly</h4>
-                      <p className="text-sm text-muted-foreground">Built by developers, for developers</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckIcon className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-medium">Free to Use</h4>
-                      <p className="text-sm text-muted-foreground">Core features are completely free</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ComparisonTable />
         </section>
 
         {/* CTA Section */}
-        <section className="text-center space-y-8 py-16 lg:py-20 px-4 lg:px-6">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Ready to Share Securely?</h2>
-          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-            Join thousands of developers who trust Snippet Share for secure code sharing.
-            Start sharing your code snippets today - no account required.
-          </p>
-          <div className="flex justify-center">
+        <section className="text-center space-y-8 py-16 lg:py-20 px-4 lg:px-6 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-2xl">
+          <div className="space-y-4">
+            <Badge className="mb-2">
+              <ClockIcon className="h-3 w-3 mr-1" />
+              Takes less than 10 seconds
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+              Ready to Share Your Code?
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Join
+              {' '}
+              <span className="font-semibold text-foreground">5,200+ developers</span>
+              {' '}
+              who trust Snippet Share.
+              Share your first snippet in seconds -
+              {' '}
+              <span className="font-semibold text-foreground">no signup, no BS</span>
+              .
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link to="/new" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto min-h-[48px] bg-primary hover:bg-primary/90 flex items-center gap-2 justify-center px-8 font-semibold"
-                onClick={() => posthog.capture('landing_cta_click', { button: 'create_first_snippet', location: 'bottom' })}
+                className="w-full sm:w-auto min-h-[56px] bg-primary hover:bg-primary/90 flex items-center gap-2 justify-center px-8 font-semibold shadow-xl hover:shadow-2xl transition-all text-lg"
+                onClick={() => posthog.capture('landing_cta_click', { button: 'share_code_now', location: 'bottom' })}
               >
-                <ZapIcon className="h-5 w-5" />
-                Create Your First Snippet
+                <RocketIcon className="h-5 w-5" />
+                Share Code Now →
               </Button>
             </Link>
+            <div className="text-sm text-muted-foreground">
+              No signup • Free forever • Zero-knowledge encryption
+            </div>
           </div>
         </section>
       </div>
