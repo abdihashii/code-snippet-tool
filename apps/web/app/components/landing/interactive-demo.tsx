@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useCodeHighlighting } from '@/hooks/use-code-highlighting';
 import { cn } from '@/lib/utils';
 
 const DEMO_SNIPPETS = {
@@ -75,6 +76,12 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
   const [showSuccess, setShowSuccess] = useState(false);
   const posthog = usePostHog();
   const navigate = useNavigate();
+
+  // Get syntax highlighting for the code
+  const { highlightedHtml, codeClassName } = useCodeHighlighting({
+    code,
+    language: language as any,
+  });
 
   useEffect(() => {
     // Start with a demo snippet
@@ -202,13 +209,24 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             </Select>
           </div>
 
-          <Textarea
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="Paste your code here..."
-            className="min-h-[150px] font-mono text-sm"
-            maxLength={5000}
-          />
+          <div className="relative w-full">
+            <pre
+              aria-hidden="true"
+              className="absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none bg-background border border-input"
+            >
+              <code
+                className={`language-${codeClassName}`}
+                dangerouslySetInnerHTML={{ __html: `${highlightedHtml}\n` }}
+              />
+            </pre>
+            <Textarea
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Paste your code here..."
+              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y"
+              maxLength={5000}
+            />
+          </div>
 
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
