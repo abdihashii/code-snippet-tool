@@ -9,4 +9,5 @@ export type Language =
   | 'JAVA'
   | 'BASH'
   | 'MARKDOWN'
-  | 'CSHARP';
+  | 'CSHARP'
+  | 'SQL';

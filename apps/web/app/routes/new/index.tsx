@@ -1,5 +1,8 @@
+import type { Language } from '@snippet-share/types';
+
 import { ClientOnly, createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
+import { z } from 'zod';
 
 import { AppLayout } from '@/components/layout/app-layout';
 import { LinkDisplay } from '@/components/snippet/link-display';
@@ -80,11 +83,23 @@ function LoadingFallback() {
   );
 }
 
+// Define the search params schema
+const searchSchema = z.object({
+  prefill: z.boolean().optional(),
+  code: z.string().optional(),
+  language: z.string().optional(),
+  title: z.string().optional(),
+}).catch({});
+
 export const Route = createFileRoute('/new/')({
   component: RouteComponent,
+  validateSearch: searchSchema,
 });
 
 function RouteComponent() {
+  // Get search params from the route
+  const searchParams = Route.useSearch();
+
   const [currentState, setCurrentState] = useState<'form' | 'link'>('form');
   const [generatedLink, setGeneratedLink] = useState<string>('');
   const [snippetPasswordWasSet, setSnippetPasswordWasSet]
@@ -109,7 +124,12 @@ function RouteComponent() {
         <div className="transition-all duration-300 ease-in-out">
           {currentState === 'form'
             ? (
-                <SnippetForm onSnippetCreated={handleSnippetCreated} />
+                <SnippetForm
+                  onSnippetCreated={handleSnippetCreated}
+                  initialCode={searchParams.code}
+                  initialLanguage={searchParams.language as Language}
+                  initialTitle={searchParams.title}
+                />
               )
             : (
                 <LinkDisplay
