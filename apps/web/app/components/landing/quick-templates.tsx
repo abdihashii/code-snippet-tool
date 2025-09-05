@@ -43,7 +43,7 @@ Context:
 - User email: user@example.com
 - Timestamp: 2024-01-15T10:30:45Z
 - Request ID: abc-123-def`,
-    language: 'javascript',
+    language: 'JAVASCRIPT',
   },
   {
     id: 'code-review',
@@ -77,7 +77,7 @@ class AuthService {
 // Questions for reviewer:
 // 1. Should we add caching for user lookups?
 // 2. Is the error message too specific?`,
-    language: 'typescript',
+    language: 'TYPESCRIPT',
   },
   {
     id: 'api-response',
@@ -113,7 +113,7 @@ class AuthService {
   "timestamp": "2024-01-15T10:30:45Z",
   "requestId": "req_4fG8kL9mN3"
 }`,
-    language: 'json',
+    language: 'JSON',
   },
   {
     id: 'sql-query',
@@ -152,7 +152,7 @@ SELECT
 FROM user_activity
 ORDER BY session_count DESC
 LIMIT 100;`,
-    language: 'sql',
+    language: 'SQL',
   },
   {
     id: 'terminal-output',
@@ -189,7 +189,7 @@ Tests:       12 passed, 12 total
 Snapshots:   2 passed, 2 total
 Time:        3.456s
 Ran all test suites.`,
-    language: 'bash',
+    language: 'BASH',
   },
   {
     id: 'unit-test',
@@ -239,7 +239,7 @@ describe('LoginForm', () => {
     });
   });
 });`,
-    language: 'typescript',
+    language: 'TYPESCRIPT',
   },
   {
     id: 'config-file',
@@ -287,7 +287,7 @@ services:
 volumes:
   postgres_data:
   node_modules:`,
-    language: 'yaml',
+    language: 'PLAINTEXT',
   },
   {
     id: 'interview',
@@ -342,7 +342,7 @@ lru.put(2, 2);      // cache is {1=1, 2=2}
 console.log(lru.get(1));  // returns 1, cache is {2=2, 1=1}
 lru.put(3, 3);      // removes key 2, cache is {1=1, 3=3}
 console.log(lru.get(2));  // returns -1 (not found)`,
-    language: 'javascript',
+    language: 'JAVASCRIPT',
   },
 ];
 

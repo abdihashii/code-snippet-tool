@@ -51,9 +51,17 @@ interface SnippetFormProps {
   onSnippetCreated: (
     result: { link: string; passwordWasSet: boolean },
   ) => void;
+  initialCode?: string;
+  initialLanguage?: Language;
+  initialTitle?: string;
 }
 
-function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
+function SnippetFormComponent({
+  onSnippetCreated,
+  initialCode,
+  initialLanguage,
+  initialTitle,
+}: SnippetFormProps) {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
   const {
@@ -98,7 +106,12 @@ function SnippetFormComponent({ onSnippetCreated }: SnippetFormProps) {
     // Constants and static data
     SUPPORTED_LANGUAGES,
     MAX_CODE_LENGTH,
-  } = useSnippetForm({ onSnippetCreated });
+  } = useSnippetForm({
+    onSnippetCreated,
+    initialCode,
+    initialLanguage,
+    initialTitle,
+  });
   const posthog = usePostHog();
 
   return (

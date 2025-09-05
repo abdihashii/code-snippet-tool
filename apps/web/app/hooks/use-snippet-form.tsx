@@ -87,15 +87,17 @@ interface UseSnippetFormProps {
   ) => void;
   initialCode?: string;
   initialLanguage?: Language;
+  initialTitle?: string;
 }
 
 export function useSnippetForm({
   onSnippetCreated,
   initialCode,
   initialLanguage,
+  initialTitle,
 }: UseSnippetFormProps) {
   const [code, setCode] = useState(initialCode ?? '');
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(initialTitle ?? '');
   const [language, setLanguage] = useState<Language>(
     initialLanguage || SUPPORTED_LANGUAGES_FOR_FORM[0]?.value || 'JAVASCRIPT',
   );

@@ -23,7 +23,7 @@ function quickSort(arr) {
 }
 
 console.log(quickSort([3, 6, 8, 10, 1, 2, 1]));`,
-    language: 'javascript',
+    language: 'JAVASCRIPT',
     title: 'JavaScript Example',
   },
   python: {
@@ -42,7 +42,7 @@ def fibonacci(n):
     return fib
 
 print(fibonacci(10))`,
-    language: 'python',
+    language: 'PYTHON',
     title: 'Python Example',
   },
   sql: {
@@ -57,7 +57,7 @@ WHERE o.order_date >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
 GROUP BY c.customer_id, c.customer_name
 ORDER BY total_spent DESC
 LIMIT 10;`,
-    language: 'sql',
+    language: 'SQL',
     title: 'SQL Example',
   },
 };
@@ -68,7 +68,7 @@ interface InteractiveDemoProps {
 
 export function InteractiveDemo({ className }: InteractiveDemoProps) {
   const [code, setCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
+  const [language, setLanguage] = useState('JAVASCRIPT');
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [demoLink, setDemoLink] = useState('');
   const [copied, setCopied] = useState(false);
@@ -190,14 +190,14 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="javascript">JavaScript</SelectItem>
-                <SelectItem value="python">Python</SelectItem>
-                <SelectItem value="typescript">TypeScript</SelectItem>
-                <SelectItem value="java">Java</SelectItem>
-                <SelectItem value="go">Go</SelectItem>
-                <SelectItem value="rust">Rust</SelectItem>
-                <SelectItem value="sql">SQL</SelectItem>
-                <SelectItem value="plaintext">Plain Text</SelectItem>
+                <SelectItem value="JAVASCRIPT">JavaScript</SelectItem>
+                <SelectItem value="PYTHON">Python</SelectItem>
+                <SelectItem value="TYPESCRIPT">TypeScript</SelectItem>
+                <SelectItem value="JAVA">Java</SelectItem>
+                <SelectItem value="BASH">Bash</SelectItem>
+                <SelectItem value="CSHARP">C#</SelectItem>
+                <SelectItem value="HTML">HTML</SelectItem>
+                <SelectItem value="PLAINTEXT">Plain Text</SelectItem>
               </SelectContent>
             </Select>
           </div>
