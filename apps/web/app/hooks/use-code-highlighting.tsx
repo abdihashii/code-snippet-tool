@@ -17,12 +17,12 @@ export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
   { value: 'JAVASCRIPT', label: 'JavaScript / JSX', hljsId: 'javascript' },
   { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript' },
   { value: 'PYTHON', label: 'Python', hljsId: 'python' },
-  // HTML uses the 'xml' grammar in hljs
-  { value: 'HTML', label: 'HTML', hljsId: 'xml' },
+  { value: 'HTML', label: 'HTML', hljsId: 'xml' }, // HTML uses the 'xml' grammar in hljs
   { value: 'CSS', label: 'CSS', hljsId: 'css' },
   { value: 'JAVA', label: 'Java', hljsId: 'java' },
   { value: 'CSHARP', label: 'C#', hljsId: 'csharp' },
   { value: 'BASH', label: 'Bash', hljsId: 'bash' },
+  { value: 'SQL', label: 'SQL', hljsId: 'sql' },
   { value: 'JSON', label: 'JSON', hljsId: 'json' },
   { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
   { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
@@ -41,6 +41,7 @@ const languageLoaders: Record<string, () => Promise<any>> = {
   typescript: () => import('highlight.js/lib/languages/typescript'),
   java: () => import('highlight.js/lib/languages/java'),
   bash: () => import('highlight.js/lib/languages/bash'),
+  sql: () => import('highlight.js/lib/languages/sql'),
   markdown: () => import('highlight.js/lib/languages/markdown'),
   csharp: () => import('highlight.js/lib/languages/csharp'),
 };
