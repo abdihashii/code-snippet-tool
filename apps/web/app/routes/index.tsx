@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { ComparisonTable } from '@/components/landing/comparison-table';
 import { InteractiveDemo } from '@/components/landing/interactive-demo';
 import { QuickTemplates } from '@/components/landing/quick-templates';
-import { SocialProof } from '@/components/landing/social-proof';
+// import { SocialProof } from '@/components/landing/social-proof';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
