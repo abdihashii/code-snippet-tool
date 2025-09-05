@@ -1,3 +1,5 @@
+import type { Language } from '@snippet-share/types';
+
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRightIcon, CheckIcon, CopyIcon, LockIcon, SparklesIcon, ZapIcon } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
@@ -9,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useCodeHighlighting } from '@/hooks/use-code-highlighting';
+import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { cn } from '@/lib/utils';
 
 const DEMO_SNIPPETS = {
@@ -68,63 +70,83 @@ interface InteractiveDemoProps {
 }
 
 export function InteractiveDemo({ className }: InteractiveDemoProps) {
-  const [code, setCode] = useState('');
-  const [language, setLanguage] = useState('JAVASCRIPT');
-  const [isEncrypting, setIsEncrypting] = useState(false);
   const [demoLink, setDemoLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const posthog = usePostHog();
   const navigate = useNavigate();
 
-  // Get syntax highlighting for the code
-  const { highlightedHtml, codeClassName } = useCodeHighlighting({
+  // Use the real snippet form hook with demo defaults
+  const {
+    // Form field states and setters
     code,
-    language: language as any,
+    setCode,
+    language,
+    setLanguage,
+    setExpiresAfter,
+    setMaxViews,
+    isSubmitting,
+
+    // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
+    highlightedHtml,
+    codeClassName,
+
+    // Actions
+    handleSubmit,
+
+    // Constants and static data
+    SUPPORTED_LANGUAGES,
+    MAX_CODE_LENGTH,
+  } = useSnippetForm({
+    onSnippetCreated: (result: { link: string; passwordWasSet: boolean }) => {
+      setDemoLink(result.link);
+      setShowSuccess(true);
+      // Analytics will be tracked in handleCreateSnippet
+    },
+    initialLanguage: 'JAVASCRIPT' as Language,
   });
 
   useEffect(() => {
+    // Set demo defaults
+    setExpiresAfter('1h'); // Demo snippets expire after 1 hour
+    setMaxViews('unlimited');
     // Start with a demo snippet
     const demo = DEMO_SNIPPETS.javascript;
     setCode(demo.code);
-    setLanguage(demo.language);
-  }, []);
+    setLanguage(demo.language as Language);
+  }, [setCode, setLanguage, setExpiresAfter, setMaxViews]);
+
+  // Track successful snippet creation
+  useEffect(() => {
+    if (showSuccess && demoLink) {
+      posthog.capture('demo_snippet_created', {
+        codeLength: code.length,
+        language,
+      });
+    }
+  }, [showSuccess, demoLink, code.length, language, posthog]);
 
   const handleTemplateSelect = (template: keyof typeof DEMO_SNIPPETS) => {
     const demo = DEMO_SNIPPETS[template];
     setCode(demo.code);
-    setLanguage(demo.language);
+    setLanguage(demo.language as Language);
     posthog.capture('demo_template_selected', { template });
   };
 
-  const handleCreateSnippet = async () => {
+  const handleCreateSnippet = async (e: React.FormEvent) => {
     if (!code.trim()) {
       toast.error('Please enter some code to share');
       return;
     }
 
-    setIsEncrypting(true);
     posthog.capture('demo_snippet_create_attempt', {
       hasCode: true,
       codeLength: code.length,
       language,
     });
 
-    // Simulate encryption process
-    setTimeout(() => {
-      const fakeId = Math.random().toString(36).substring(2, 9);
-      const fakeKey = Math.random().toString(36).substring(2, 15);
-      const link = `${window.location.origin}/s/${fakeId}#${fakeKey}`;
-
-      setDemoLink(link);
-      setIsEncrypting(false);
-      setShowSuccess(true);
-
-      posthog.capture('demo_snippet_created', {
-        codeLength: code.length,
-        language,
-      });
-    }, 800);
+    // Use the real handleSubmit from useSnippetForm
+    await handleSubmit(e);
   };
 
   const handleCopyLink = () => {
@@ -192,19 +214,16 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Your code</label>
-            <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-32 h-8">
+            <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
+              <SelectTrigger className="w-[145px] h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="JAVASCRIPT">JavaScript</SelectItem>
-                <SelectItem value="PYTHON">Python</SelectItem>
-                <SelectItem value="TYPESCRIPT">TypeScript</SelectItem>
-                <SelectItem value="JAVA">Java</SelectItem>
-                <SelectItem value="BASH">Bash</SelectItem>
-                <SelectItem value="CSHARP">C#</SelectItem>
-                <SelectItem value="HTML">HTML</SelectItem>
-                <SelectItem value="PLAINTEXT">Plain Text</SelectItem>
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <SelectItem key={lang.value} value={lang.value} className="text-xs hover:cursor-pointer">
+                    {lang.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -224,7 +243,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
               onChange={(e) => setCode(e.target.value)}
               placeholder="Paste your code here..."
               className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y"
-              maxLength={5000}
+              maxLength={Math.min(5000, MAX_CODE_LENGTH)}
             />
           </div>
 
@@ -236,7 +255,11 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             <span>
               {code.length}
               {' '}
-              / 5000 characters
+              /
+              {' '}
+              {Math.min(5000, MAX_CODE_LENGTH).toLocaleString()}
+              {' '}
+              characters
             </span>
           </div>
         </div>
@@ -268,8 +291,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              This is a demo link. For real sharing with expiration options, password protection, and more,
-              try the full version.
+              This is a real working snippet that expires in 1 hour. Try the full version for more options like password protection, custom expiration, and more.
             </p>
           </div>
         )}
@@ -279,11 +301,15 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
           {!showSuccess
             ? (
                 <Button
-                  onClick={handleCreateSnippet}
-                  disabled={isEncrypting || !code.trim()}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleCreateSnippet(e);
+                  }}
+                  disabled={isSubmitting || !code.trim()}
                   className="flex-1"
+                  type="button"
                 >
-                  {isEncrypting
+                  {isSubmitting
                     ? (
                         <>
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
@@ -320,22 +346,6 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
                   </Button>
                 </>
               )}
-        </div>
-
-        {/* Feature callouts */}
-        <div className="grid grid-cols-3 gap-2 pt-2">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">10s</div>
-            <div className="text-xs text-muted-foreground">To share</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">100%</div>
-            <div className="text-xs text-muted-foreground">Encrypted</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-primary">0</div>
-            <div className="text-xs text-muted-foreground">Sign-ups</div>
-          </div>
         </div>
       </CardContent>
     </Card>
