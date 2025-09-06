@@ -75,10 +75,22 @@ interface InteractiveDemoProps {
   className?: string;
 }
 
+const PLACEHOLDER_TEXTS = [
+  'Paste an error log to debug with your team...',
+  'Share SQL queries without Slack formatting issues...',
+  'Send config files with proper syntax highlighting...',
+  'Share code snippets during interviews...',
+  'Send API responses without breaking JSON...',
+];
+
 export function InteractiveDemo({ className }: InteractiveDemoProps) {
   const [demoLink, setDemoLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isEncrypting, setIsEncrypting] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [showRecipientPreview, setShowRecipientPreview] = useState(false);
+
   const posthog = usePostHog();
   const navigate = useNavigate();
 
@@ -114,13 +126,20 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
 
   useEffect(() => {
     // Set demo defaults
-    setExpiresAfter('1h'); // Demo snippets expire after 1 hour
+    setExpiresAfter('24h'); // Demo snippets expire after 24 hours for proper testing
     setMaxViews('unlimited');
-    // Start with a demo snippet
-    const demo = DEMO_SNIPPETS.javascript;
-    setCode(demo.code);
-    setLanguage(demo.language as Language);
+    // Start with empty textarea - no pre-filled code
+    setCode('');
+    setLanguage('PLAINTEXT' as Language);
   }, [setCode, setLanguage, setExpiresAfter, setMaxViews]);
+
+  // Cycle through placeholder texts
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_TEXTS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Track successful snippet creation
   useEffect(() => {
@@ -151,9 +170,33 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
       language,
     });
 
+    // Show encryption animation
+    setIsEncrypting(true);
+
+    // Small delay for animation
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     // Use the real handleSubmit from useSnippetForm
     await handleSubmit(e);
+
+    setIsEncrypting(false);
   };
+
+  // Handle keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && code.trim()) {
+        e.preventDefault();
+        const form = document.querySelector('form');
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [code]);
 
   const handleCopyLink = () => {
     if (demoLink) {
@@ -194,6 +237,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
           {Object.entries(DEMO_SNIPPETS).map(([key, demo]) => (
             <button
               key={key}
+              type="button"
               onClick={() => handleTemplateSelect(key as keyof typeof DEMO_SNIPPETS)}
               className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors"
             >
@@ -234,8 +278,8 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             <Textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Paste your code here..."
-              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y"
+              placeholder={PLACEHOLDER_TEXTS[placeholderIndex]}
+              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y placeholder:text-muted-foreground/50"
               maxLength={Math.min(10000, MAX_CODE_LENGTH)}
               autoFocus
             />
@@ -245,6 +289,17 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             <div className="flex items-center gap-1">
               <LockIcon className="h-3 w-3" />
               <span>End-to-end encrypted</span>
+              {code.trim() && (
+                <span className="ml-2 text-muted-foreground">
+                  • Press
+                  {' '}
+                  <kbd className="px-1 py-0.5 text-[10px] bg-muted rounded">⌘</kbd>
+                  +
+                  <kbd className="px-1 py-0.5 text-[10px] bg-muted rounded">Enter</kbd>
+                  {' '}
+                  to create
+                </span>
+              )}
             </div>
             <span>
               {code.length}
@@ -284,9 +339,22 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
               </Button>
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              Demo snippets expire in 1 hour • Full version includes password protection & custom expiration
-            </p>
+            <div className="text-[11px] text-muted-foreground bg-muted/30 rounded px-2 py-1">
+              📌 Pro tip: Bookmark this page (Cmd+D) for quick access
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Demo snippets expire in 24 hours - enough time to test properly • Full version includes password protection
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowRecipientPreview(true)}
+                className="text-xs text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"
+              >
+                See what recipients will see →
+              </button>
+            </div>
           </div>
         )}
 
@@ -303,11 +371,11 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
                   className="flex-1"
                   type="button"
                 >
-                  {isSubmitting
+                  {isSubmitting || isEncrypting
                     ? (
                         <>
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
-                          Encrypting...
+                          {isEncrypting ? '🔐 Generating unique key...' : 'Encrypting...'}
                         </>
                       )
                     : (
@@ -340,6 +408,42 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
               )}
         </div>
       </CardContent>
+
+      {/* Recipient Preview Modal */}
+      {showRecipientPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowRecipientPreview(false)}>
+          <div className="bg-background border rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-semibold mb-4">Recipient View</h3>
+            <div className="space-y-4">
+              <div className="border rounded-md p-4 bg-muted/30">
+                <p className="text-sm text-muted-foreground mb-2">When someone opens your link, they'll see:</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <LockIcon className="h-4 w-4 text-primary" />
+                    <span className="text-sm">This snippet is encrypted</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    • Click to decrypt and view
+                    <br />
+                    • Automatic syntax highlighting
+                    <br />
+                    • One-click copy to clipboard
+                    <br />
+                    {demoLink && '• Self-destructs after expiration'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRecipientPreview(false)}
+                className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
