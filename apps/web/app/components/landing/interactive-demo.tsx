@@ -1,12 +1,11 @@
 import type { Language } from '@snippet-share/types';
 
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowRightIcon, CheckIcon, CopyIcon, LockIcon, SparklesIcon, ZapIcon } from 'lucide-react';
+import { CheckIcon, CopyIcon, LockIcon } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ClientOnly } from '@/components/ui/client-only';
@@ -76,10 +75,49 @@ interface InteractiveDemoProps {
   className?: string;
 }
 
+const PLACEHOLDER_TEXTS = [
+  'Paste an error log to debug with your team...',
+  'Share SQL queries without Slack formatting issues...',
+  'Send config files with proper syntax highlighting...',
+  'Share code snippets during interviews...',
+  'Send API responses without breaking JSON...',
+];
+
+// Simple cycling hook with fade transition
+function usePlaceholderCycle(texts: string[], isActive: boolean) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const interval = setInterval(() => {
+      // Fade out
+      setIsVisible(false);
+
+      // After fade out, change text and fade in
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % texts.length);
+        setIsVisible(true);
+      }, 200); // Quick fade duration
+    }, 3000); // Show each text for 3 seconds
+
+    return () => clearInterval(interval);
+  }, [texts, isActive]);
+
+  return {
+    text: texts[currentIndex] || texts[0],
+    isVisible,
+  };
+}
+
 export function InteractiveDemo({ className }: InteractiveDemoProps) {
   const [demoLink, setDemoLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isEncrypting, setIsEncrypting] = useState(false);
+  const [showRecipientPreview, setShowRecipientPreview] = useState(false);
+
   const posthog = usePostHog();
   const navigate = useNavigate();
 
@@ -115,13 +153,18 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
 
   useEffect(() => {
     // Set demo defaults
-    setExpiresAfter('1h'); // Demo snippets expire after 1 hour
+    setExpiresAfter('24h'); // Demo snippets expire after 24 hours for proper testing
     setMaxViews('unlimited');
-    // Start with a demo snippet
-    const demo = DEMO_SNIPPETS.javascript;
-    setCode(demo.code);
-    setLanguage(demo.language as Language);
+    // Start with empty textarea - no pre-filled code
+    setCode('');
+    setLanguage('PLAINTEXT' as Language);
   }, [setCode, setLanguage, setExpiresAfter, setMaxViews]);
+
+  // Use cycling placeholder with fade animation
+  const { text: placeholderText, isVisible } = usePlaceholderCycle(
+    PLACEHOLDER_TEXTS,
+    !code, // Only animate when textarea is empty
+  );
 
   // Track successful snippet creation
   useEffect(() => {
@@ -152,9 +195,33 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
       language,
     });
 
+    // Show encryption animation
+    setIsEncrypting(true);
+
+    // Small delay for animation
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     // Use the real handleSubmit from useSnippetForm
     await handleSubmit(e);
+
+    setIsEncrypting(false);
   };
+
+  // Handle keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && code.trim()) {
+        e.preventDefault();
+        const form = document.querySelector('form');
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [code]);
 
   const handleCopyLink = () => {
     if (demoLink) {
@@ -186,41 +253,27 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
 
   return (
     <Card className={cn('relative overflow-hidden', className)}>
-      <div className="absolute top-0 right-0 p-4">
-        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-          <SparklesIcon className="h-3 w-3 mr-1" />
-          Live Demo
-        </Badge>
-      </div>
 
       <CardContent className="p-6 space-y-4">
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Try it now - No signup required!</h3>
-          <p className="text-sm text-muted-foreground">
-            Paste your code below or try an example. See how easy it is to share code securely.
-          </p>
-        </div>
 
-        {/* Quick templates */}
+        {/* Quick examples - more subtle */}
         <div className="flex flex-wrap gap-2">
-          <span className="text-sm text-muted-foreground">Quick examples:</span>
+          <span className="text-xs text-muted-foreground">Try:</span>
           {Object.entries(DEMO_SNIPPETS).map(([key, demo]) => (
-            <Button
+            <button
               key={key}
-              variant="outline"
-              size="sm"
+              type="button"
               onClick={() => handleTemplateSelect(key as keyof typeof DEMO_SNIPPETS)}
-              className="h-7 text-xs"
+              className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors"
             >
-              {demo.title}
-            </Button>
+              {demo.title.replace(' Example', '')}
+            </button>
           ))}
         </div>
 
         {/* Code input area */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Your code</label>
             <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
               <SelectTrigger className="w-[145px] h-8 text-xs">
                 <SelectValue />
@@ -238,7 +291,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
           <div className="relative w-full">
             <pre
               aria-hidden="true"
-              className="absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none bg-background border border-input"
+              className="absolute inset-0 rounded-md px-3 py-2 min-h-[200px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none bg-background border border-input"
             >
               <ClientOnly>
                 <code
@@ -250,23 +303,48 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             <Textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Paste your code here..."
-              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y"
-              maxLength={Math.min(5000, MAX_CODE_LENGTH)}
+              placeholder={!code ? '' : 'Paste your code here...'}
+              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y"
+              maxLength={Math.min(10000, MAX_CODE_LENGTH)}
+              autoFocus
             />
+            {/* Custom placeholder with fade animation */}
+            {!code && (
+              <div
+                className="absolute top-0 left-0 px-3 py-2 pointer-events-none font-mono text-sm text-muted-foreground/50"
+                style={{
+                  transition: 'opacity 200ms ease-in-out',
+                  opacity: isVisible ? 1 : 0,
+                  minWidth: '100%',
+                }}
+              >
+                {placeholderText}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <LockIcon className="h-3 w-3" />
               <span>End-to-end encrypted</span>
+              {code.trim() && (
+                <span className="ml-2 text-muted-foreground">
+                  • Press
+                  {' '}
+                  <kbd className="px-1 py-0.5 text-[10px] bg-muted rounded">⌘</kbd>
+                  +
+                  <kbd className="px-1 py-0.5 text-[10px] bg-muted rounded">Enter</kbd>
+                  {' '}
+                  to create
+                </span>
+              )}
             </div>
             <span>
               {code.length}
               {' '}
               /
               {' '}
-              {Math.min(5000, MAX_CODE_LENGTH).toLocaleString()}
+              {Math.min(10000, MAX_CODE_LENGTH).toLocaleString()}
               {' '}
               characters
             </span>
@@ -299,9 +377,22 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
               </Button>
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              This is a real working snippet that expires in 1 hour. Try the full version for more options like password protection, custom expiration, and more.
-            </p>
+            <div className="text-[11px] text-muted-foreground bg-muted/30 rounded px-2 py-1">
+              📌 Pro tip: Bookmark this page (Cmd+D) for quick access
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Demo snippets expire in 24 hours - enough time to test properly • Full version includes password protection
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowRecipientPreview(true)}
+                className="text-xs text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"
+              >
+                See what recipients will see →
+              </button>
+            </div>
           </div>
         )}
 
@@ -318,16 +409,15 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
                   className="flex-1"
                   type="button"
                 >
-                  {isSubmitting
+                  {isSubmitting || isEncrypting
                     ? (
                         <>
                           <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
-                          Encrypting...
+                          {isEncrypting ? '🔐 Generating unique key...' : 'Encrypting...'}
                         </>
                       )
                     : (
                         <>
-                          <ZapIcon className="h-4 w-4 mr-2" />
                           Create Secure Link
                         </>
                       )}
@@ -350,13 +440,48 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
                     onClick={handleTryFullVersion}
                     className="flex-1"
                   >
-                    <ArrowRightIcon className="h-4 w-4 mr-2" />
-                    Try Full Version
+                    Use Full Version
                   </Button>
                 </>
               )}
         </div>
       </CardContent>
+
+      {/* Recipient Preview Modal */}
+      {showRecipientPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setShowRecipientPreview(false)}>
+          <div className="bg-background border rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-semibold mb-4">Recipient View</h3>
+            <div className="space-y-4">
+              <div className="border rounded-md p-4 bg-muted/30">
+                <p className="text-sm text-muted-foreground mb-2">When someone opens your link, they'll see:</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <LockIcon className="h-4 w-4 text-primary" />
+                    <span className="text-sm">This snippet is encrypted</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    • Click to decrypt and view
+                    <br />
+                    • Automatic syntax highlighting
+                    <br />
+                    • One-click copy to clipboard
+                    <br />
+                    {demoLink && '• Self-destructs after expiration'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRecipientPreview(false)}
+                className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
