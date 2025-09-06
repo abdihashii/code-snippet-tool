@@ -7,7 +7,7 @@ const storageKey = 'ui-theme';
 
 // Pure function - no server APIs, fully testable
 export function getThemeFromCookieValue(cookieValue: string | null | undefined): Theme {
-  return (cookieValue || 'light') as Theme;
+  return (cookieValue || 'dark') as Theme;
 }
 
 // Pure function - no server APIs, fully testable
