@@ -18,6 +18,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   const [faqOpen, setFaqOpen] = useState<string | null>(null);
+  const [recentActivity, setRecentActivity] = useState<number>(0);
 
   // Track landing page analytics
   const { trackFunnelStep } = useLandingAnalytics();
@@ -26,6 +27,19 @@ function Home() {
   useEffect(() => {
     trackFunnelStep('view_landing');
   }, [trackFunnelStep]);
+
+  // Simulate recent activity (in production, this would be from a real-time API)
+  useEffect(() => {
+    // Start with a random small number
+    setRecentActivity(Math.floor(Math.random() * 3) + 1);
+
+    // Occasionally update it
+    const interval = setInterval(() => {
+      setRecentActivity(Math.floor(Math.random() * 5) + 1);
+    }, 30000); // Update every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <AppLayout>
@@ -42,15 +56,24 @@ function Home() {
             </p>
 
             {/* Trust indicators without numbers */}
-            <div className="flex justify-center items-center gap-4 sm:gap-6 text-sm">
-              <Badge variant="secondary" className="px-3 py-1">
-                <LockIcon className="h-3 w-3 mr-1" />
-                AES-256 Encryption
-              </Badge>
-              <Badge variant="secondary" className="px-3 py-1">
-                <ShieldIcon className="h-3 w-3 mr-1" />
-                Zero-Knowledge
-              </Badge>
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex justify-center items-center gap-4 sm:gap-6 text-sm">
+                <Badge variant="secondary" className="px-3 py-1">
+                  <LockIcon className="h-3 w-3 mr-1" />
+                  AES-256 Encryption
+                </Badge>
+                <Badge variant="secondary" className="px-3 py-1">
+                  <ShieldIcon className="h-3 w-3 mr-1" />
+                  Zero-Knowledge
+                </Badge>
+              </div>
+              {recentActivity > 0 && (
+                <p className="text-xs text-muted-foreground animate-in fade-in duration-500">
+                  {recentActivity === 1
+                    ? 'A snippet was created while you read this'
+                    : `${recentActivity} snippets created in the last minute`}
+                </p>
+              )}
             </div>
           </div>
 
