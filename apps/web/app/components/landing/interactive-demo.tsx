@@ -83,39 +83,32 @@ const PLACEHOLDER_TEXTS = [
   'Send API responses without breaking JSON...',
 ];
 
-// Custom hook for typing animation
-function useTypingAnimation(texts: string[], isActive: boolean) {
-  const [displayText, setDisplayText] = useState('');
+// Simple cycling hook with fade transition
+function usePlaceholderCycle(texts: string[], isActive: boolean) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    if (!isActive) {
-      setDisplayText('');
-      return;
-    }
+    if (!isActive) return;
 
-    const currentFullText = texts[currentIndex];
-    if (!currentFullText) return;
+    const interval = setInterval(() => {
+      // Fade out
+      setIsVisible(false);
 
-    let timeout: NodeJS.Timeout;
-
-    // Typing animation with consistent speed
-    if (displayText.length < currentFullText.length) {
-      timeout = setTimeout(() => {
-        setDisplayText(currentFullText.slice(0, displayText.length + 1));
-      }, 30); // Consistent speed for stability
-    } else {
-      // Finished typing, pause then clear instantly and move to next
-      timeout = setTimeout(() => {
-        setDisplayText(''); // Instant clear, no backspace animation
+      // After fade out, change text and fade in
+      setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % texts.length);
-      }, 2000); // Slightly longer pause to read
-    }
+        setIsVisible(true);
+      }, 200); // Quick fade duration
+    }, 3000); // Show each text for 3 seconds
 
-    return () => clearTimeout(timeout);
-  }, [displayText, currentIndex, texts, isActive]);
+    return () => clearInterval(interval);
+  }, [texts, isActive]);
 
-  return displayText;
+  return {
+    text: texts[currentIndex] || texts[0],
+    isVisible,
+  };
 }
 
 export function InteractiveDemo({ className }: InteractiveDemoProps) {
@@ -167,8 +160,8 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
     setLanguage('PLAINTEXT' as Language);
   }, [setCode, setLanguage, setExpiresAfter, setMaxViews]);
 
-  // Use typing animation for placeholder
-  const animatedPlaceholder = useTypingAnimation(
+  // Use cycling placeholder with fade animation
+  const { text: placeholderText, isVisible } = usePlaceholderCycle(
     PLACEHOLDER_TEXTS,
     !code, // Only animate when textarea is empty
   );
@@ -298,7 +291,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
           <div className="relative w-full">
             <pre
               aria-hidden="true"
-              className="absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none bg-background border border-input"
+              className="absolute inset-0 rounded-md px-3 py-2 min-h-[200px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none bg-background border border-input"
             >
               <ClientOnly>
                 <code
@@ -310,12 +303,24 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             <Textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder={animatedPlaceholder || 'Paste your code here...'}
-              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y placeholder:text-muted-foreground/40 transition-opacity"
-              style={{ minWidth: '100%' }} // Prevent layout shift
+              placeholder={!code ? '' : 'Paste your code here...'}
+              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y"
               maxLength={Math.min(10000, MAX_CODE_LENGTH)}
               autoFocus
             />
+            {/* Custom placeholder with fade animation */}
+            {!code && (
+              <div
+                className="absolute top-0 left-0 px-3 py-2 pointer-events-none font-mono text-sm text-muted-foreground/50"
+                style={{
+                  transition: 'opacity 200ms ease-in-out',
+                  opacity: isVisible ? 1 : 0,
+                  minWidth: '100%',
+                }}
+              >
+                {placeholderText}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between text-xs text-muted-foreground">
