@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { ChevronDownIcon, LockIcon, ShieldIcon } from 'lucide-react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { ArrowRightIcon, ChevronDownIcon, LockIcon, ShieldIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { InteractiveDemo } from '@/components/landing/interactive-demo';
@@ -59,9 +59,17 @@ function Home() {
             <InteractiveDemo className="border-2 shadow-xl" />
           </div>
 
-          {/* Single line trust statement */}
+          {/* Single line trust statement with CTA */}
           <p className="text-center text-sm text-muted-foreground mt-6">
             Expires when you want. Deleted forever after.
+            {' '}
+            <Link
+              to="/new"
+              className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+            >
+              Need more control?
+              <ArrowRightIcon className="h-3 w-3" />
+            </Link>
           </p>
         </section>
 
@@ -108,6 +116,14 @@ function Home() {
                   When the expiration time is reached or view limit is hit, it's permanently deleted.
                   We also offer "burn after reading" which deletes immediately after the first view.
                   There's no way to recover deleted snippets.
+                  {' '}
+                  <Link
+                    to="/new"
+                    className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+                  >
+                    Create your first snippet
+                    <ArrowRightIcon className="h-3 w-3" />
+                  </Link>
                 </p>
               </CollapsibleContent>
             </Collapsible>
@@ -129,6 +145,14 @@ function Home() {
                   You can also set custom expiration times (1 hour to never),
                   view limits, and use syntax highlighting for 50+ programming languages.
                   All features are free - no premium tiers, no ads, no tracking.
+                  {' '}
+                  <Link
+                    to="/new"
+                    className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+                  >
+                    Try it now
+                    <ArrowRightIcon className="h-3 w-3" />
+                  </Link>
                 </p>
               </CollapsibleContent>
             </Collapsible>
