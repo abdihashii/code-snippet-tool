@@ -7,11 +7,11 @@ export function AppLayout({ children }: {
 }) {
   return (
     <main
-      className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-6 md:p-8 bg-background"
+      className="flex min-h-screen flex-col bg-background"
     >
-      <div className="w-full max-w-5xl mx-auto">
-        <Header />
+      <Header />
 
+      <div className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8">
         {children}
       </div>
 
