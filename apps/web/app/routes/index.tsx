@@ -35,10 +35,10 @@ function Home() {
           {/* Minimalist header */}
           <div className="text-center mb-8 space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-              Paste code. Get unbreakable link. Share with confidence.
+              Share code snippets. Truly private.
             </h1>
             <p className="text-lg text-muted-foreground">
-              Your code is encrypted so strongly, we couldn't read it if we tried.
+              Encrypted in your browser before upload. We literally can't read your code.
             </p>
 
             {/* Trust indicators without numbers */}
