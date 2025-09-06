@@ -1,12 +1,11 @@
 import type { Language } from '@snippet-share/types';
 
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowRightIcon, CheckIcon, CopyIcon, LockIcon, SparklesIcon, ZapIcon } from 'lucide-react';
+import { CheckIcon, CopyIcon, LockIcon } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ClientOnly } from '@/components/ui/client-only';
@@ -186,41 +185,26 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
 
   return (
     <Card className={cn('relative overflow-hidden', className)}>
-      <div className="absolute top-0 right-0 p-4">
-        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-          <SparklesIcon className="h-3 w-3 mr-1" />
-          Live Demo
-        </Badge>
-      </div>
 
       <CardContent className="p-6 space-y-4">
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Try it now - No signup required!</h3>
-          <p className="text-sm text-muted-foreground">
-            Paste your code below or try an example. See how easy it is to share code securely.
-          </p>
-        </div>
 
-        {/* Quick templates */}
+        {/* Quick examples - more subtle */}
         <div className="flex flex-wrap gap-2">
-          <span className="text-sm text-muted-foreground">Quick examples:</span>
+          <span className="text-xs text-muted-foreground">Try:</span>
           {Object.entries(DEMO_SNIPPETS).map(([key, demo]) => (
-            <Button
+            <button
               key={key}
-              variant="outline"
-              size="sm"
               onClick={() => handleTemplateSelect(key as keyof typeof DEMO_SNIPPETS)}
-              className="h-7 text-xs"
+              className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline transition-colors"
             >
-              {demo.title}
-            </Button>
+              {demo.title.replace(' Example', '')}
+            </button>
           ))}
         </div>
 
         {/* Code input area */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Your code</label>
             <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
               <SelectTrigger className="w-[145px] h-8 text-xs">
                 <SelectValue />
@@ -251,8 +235,9 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Paste your code here..."
-              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y"
-              maxLength={Math.min(5000, MAX_CODE_LENGTH)}
+              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y"
+              maxLength={Math.min(10000, MAX_CODE_LENGTH)}
+              autoFocus
             />
           </div>
 
@@ -266,7 +251,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
               {' '}
               /
               {' '}
-              {Math.min(5000, MAX_CODE_LENGTH).toLocaleString()}
+              {Math.min(10000, MAX_CODE_LENGTH).toLocaleString()}
               {' '}
               characters
             </span>
@@ -300,7 +285,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              This is a real working snippet that expires in 1 hour. Try the full version for more options like password protection, custom expiration, and more.
+              Demo snippets expire in 1 hour • Full version includes password protection & custom expiration
             </p>
           </div>
         )}
@@ -327,7 +312,6 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
                       )
                     : (
                         <>
-                          <ZapIcon className="h-4 w-4 mr-2" />
                           Create Secure Link
                         </>
                       )}
@@ -350,8 +334,7 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
                     onClick={handleTryFullVersion}
                     className="flex-1"
                   >
-                    <ArrowRightIcon className="h-4 w-4 mr-2" />
-                    Try Full Version
+                    Use Full Version
                   </Button>
                 </>
               )}
