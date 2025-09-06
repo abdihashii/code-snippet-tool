@@ -161,6 +161,6 @@ This project is licensed under the ISC License.
 
 ## 🔗 Links
 
-- [Live Demo](https://snippet-share.com) (coming soon)
+- [Live Demo](https://snippet-share.com)
 - [Documentation](docs/)
 - [Issues](https://github.com/abdihashii/snippet-share/issues)
