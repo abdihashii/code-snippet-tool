@@ -83,12 +83,46 @@ const PLACEHOLDER_TEXTS = [
   'Send API responses without breaking JSON...',
 ];
 
+// Custom hook for typing animation
+function useTypingAnimation(texts: string[], isActive: boolean) {
+  const [displayText, setDisplayText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!isActive) {
+      setDisplayText('');
+      return;
+    }
+
+    const currentFullText = texts[currentIndex];
+    if (!currentFullText) return;
+
+    let timeout: NodeJS.Timeout;
+
+    // Typing animation with consistent speed
+    if (displayText.length < currentFullText.length) {
+      timeout = setTimeout(() => {
+        setDisplayText(currentFullText.slice(0, displayText.length + 1));
+      }, 30); // Consistent speed for stability
+    } else {
+      // Finished typing, pause then clear instantly and move to next
+      timeout = setTimeout(() => {
+        setDisplayText(''); // Instant clear, no backspace animation
+        setCurrentIndex((prev) => (prev + 1) % texts.length);
+      }, 2000); // Slightly longer pause to read
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayText, currentIndex, texts, isActive]);
+
+  return displayText;
+}
+
 export function InteractiveDemo({ className }: InteractiveDemoProps) {
   const [demoLink, setDemoLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isEncrypting, setIsEncrypting] = useState(false);
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [showRecipientPreview, setShowRecipientPreview] = useState(false);
 
   const posthog = usePostHog();
@@ -133,13 +167,11 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
     setLanguage('PLAINTEXT' as Language);
   }, [setCode, setLanguage, setExpiresAfter, setMaxViews]);
 
-  // Cycle through placeholder texts
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_TEXTS.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  // Use typing animation for placeholder
+  const animatedPlaceholder = useTypingAnimation(
+    PLACEHOLDER_TEXTS,
+    !code, // Only animate when textarea is empty
+  );
 
   // Track successful snippet creation
   useEffect(() => {
@@ -278,8 +310,9 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
             <Textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder={PLACEHOLDER_TEXTS[placeholderIndex]}
-              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y placeholder:text-muted-foreground/50"
+              placeholder={animatedPlaceholder || 'Paste your code here...'}
+              className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[200px] font-mono text-sm resize-y placeholder:text-muted-foreground/40 transition-opacity"
+              style={{ minWidth: '100%' }} // Prevent layout shift
               maxLength={Math.min(10000, MAX_CODE_LENGTH)}
               autoFocus
             />
