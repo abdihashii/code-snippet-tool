@@ -9,7 +9,14 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ClientOnly } from '@/components/ui/client-only';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { cn } from '@/lib/utils';
@@ -233,10 +240,12 @@ export function InteractiveDemo({ className }: InteractiveDemoProps) {
               aria-hidden="true"
               className="absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none bg-background border border-input"
             >
-              <code
-                className={`language-${codeClassName}`}
-                dangerouslySetInnerHTML={{ __html: `${highlightedHtml}\n` }}
-              />
+              <ClientOnly>
+                <code
+                  className={`language-${codeClassName}`}
+                  dangerouslySetInnerHTML={{ __html: `${highlightedHtml}\n` }}
+                />
+              </ClientOnly>
             </pre>
             <Textarea
               value={code}
