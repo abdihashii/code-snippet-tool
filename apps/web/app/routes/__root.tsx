@@ -21,8 +21,8 @@ import {
   POSTHOG_KEY,
   TITLE,
   URL,
-} from '@/lib/constants';
-import { getThemeServerFn } from '@/lib/theme';
+} from '@/lib/utils/constants';
+import { getThemeServerFn } from '@/lib/utils/theme';
 
 import { NotFound } from './404';
 

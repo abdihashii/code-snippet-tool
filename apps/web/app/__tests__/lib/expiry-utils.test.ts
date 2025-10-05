@@ -11,7 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   hasExpiredByTime,
   hasReachedMaxViews,
-} from '@/lib/expiry-utils';
+} from '@/lib/utils/expiry-utils';
 
 // Tests for hasReachedMaxViews
 describe('hasReachedMaxViews', () => {

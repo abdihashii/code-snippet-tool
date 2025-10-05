@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   arrayBufferToBase64,
   exportKeyToUrlSafeBase64,
-} from '@/lib/crypto-utils';
+} from '@/lib/utils/crypto-utils';
 
 // Mock browser APIs for Node.js test environment
 const mockBtoa = vi.fn();

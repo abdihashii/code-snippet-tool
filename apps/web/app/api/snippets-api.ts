@@ -4,12 +4,12 @@ import type {
   GetSnippetByIdResponse,
 } from '@snippet-share/types';
 
-import { API_URL } from '@/lib/constants';
 import {
   extractRateLimitInfo,
   formatRateLimitMessage,
   RateLimitError,
 } from '@/lib/utils';
+import { API_URL } from '@/lib/utils/constants';
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,

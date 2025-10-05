@@ -32,13 +32,13 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
-import { decryptSnippet } from '@/lib/crypto';
 import {
   formatExpiryTimestamp,
   formatTimestamp,
   hasExpiredByTime,
   hasReachedMaxViews,
 } from '@/lib/utils';
+import { decryptSnippet } from '@/lib/utils/crypto';
 
 type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 

@@ -5,7 +5,7 @@ import {
   PasswordCriterionKey,
   PasswordSchema,
   PasswordStrength,
-} from '@/lib/password-strength';
+} from '@/lib/utils/password-strength';
 
 describe('passwordSchema', () => {
   it('should pass validation for a strong password', () => {

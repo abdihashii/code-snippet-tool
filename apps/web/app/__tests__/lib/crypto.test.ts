@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import {
   decryptSnippet,
-} from '@/lib/crypto';
+} from '@/lib/utils/crypto';
 
 // Mock the Web Crypto API
 const mockCrypto = {
