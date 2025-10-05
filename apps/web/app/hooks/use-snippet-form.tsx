@@ -13,11 +13,11 @@ import { toast } from 'sonner';
 
 import type { PasswordStrengthAnalysis } from '@/lib/utils/password-strength';
 
-import { createSnippet } from '@/api/snippets-api';
 import {
   SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
+import { createSnippet } from '@/lib/api/snippets-api';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
 import {
   checkPasswordStrength,
