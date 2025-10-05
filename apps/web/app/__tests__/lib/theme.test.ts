@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getThemeFromCookieValue, validateTheme } from '@/lib/utils/theme';
+import { getThemeFromCookieValue, validateTheme } from '@/lib/utils/theme-utils';
 
 describe('theme functions', () => {
   describe('getThemeFromCookieValue', () => {
