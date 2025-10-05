@@ -4,19 +4,19 @@ import { getThemeFromCookieValue, validateTheme } from '@/lib/utils/theme-utils'
 
 describe('theme functions', () => {
   describe('getThemeFromCookieValue', () => {
-    it('should return "light" when no cookie exists', () => {
+    it('should return "dark" when no cookie exists', () => {
       const result = getThemeFromCookieValue(undefined);
-      expect(result).toBe('light');
+      expect(result).toBe('dark');
     });
 
-    it('should return "light" when cookie is null', () => {
+    it('should return "dark" when cookie is null', () => {
       const result = getThemeFromCookieValue(null);
-      expect(result).toBe('light');
+      expect(result).toBe('dark');
     });
 
-    it('should return "light" when cookie is empty string', () => {
+    it('should return "dark" when cookie is empty string', () => {
       const result = getThemeFromCookieValue('');
-      expect(result).toBe('light');
+      expect(result).toBe('dark');
     });
 
     it('should return "dark" when cookie value is "dark"', () => {
@@ -112,16 +112,16 @@ describe('theme functions', () => {
     it('should handle full theme switching workflow', () => {
       // Get current theme (none exists)
       const currentTheme = getThemeFromCookieValue(undefined);
-      expect(currentTheme).toBe('light');
+      expect(currentTheme).toBe('dark');
 
       // Validate and set new theme
-      const newTheme = 'dark';
+      const newTheme = 'light';
       const validatedTheme = validateTheme(newTheme);
-      expect(validatedTheme).toBe('dark');
+      expect(validatedTheme).toBe('light');
 
       // Verify retrieval of new theme
-      const updatedTheme = getThemeFromCookieValue('dark');
-      expect(updatedTheme).toBe('dark');
+      const updatedTheme = getThemeFromCookieValue('light');
+      expect(updatedTheme).toBe('light');
     });
 
     it('should handle edge case with falsy cookie values', () => {
@@ -130,7 +130,7 @@ describe('theme functions', () => {
 
       falsyValues.forEach((value) => {
         const result = getThemeFromCookieValue(value as any);
-        expect(result).toBe('light');
+        expect(result).toBe('dark');
       });
     });
 
@@ -173,9 +173,9 @@ describe('theme functions', () => {
       // Test that the same logic applies for different input scenarios
       expect(getThemeFromCookieValue('dark')).toBe('dark');
       expect(getThemeFromCookieValue('light')).toBe('light');
-      expect(getThemeFromCookieValue(null)).toBe('light');
-      expect(getThemeFromCookieValue(undefined)).toBe('light');
-      expect(getThemeFromCookieValue('')).toBe('light');
+      expect(getThemeFromCookieValue(null)).toBe('dark');
+      expect(getThemeFromCookieValue(undefined)).toBe('dark');
+      expect(getThemeFromCookieValue('')).toBe('dark');
     });
   });
 });
