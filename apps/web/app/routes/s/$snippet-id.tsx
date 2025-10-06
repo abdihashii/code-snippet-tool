@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { getSnippetById } from '@/api/snippets-api';
 import { AppLayout } from '@/components/layout/app-layout';
 import { CodeEditor } from '@/components/snippet/code-editor';
 import {
@@ -32,13 +31,14 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
-import { decryptSnippet } from '@/lib/crypto';
+import { getSnippetById } from '@/lib/api/snippets-api';
 import {
   formatExpiryTimestamp,
   formatTimestamp,
   hasExpiredByTime,
   hasReachedMaxViews,
 } from '@/lib/utils';
+import { decryptSnippet } from '@/lib/utils/crypto';
 
 type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 

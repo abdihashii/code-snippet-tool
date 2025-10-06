@@ -3,8 +3,8 @@ import type { RateLimitInfo } from '@snippet-share/types';
 import { signupSchema } from '@snippet-share/schemas';
 import { useState } from 'react';
 
-import { signUp } from '@/api/auth-apis';
-import { RateLimitError } from '@/lib/rate-limit-utils';
+import { signUp } from '@/lib/api/auth-apis';
+import { RateLimitError } from '@/lib/utils/rate-limit-utils';
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState<boolean>(false);

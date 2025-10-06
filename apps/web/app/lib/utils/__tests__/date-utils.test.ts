@@ -12,7 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   formatExpiryTimestamp,
   formatTimestamp,
-} from '@/lib/date-utils';
+} from '@/lib/utils/date-utils';
 
 // Tests for formatTimestamp
 describe('formatTimestamp', () => {

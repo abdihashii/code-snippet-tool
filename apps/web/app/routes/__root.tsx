@@ -22,7 +22,7 @@ import {
   TITLE,
   URL,
 } from '@/lib/constants';
-import { getThemeServerFn } from '@/lib/theme';
+import { getThemeServerFn } from '@/lib/utils/theme-utils';
 
 import { NotFound } from './404';
 

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { generateStrongPassword } from '@/lib/password-utils';
+import { generateStrongPassword } from '@/lib/utils/password-utils';
 
 // Mock crypto.getRandomValues for consistent testing
 const mockGetRandomValues = vi.fn();

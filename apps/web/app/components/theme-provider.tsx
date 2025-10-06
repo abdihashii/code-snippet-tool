@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'react';
 import type { Theme } from '@/hooks/use-theme';
 
 import { ThemeContext } from '@/hooks/use-theme';
-import { setThemeServerFn } from '@/lib/theme';
+import { setThemeServerFn } from '@/lib/utils/theme-utils';
 
 type Props = PropsWithChildren<{ theme: Theme }>;
 

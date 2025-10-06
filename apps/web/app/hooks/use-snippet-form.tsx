@@ -11,20 +11,20 @@ import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { PasswordStrengthAnalysis } from '@/lib/password-strength';
+import type { PasswordStrengthAnalysis } from '@/lib/utils/password-strength';
 
-import { createSnippet } from '@/api/snippets-api';
 import {
   SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
+import { createSnippet } from '@/lib/api/snippets-api';
+import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
 import {
   checkPasswordStrength,
   PasswordStrength,
-} from '@/lib/password-strength';
-import { generateStrongPassword } from '@/lib/password-utils';
-import { RateLimitError } from '@/lib/rate-limit-utils';
-import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
+} from '@/lib/utils/password-strength';
+import { generateStrongPassword } from '@/lib/utils/password-utils';
+import { RateLimitError } from '@/lib/utils/rate-limit-utils';
 
 const MAX_CODE_LENGTH = 10_000;
 
