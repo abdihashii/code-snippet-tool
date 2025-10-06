@@ -11,13 +11,17 @@ import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import type { PasswordStrengthAnalysis } from '@/lib/schemas';
+
 import {
   SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
 import { createSnippet } from '@/lib/api/snippets-api';
-import { PasswordService, PasswordValidation, RateLimitService } from '@/lib/services';
+import { PasswordStrength } from '@/lib/schemas';
+import { PasswordService, RateLimitService } from '@/lib/services';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
+import { checkPasswordStrength } from '@/lib/utils/password-utils';
 
 const MAX_CODE_LENGTH = 10_000;
 
@@ -105,7 +109,7 @@ export function useSnippetForm({
   ] = useState(false);
   const [snippetPassword, setSnippetPassword] = useState('');
   const [passwordStrengthAnalysis, setPasswordStrengthAnalysis]
-  = useState<PasswordValidation.PasswordStrengthAnalysis | null>(null);
+  = useState<PasswordStrengthAnalysis | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'code' | 'text'>('code');
@@ -141,7 +145,7 @@ export function useSnippetForm({
   // Effect to check password strength
   useEffect(() => {
     if (isPasswordProtectionEnabled) {
-      setPasswordStrengthAnalysis(PasswordValidation.checkPasswordStrength(snippetPassword));
+      setPasswordStrengthAnalysis(checkPasswordStrength(snippetPassword));
     } else {
       // Reset strength if password protection is off
       setPasswordStrengthAnalysis(null);
@@ -405,16 +409,16 @@ export function useSnippetForm({
   }, [code, language, setCode]);
 
   // Helper function for color based on strength
-  function getPasswordStrengthColor(strength: PasswordValidation.PasswordStrength) {
+  function getPasswordStrengthColor(strength: PasswordStrength) {
     switch (strength) {
-      case PasswordValidation.PasswordStrength.TooShort:
-      case PasswordValidation.PasswordStrength.Weak:
+      case PasswordStrength.TooShort:
+      case PasswordStrength.Weak:
         return 'text-red-500';
-      case PasswordValidation.PasswordStrength.Medium:
+      case PasswordStrength.Medium:
         return 'text-yellow-500';
-      case PasswordValidation.PasswordStrength.Strong:
+      case PasswordStrength.Strong:
         return 'text-green-500';
-      case PasswordValidation.PasswordStrength.VeryStrong:
+      case PasswordStrength.VeryStrong:
         return 'text-emerald-600'; // Or a stronger green
       default:
         return 'text-slate-500';

@@ -32,8 +32,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { getSnippetById } from '@/lib/api/snippets-api';
-import { DecryptionService, ExpiryValidation } from '@/lib/services';
+import { DecryptionService } from '@/lib/services';
 import { formatExpiryTimestamp, formatTimestamp } from '@/lib/utils';
+import { hasExpiredByTime, hasReachedMaxViews } from '@/lib/utils/expiry-utils';
 
 type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 
@@ -234,11 +235,11 @@ function RouteComponent() {
     created_at,
   } = snippetData!; // Non-null assertion since we're in success case
 
-  const isExpired = ExpiryValidation.hasExpiredByTime(expires_at);
+  const isExpired = hasExpiredByTime(expires_at);
   // Client-side check for max views, in case API doesn't return 403 for some
   // reason but snippet data is fetched
   const hasReachedDisplayLimit = max_views !== null && current_views !== undefined
-    ? ExpiryValidation.hasReachedMaxViews(current_views, max_views)
+    ? hasReachedMaxViews(current_views, max_views)
     : false;
 
   return (

@@ -1,15 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
-import { PasswordValidation } from '@/lib/services';
+import {
+  PasswordCriterionKey,
+  PasswordSchema,
+  PasswordStrength,
+} from '@/lib/schemas';
+import { checkPasswordStrength } from '@/lib/utils/password-utils';
 
 describe('passwordSchema', () => {
   it('should pass validation for a strong password', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('StrongP@ssw0rd!');
+    const result = PasswordSchema.safeParse('StrongP@ssw0rd!');
     expect(result.success).toBe(true);
   });
 
   it('should fail validation for password shorter than 8 characters', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('Short1!');
+    const result = PasswordSchema.safeParse('Short1!');
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.errors).toContainEqual(
@@ -21,7 +26,7 @@ describe('passwordSchema', () => {
   });
 
   it('should fail validation for password without uppercase letter', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('nouppercase1!');
+    const result = PasswordSchema.safeParse('nouppercase1!');
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.errors).toContainEqual(
@@ -33,7 +38,7 @@ describe('passwordSchema', () => {
   });
 
   it('should fail validation for password without lowercase letter', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('NOLOWERCASE1!');
+    const result = PasswordSchema.safeParse('NOLOWERCASE1!');
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.errors).toContainEqual(
@@ -45,7 +50,7 @@ describe('passwordSchema', () => {
   });
 
   it('should fail validation for password without number', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('NoNumberHere!');
+    const result = PasswordSchema.safeParse('NoNumberHere!');
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.errors).toContainEqual(
@@ -57,7 +62,7 @@ describe('passwordSchema', () => {
   });
 
   it('should fail validation for password without symbol', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('NoSymbolHere1');
+    const result = PasswordSchema.safeParse('NoSymbolHere1');
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.errors).toContainEqual(
@@ -69,7 +74,7 @@ describe('passwordSchema', () => {
   });
 
   it('should fail validation with multiple issues', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('bad');
+    const result = PasswordSchema.safeParse('bad');
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.errors.length).toBeGreaterThan(1);
@@ -77,7 +82,7 @@ describe('passwordSchema', () => {
   });
 
   it('should pass validation for minimum valid password', () => {
-    const result = PasswordValidation.PasswordSchema.safeParse('Aa1!bcde');
+    const result = PasswordSchema.safeParse('Aa1!bcde');
     expect(result.success).toBe(true);
   });
 });
@@ -85,22 +90,22 @@ describe('passwordSchema', () => {
 describe('checkPasswordStrength', () => {
   describe('tooShort strength', () => {
     it('should return TooShort for password with less than 8 characters', () => {
-      const result = PasswordValidation.checkPasswordStrength('Abc1!');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.TooShort);
+      const result = checkPasswordStrength('Abc1!');
+      expect(result.strength).toBe(PasswordStrength.TooShort);
       expect(result.score).toBe(0);
       expect(result.criteria).toHaveLength(5);
 
-      const lengthCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Length);
+      const lengthCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Length);
       expect(lengthCriterion?.isMet).toBe(false);
     });
 
     it('should still show other criteria status for short passwords', () => {
-      const result = PasswordValidation.checkPasswordStrength('A1!');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.TooShort);
+      const result = checkPasswordStrength('A1!');
+      expect(result.strength).toBe(PasswordStrength.TooShort);
 
-      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.UpperCase);
-      const numberCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Number);
-      const symbolCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Symbol);
+      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.UpperCase);
+      const numberCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Number);
+      const symbolCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Symbol);
 
       expect(upperCaseCriterion?.isMet).toBe(true);
       expect(numberCriterion?.isMet).toBe(true);
@@ -110,71 +115,71 @@ describe('checkPasswordStrength', () => {
 
   describe('weak strength', () => {
     it('should return Weak for password with only length requirement', () => {
-      const result = PasswordValidation.checkPasswordStrength('abcdefgh');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Weak);
+      const result = checkPasswordStrength('abcdefgh');
+      expect(result.strength).toBe(PasswordStrength.Weak);
       expect(result.score).toBe(1); // Only lowercase character type
     });
 
     it('should return Weak for password with 1 character type', () => {
-      const result = PasswordValidation.checkPasswordStrength('ABCDEFGH');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Weak);
+      const result = checkPasswordStrength('ABCDEFGH');
+      expect(result.strength).toBe(PasswordStrength.Weak);
       expect(result.score).toBe(1); // Only uppercase character type
     });
 
     it('should return Weak with score 0 for password with no recognized character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('        '); // 8 spaces
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Weak);
+      const result = checkPasswordStrength('        '); // 8 spaces
+      expect(result.strength).toBe(PasswordStrength.Weak);
       expect(result.score).toBe(0); // No uppercase, lowercase, numbers, or symbols
     });
   });
 
   describe('medium strength', () => {
     it('should return Medium for password with 2 character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('Abcdefgh');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Medium);
+      const result = checkPasswordStrength('Abcdefgh');
+      expect(result.strength).toBe(PasswordStrength.Medium);
       expect(result.score).toBe(2); // Uppercase + lowercase
     });
   });
 
   describe('strong strength', () => {
     it('should return Strong for password with 3 character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('Abc12345');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Strong);
+      const result = checkPasswordStrength('Abc12345');
+      expect(result.strength).toBe(PasswordStrength.Strong);
       expect(result.score).toBe(3); // Uppercase + lowercase + number
     });
 
     it('should return Strong for password with all 4 character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('Abc123!@');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Strong);
+      const result = checkPasswordStrength('Abc123!@');
+      expect(result.strength).toBe(PasswordStrength.Strong);
       expect(result.score).toBe(4); // Uppercase + lowercase + number + symbol
     });
   });
 
   describe('veryStrong strength', () => {
     it('should return VeryStrong for password with 4 character types and length >= 12', () => {
-      const result = PasswordValidation.checkPasswordStrength('Abc123!@defg');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.VeryStrong);
+      const result = checkPasswordStrength('Abc123!@defg');
+      expect(result.strength).toBe(PasswordStrength.VeryStrong);
       expect(result.score).toBe(5);
     });
 
     it('should return VeryStrong for very long password with all character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('ThisIsAVeryLongAndSecurePassword123!@#');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.VeryStrong);
+      const result = checkPasswordStrength('ThisIsAVeryLongAndSecurePassword123!@#');
+      expect(result.strength).toBe(PasswordStrength.VeryStrong);
       expect(result.score).toBe(5);
     });
   });
 
   describe('criteria checking', () => {
     it('should correctly identify all criteria for a complete password', () => {
-      const result = PasswordValidation.checkPasswordStrength('MyPassword123!');
+      const result = checkPasswordStrength('MyPassword123!');
 
       expect(result.criteria).toHaveLength(5);
 
-      const lengthCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Length);
-      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.UpperCase);
-      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.LowerCase);
-      const numberCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Number);
-      const symbolCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Symbol);
+      const lengthCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Length);
+      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.UpperCase);
+      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.LowerCase);
+      const numberCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Number);
+      const symbolCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Symbol);
 
       expect(lengthCriterion?.isMet).toBe(true);
       expect(lengthCriterion?.label).toBe('Be at least 8 characters long');
@@ -193,13 +198,13 @@ describe('checkPasswordStrength', () => {
     });
 
     it('should correctly identify missing criteria', () => {
-      const result = PasswordValidation.checkPasswordStrength('onlylowercase');
+      const result = checkPasswordStrength('onlylowercase');
 
-      const lengthCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Length);
-      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.UpperCase);
-      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.LowerCase);
-      const numberCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Number);
-      const symbolCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Symbol);
+      const lengthCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Length);
+      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.UpperCase);
+      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.LowerCase);
+      const numberCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Number);
+      const symbolCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Symbol);
 
       expect(lengthCriterion?.isMet).toBe(true);
       expect(upperCaseCriterion?.isMet).toBe(false);
@@ -211,8 +216,8 @@ describe('checkPasswordStrength', () => {
 
   describe('edge cases', () => {
     it('should handle empty password', () => {
-      const result = PasswordValidation.checkPasswordStrength('');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.TooShort);
+      const result = checkPasswordStrength('');
+      expect(result.strength).toBe(PasswordStrength.TooShort);
       expect(result.score).toBe(0);
 
       const allCriteria = result.criteria.every((c) => !c.isMet);
@@ -220,25 +225,25 @@ describe('checkPasswordStrength', () => {
     });
 
     it('should handle password with exactly 8 characters', () => {
-      const result = PasswordValidation.checkPasswordStrength('Abc123!@');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Strong);
+      const result = checkPasswordStrength('Abc123!@');
+      expect(result.strength).toBe(PasswordStrength.Strong);
 
-      const lengthCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Length);
+      const lengthCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Length);
       expect(lengthCriterion?.isMet).toBe(true);
     });
 
     it('should handle password with exactly 12 characters', () => {
-      const result = PasswordValidation.checkPasswordStrength('Abc123!@defg');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.VeryStrong);
+      const result = checkPasswordStrength('Abc123!@defg');
+      expect(result.strength).toBe(PasswordStrength.VeryStrong);
       expect(result.score).toBe(5);
     });
 
     it('should handle password with special unicode characters', () => {
-      const result = PasswordValidation.checkPasswordStrength('Pässwörd123!');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.VeryStrong);
+      const result = checkPasswordStrength('Pässwörd123!');
+      expect(result.strength).toBe(PasswordStrength.VeryStrong);
 
-      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.UpperCase);
-      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.LowerCase);
+      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.UpperCase);
+      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.LowerCase);
 
       expect(upperCaseCriterion?.isMet).toBe(true);
       expect(lowerCaseCriterion?.isMet).toBe(true);
@@ -250,23 +255,23 @@ describe('checkPasswordStrength', () => {
 
       symbolTests.forEach((symbol) => {
         const testPassword = symbolPassword + symbol;
-        const result = PasswordValidation.checkPasswordStrength(testPassword);
+        const result = checkPasswordStrength(testPassword);
 
-        const symbolCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Symbol);
+        const symbolCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Symbol);
         expect(symbolCriterion?.isMet).toBe(true);
       });
     });
 
     it('should handle password with only numbers', () => {
-      const result = PasswordValidation.checkPasswordStrength('12345678');
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Weak);
+      const result = checkPasswordStrength('12345678');
+      expect(result.strength).toBe(PasswordStrength.Weak);
 
-      const numberCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Number);
+      const numberCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Number);
       expect(numberCriterion?.isMet).toBe(true);
 
-      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.UpperCase);
-      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.LowerCase);
-      const symbolCriterion = result.criteria.find((c) => c.key === PasswordValidation.PasswordCriterionKey.Symbol);
+      const upperCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.UpperCase);
+      const lowerCaseCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.LowerCase);
+      const symbolCriterion = result.criteria.find((c) => c.key === PasswordCriterionKey.Symbol);
 
       expect(upperCaseCriterion?.isMet).toBe(false);
       expect(lowerCaseCriterion?.isMet).toBe(false);
@@ -275,30 +280,30 @@ describe('checkPasswordStrength', () => {
 
     it('should handle very long password', () => {
       const longPassword = `${'A'.repeat(50)}1!`;
-      const result = PasswordValidation.checkPasswordStrength(longPassword);
+      const result = checkPasswordStrength(longPassword);
 
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Strong);
+      expect(result.strength).toBe(PasswordStrength.Strong);
       expect(result.score).toBe(4); // uppercase + number + symbol + length bonus
     });
   });
 
   describe('score calculation edge cases', () => {
     it('should handle exactly minimum length with all character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('Aa1!bcde');
+      const result = checkPasswordStrength('Aa1!bcde');
       expect(result.score).toBe(4); // All 4 character types, but < 12 chars
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Strong);
+      expect(result.strength).toBe(PasswordStrength.Strong);
     });
 
     it('should handle 12+ characters with all character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('Aa1!bcdefghi');
+      const result = checkPasswordStrength('Aa1!bcdefghi');
       expect(result.score).toBe(5); // All 4 character types + length bonus
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.VeryStrong);
+      expect(result.strength).toBe(PasswordStrength.VeryStrong);
     });
 
     it('should handle 12+ characters with only some character types', () => {
-      const result = PasswordValidation.checkPasswordStrength('abcdefghijkl');
+      const result = checkPasswordStrength('abcdefghijkl');
       expect(result.score).toBe(2); // Only lowercase + length bonus
-      expect(result.strength).toBe(PasswordValidation.PasswordStrength.Medium);
+      expect(result.strength).toBe(PasswordStrength.Medium);
     });
   });
 });
