@@ -22,7 +22,7 @@ import {
   TITLE,
   URL,
 } from '@/lib/constants';
-import { getThemeServerFn } from '@/lib/utils/theme-utils';
+import { ThemeService } from '@/lib/services';
 
 import { NotFound } from './404';
 
@@ -111,7 +111,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
-  loader: () => getThemeServerFn(),
+  loader: () => ThemeService.getThemeServerFn(),
   notFoundComponent: NotFound,
 });
 

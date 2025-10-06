@@ -11,20 +11,13 @@ import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { PasswordStrengthAnalysis } from '@/lib/utils/password-strength';
-
 import {
   SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
 import { createSnippet } from '@/lib/api/snippets-api';
+import { PasswordService, PasswordValidation, RateLimitService } from '@/lib/services';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
-import {
-  checkPasswordStrength,
-  PasswordStrength,
-} from '@/lib/utils/password-strength';
-import { generateStrongPassword } from '@/lib/utils/password-utils';
-import { RateLimitError } from '@/lib/utils/rate-limit-utils';
 
 const MAX_CODE_LENGTH = 10_000;
 
@@ -112,7 +105,7 @@ export function useSnippetForm({
   ] = useState(false);
   const [snippetPassword, setSnippetPassword] = useState('');
   const [passwordStrengthAnalysis, setPasswordStrengthAnalysis]
-  = useState<PasswordStrengthAnalysis | null>(null);
+  = useState<PasswordValidation.PasswordStrengthAnalysis | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'code' | 'text'>('code');
@@ -148,7 +141,7 @@ export function useSnippetForm({
   // Effect to check password strength
   useEffect(() => {
     if (isPasswordProtectionEnabled) {
-      setPasswordStrengthAnalysis(checkPasswordStrength(snippetPassword));
+      setPasswordStrengthAnalysis(PasswordValidation.checkPasswordStrength(snippetPassword));
     } else {
       // Reset strength if password protection is off
       setPasswordStrengthAnalysis(null);
@@ -158,7 +151,7 @@ export function useSnippetForm({
   const handleGeneratePassword = useCallback(() => {
     posthog.capture('password_generate_button_click');
 
-    const newPassword = generateStrongPassword();
+    const newPassword = PasswordService.generateStrongPassword();
     setSnippetPassword(newPassword);
 
     toast.info('Strong password generated and filled!');
@@ -371,7 +364,7 @@ export function useSnippetForm({
       console.error('Error creating snippet:', error);
 
       // First, check if the error is a rate limit error
-      if (error instanceof RateLimitError) {
+      if (error instanceof RateLimitService.RateLimitError) {
         setIsRateLimited(true);
         setRateLimitInfo(error.rateLimitInfo);
         toast.error(error.message);
@@ -412,16 +405,16 @@ export function useSnippetForm({
   }, [code, language, setCode]);
 
   // Helper function for color based on strength
-  function getPasswordStrengthColor(strength: PasswordStrength) {
+  function getPasswordStrengthColor(strength: PasswordValidation.PasswordStrength) {
     switch (strength) {
-      case PasswordStrength.TooShort:
-      case PasswordStrength.Weak:
+      case PasswordValidation.PasswordStrength.TooShort:
+      case PasswordValidation.PasswordStrength.Weak:
         return 'text-red-500';
-      case PasswordStrength.Medium:
+      case PasswordValidation.PasswordStrength.Medium:
         return 'text-yellow-500';
-      case PasswordStrength.Strong:
+      case PasswordValidation.PasswordStrength.Strong:
         return 'text-green-500';
-      case PasswordStrength.VeryStrong:
+      case PasswordValidation.PasswordStrength.VeryStrong:
         return 'text-emerald-600'; // Or a stronger green
       default:
         return 'text-slate-500';

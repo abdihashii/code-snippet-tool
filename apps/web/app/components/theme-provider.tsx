@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'react';
 import type { Theme } from '@/hooks/use-theme';
 
 import { ThemeContext } from '@/hooks/use-theme';
-import { setThemeServerFn } from '@/lib/utils/theme-utils';
+import { themeService } from '@/lib/services';
 
 type Props = PropsWithChildren<{ theme: Theme }>;
 
@@ -14,7 +14,7 @@ export function ThemeProvider({ children, theme }: Props) {
   const router = useRouter();
 
   const setTheme = useCallback(async (val: Theme) => {
-    await setThemeServerFn({ data: val });
+    await themeService.setThemeServerFn({ data: val });
     router.invalidate();
   }, [router]);
 

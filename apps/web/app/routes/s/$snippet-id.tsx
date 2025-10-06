@@ -32,13 +32,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { getSnippetById } from '@/lib/api/snippets-api';
-import {
-  formatExpiryTimestamp,
-  formatTimestamp,
-  hasExpiredByTime,
-  hasReachedMaxViews,
-} from '@/lib/utils';
-import { decryptSnippet } from '@/lib/utils/crypto';
+import { DecryptionService, ExpiryValidation } from '@/lib/services';
+import { formatExpiryTimestamp, formatTimestamp } from '@/lib/utils';
 
 type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 
@@ -102,7 +97,7 @@ function RouteComponent() {
     setDecryptionError(null);
 
     try {
-      const decrypted = await decryptSnippet({
+      const decrypted = await DecryptionService.decryptSnippet({
         encryptedContent: snippetData.encrypted_content,
         iv: snippetData.initialization_vector,
         authTag: snippetData.auth_tag,
@@ -138,7 +133,7 @@ function RouteComponent() {
         throw new Error('No decryption key found in URL');
       }
 
-      const decrypted = await decryptSnippet({
+      const decrypted = await DecryptionService.decryptSnippet({
         encryptedContent: snippetData.encrypted_content,
         iv: snippetData.initialization_vector,
         authTag: snippetData.auth_tag,
@@ -239,11 +234,11 @@ function RouteComponent() {
     created_at,
   } = snippetData!; // Non-null assertion since we're in success case
 
-  const isExpired = hasExpiredByTime(expires_at);
+  const isExpired = ExpiryValidation.hasExpiredByTime(expires_at);
   // Client-side check for max views, in case API doesn't return 403 for some
   // reason but snippet data is fetched
   const hasReachedDisplayLimit = max_views !== null && current_views !== undefined
-    ? hasReachedMaxViews(current_views, max_views)
+    ? ExpiryValidation.hasReachedMaxViews(current_views, max_views)
     : false;
 
   return (

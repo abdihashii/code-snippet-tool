@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { generateStrongPassword } from '@/lib/utils/password-utils';
+import { PasswordService } from '@/lib/services';
 
 // Mock crypto.getRandomValues for consistent testing
 const mockGetRandomValues = vi.fn();
@@ -21,7 +21,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     expect(password).toHaveLength(16);
   });
 
@@ -33,7 +33,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     expect(password).toMatch(/[a-z]/);
   });
 
@@ -45,7 +45,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     expect(password).toMatch(/[A-Z]/);
   });
 
@@ -57,7 +57,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     expect(password).toMatch(/\d/);
   });
 
@@ -69,7 +69,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     expect(password).toMatch(/[!@#$%^&*(),.?":{}|<>=_-]/);
   });
 
@@ -84,8 +84,8 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password1 = generateStrongPassword();
-    const password2 = generateStrongPassword();
+    const password1 = PasswordService.generateStrongPassword();
+    const password2 = PasswordService.generateStrongPassword();
 
     expect(password1).not.toBe(password2);
   });
@@ -98,7 +98,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     const validChars = /^[\w!@#$%^&*(),.?":{}|<>=-]+$/;
     expect(password).toMatch(validChars);
   });
@@ -111,7 +111,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     expect(password).toHaveLength(16);
     expect(password).toMatch(/[a-z]/);
     expect(password).toMatch(/[A-Z]/);
@@ -127,7 +127,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
     expect(password).toHaveLength(16);
     // Even with all zeros, the first 4 characters will still be from each required set
     expect(password).toMatch(/[a-z]/);
@@ -145,7 +145,7 @@ describe('generateStrongPassword', () => {
       return array;
     });
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
 
     // The password should not start with the first character of each character set
     // in order (which would indicate no shuffling)
@@ -157,7 +157,7 @@ describe('generateStrongPassword', () => {
     // Restore real crypto for this test
     mockGetRandomValues.mockRestore();
 
-    const password = generateStrongPassword();
+    const password = PasswordService.generateStrongPassword();
 
     expect(password).toHaveLength(16);
     expect(password).toMatch(/[a-z]/);
@@ -186,7 +186,7 @@ describe('generateStrongPassword', () => {
 
     const passwords = [];
     for (let i = 0; i < 10; i++) {
-      const password = generateStrongPassword();
+      const password = PasswordService.generateStrongPassword();
       passwords.push(password);
 
       expect(password).toHaveLength(16);
