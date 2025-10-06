@@ -33,8 +33,7 @@ import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { getSnippetById } from '@/lib/api/snippets-api';
 import { DecryptionService } from '@/lib/services';
-import { formatExpiryTimestamp, formatTimestamp } from '@/lib/utils';
-import { hasExpiredByTime, hasReachedMaxViews } from '@/lib/utils/expiry-utils';
+import { formatExpiryTimestamp, formatTimestamp, hasExpiredByTime, hasReachedMaxViews } from '@/lib/utils';
 
 type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 
