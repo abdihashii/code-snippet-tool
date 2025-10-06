@@ -4,7 +4,7 @@ export {
   PasswordCriterion,
   type PasswordCriterionDetails,
   PasswordSchema,
-  PasswordStrengthLevel,
   type PasswordStrengthAnalysis,
+  PasswordStrengthLevel,
 } from './password-schema';
 /* c8 ignore end */
