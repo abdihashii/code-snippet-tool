@@ -1,10 +1,10 @@
 /* c8 ignore start */
 export {
   MIN_PASSWORD_LENGTH,
-  type PasswordCriterion,
-  PasswordCriterionKey,
+  PasswordCriterion,
+  type PasswordCriterionDetails,
   PasswordSchema,
-  PasswordStrength,
+  PasswordStrengthLevel,
   type PasswordStrengthAnalysis,
 } from './password-schema';
 /* c8 ignore end */

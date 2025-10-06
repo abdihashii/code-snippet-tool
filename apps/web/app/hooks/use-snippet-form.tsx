@@ -18,7 +18,7 @@ import {
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
 import { createSnippet } from '@/lib/api/snippets-api';
-import { PasswordStrength } from '@/lib/schemas';
+import { PasswordStrengthLevel } from '@/lib/schemas';
 import { PasswordService, RateLimitService } from '@/lib/services';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
 import { checkPasswordStrength } from '@/lib/utils/password-utils';
@@ -409,16 +409,16 @@ export function useSnippetForm({
   }, [code, language, setCode]);
 
   // Helper function for color based on strength
-  function getPasswordStrengthColor(strength: PasswordStrength) {
+  function getPasswordStrengthColor(strength: PasswordStrengthLevel) {
     switch (strength) {
-      case PasswordStrength.TooShort:
-      case PasswordStrength.Weak:
+      case PasswordStrengthLevel.TooShort:
+      case PasswordStrengthLevel.Weak:
         return 'text-red-500';
-      case PasswordStrength.Medium:
+      case PasswordStrengthLevel.Medium:
         return 'text-yellow-500';
-      case PasswordStrength.Strong:
+      case PasswordStrengthLevel.Strong:
         return 'text-green-500';
-      case PasswordStrength.VeryStrong:
+      case PasswordStrengthLevel.VeryStrong:
         return 'text-emerald-600'; // Or a stronger green
       default:
         return 'text-slate-500';

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export enum PasswordStrength {
+export enum PasswordStrengthLevel {
   TooShort = 'Too Short',
   Weak = 'Weak',
   Medium = 'Medium',
@@ -9,7 +9,7 @@ export enum PasswordStrength {
 }
 
 // Interfaces for detailed criteria analysis
-export enum PasswordCriterionKey {
+export enum PasswordCriterion {
   Length = 'length',
   UpperCase = 'uppercase',
   LowerCase = 'lowercase',
@@ -18,17 +18,17 @@ export enum PasswordCriterionKey {
 }
 
 // Interface for a single criterion of the password strength
-export interface PasswordCriterion {
-  key: PasswordCriterionKey;
+export interface PasswordCriterionDetails {
+  key: PasswordCriterion;
   label: string;
   isMet: boolean;
 }
 
 // Interface for the password strength analysis
 export interface PasswordStrengthAnalysis {
-  strength: PasswordStrength;
+  strength: PasswordStrengthLevel;
   score: number; // A numerical score, e.g., 0-5
-  criteria: PasswordCriterion[];
+  criteria: PasswordCriterionDetails[];
 }
 
 // Minimum length of a password

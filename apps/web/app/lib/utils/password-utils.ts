@@ -1,9 +1,9 @@
-import type { PasswordCriterion, PasswordStrengthAnalysis } from '@/lib/schemas';
+import type { PasswordCriterionDetails, PasswordStrengthAnalysis } from '@/lib/schemas';
 
 import {
   MIN_PASSWORD_LENGTH,
-  PasswordCriterionKey,
-  PasswordStrength,
+  PasswordCriterion,
+  PasswordStrengthLevel,
 } from '@/lib/schemas';
 
 // Helper functions to check if a password contains certain criteria
@@ -24,29 +24,29 @@ const hasSymbol = (str: string) => /[!@#$%^&*(),.?":{}|<>=]/.test(str);
  * @returns The strength of the password and the criteria that were met
  */
 export function checkPasswordStrength(password: string): PasswordStrengthAnalysis {
-  const criteriaChecks: PasswordCriterion[] = [
+  const criteriaChecks: PasswordCriterionDetails[] = [
     {
-      key: PasswordCriterionKey.Length,
+      key: PasswordCriterion.Length,
       label: `Be at least ${MIN_PASSWORD_LENGTH} characters long`,
       isMet: password.length >= MIN_PASSWORD_LENGTH,
     },
     {
-      key: PasswordCriterionKey.UpperCase,
+      key: PasswordCriterion.UpperCase,
       label: 'Include an uppercase letter',
       isMet: hasUpperCase(password),
     },
     {
-      key: PasswordCriterionKey.LowerCase,
+      key: PasswordCriterion.LowerCase,
       label: 'Include a lowercase letter',
       isMet: hasLowerCase(password),
     },
     {
-      key: PasswordCriterionKey.Number,
+      key: PasswordCriterion.Number,
       label: 'Include a number',
       isMet: hasNumber(password),
     },
     {
-      key: PasswordCriterionKey.Symbol,
+      key: PasswordCriterion.Symbol,
       label: 'Include a symbol',
       isMet: hasSymbol(password),
     },
@@ -56,12 +56,12 @@ export function checkPasswordStrength(password: string): PasswordStrengthAnalysi
   let score = 0;
 
   if (
-    !criteriaChecks.find((c) => c.key === PasswordCriterionKey.Length)?.isMet
+    !criteriaChecks.find((c) => c.key === PasswordCriterion.Length)?.isMet
   ) {
     // If too short, the strength is "Too Short", score is 0.
     // All other criteria's 'isMet' status is still relevant for UI display.
     return {
-      strength: PasswordStrength.TooShort,
+      strength: PasswordStrengthLevel.TooShort,
       score: 0,
       criteria: criteriaChecks,
     };
@@ -70,22 +70,22 @@ export function checkPasswordStrength(password: string): PasswordStrengthAnalysi
   // Calculate score based on met criteria (excluding length for this part of
   // scoring, as it's a base requirement)
   if (criteriaChecks.find(
-    (c) => c.key === PasswordCriterionKey.UpperCase,
+    (c) => c.key === PasswordCriterion.UpperCase,
   )?.isMet) {
     score++;
   }
   if (criteriaChecks.find(
-    (c) => c.key === PasswordCriterionKey.LowerCase,
+    (c) => c.key === PasswordCriterion.LowerCase,
   )?.isMet) {
     score++;
   } // Technically, a good password needs both, but we score them individually.
   if (criteriaChecks.find(
-    (c) => c.key === PasswordCriterionKey.Number,
+    (c) => c.key === PasswordCriterion.Number,
   )?.isMet) {
     score++;
   }
   if (criteriaChecks.find(
-    (c) => c.key === PasswordCriterionKey.Symbol,
+    (c) => c.key === PasswordCriterion.Symbol,
   )?.isMet) {
     score++;
   }
@@ -97,17 +97,17 @@ export function checkPasswordStrength(password: string): PasswordStrengthAnalysi
   // Max score can be 5 (4 from char types + 1 from length >= 12)
 
   // Determine the strength of the password based on the score.
-  let strength: PasswordStrength;
+  let strength: PasswordStrengthLevel;
   if (score === 0) { // Only min length met, none of the char types
-    strength = PasswordStrength.Weak;
+    strength = PasswordStrengthLevel.Weak;
   } else if (score === 1) {
-    strength = PasswordStrength.Weak;
+    strength = PasswordStrengthLevel.Weak;
   } else if (score === 2) {
-    strength = PasswordStrength.Medium;
+    strength = PasswordStrengthLevel.Medium;
   } else if (score === 3 || score === 4) {
-    strength = PasswordStrength.Strong;
+    strength = PasswordStrengthLevel.Strong;
   } else { // score >= 5
-    strength = PasswordStrength.VeryStrong;
+    strength = PasswordStrengthLevel.VeryStrong;
   }
 
   return { strength, score, criteria: criteriaChecks };
