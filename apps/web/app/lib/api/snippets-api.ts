@@ -6,10 +6,8 @@ import type {
 
 import { API_URL } from '@/lib/constants';
 import {
-  extractRateLimitInfo,
-  formatRateLimitMessage,
-  RateLimitError,
-} from '@/lib/utils';
+  RateLimitService,
+} from '@/lib/services';
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,
@@ -26,9 +24,9 @@ export async function createSnippet(
 
   // Check for rate limiting first
   if (response.status === 429) {
-    const rateLimitInfo = extractRateLimitInfo(response);
-    const message = formatRateLimitMessage(rateLimitInfo);
-    throw new RateLimitError(rateLimitInfo, message);
+    const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
+    const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
+    throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
 
   if (!response.ok || !responseData.success) {
@@ -53,9 +51,9 @@ export async function getSnippetById(
 
   // Check for rate limiting first
   if (response.status === 429) {
-    const rateLimitInfo = extractRateLimitInfo(response);
-    const message = formatRateLimitMessage(rateLimitInfo);
-    throw new RateLimitError(rateLimitInfo, message);
+    const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
+    const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
+    throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
 
   if (!response.ok || !responseData.success) {

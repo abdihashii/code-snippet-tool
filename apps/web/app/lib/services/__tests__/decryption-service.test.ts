@@ -1,8 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import {
-  decryptSnippet,
-} from '@/lib/utils/crypto';
+import { DecryptionService } from '@/lib/services';
 
 // Mock the Web Crypto API
 const mockCrypto = {
@@ -26,7 +24,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
       mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
 
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'SGVsbG8=', // Base64 encoded
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==', // Base64 encoded 16 bytes
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==', // Base64 encoded 16 bytes
@@ -51,7 +49,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
 
       // Test with base64url that needs padding
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'VGVzdA==',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -66,7 +64,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.decrypt.mockRejectedValue(new Error('Decryption failed'));
 
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -97,7 +95,7 @@ describe('decryptSnippet', () => {
         .mockResolvedValueOnce(decryptedDek) // Decrypt DEK
         .mockResolvedValueOnce(decryptedContent.buffer); // Decrypt content
 
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'U2VjcmV0',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -134,7 +132,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.decrypt.mockRejectedValue(new Error('Invalid auth tag'));
 
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'U2VjcmV0',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -155,7 +153,7 @@ describe('decryptSnippet', () => {
   describe('parameter validation', () => {
     it('should throw error when neither dek nor password parameters are provided', async () => {
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -165,7 +163,7 @@ describe('decryptSnippet', () => {
 
     it('should throw error when password is provided but other required params are missing', async () => {
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -177,7 +175,7 @@ describe('decryptSnippet', () => {
 
     it('should throw error when some password-protected params are missing', async () => {
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -211,7 +209,7 @@ describe('decryptSnippet', () => {
         mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
         mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
 
-        const result = await decryptSnippet({
+        const result = await DecryptionService.decryptSnippet({
           encryptedContent: testCase.encoded,
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -224,7 +222,7 @@ describe('decryptSnippet', () => {
 
     it('should throw error for invalid base64', async () => {
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'Invalid!@#$%Base64',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -240,7 +238,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.decrypt.mockRejectedValue(new Error('Invalid authentication tag'));
 
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -255,7 +253,7 @@ describe('decryptSnippet', () => {
       globalThis.crypto = undefined;
 
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -278,7 +276,7 @@ describe('decryptSnippet', () => {
       // Simulate a real DEK that might come from URL fragment
       const urlSafeDek = 'VGhpc0lzQVRlc3RLZXlGb3JBZXM_'; // Missing padding, has - and _
 
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'U2Vuc2l0aXZl',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -299,7 +297,7 @@ describe('decryptSnippet', () => {
       // Create a large base64 string
       const largeBase64 = btoa('X'.repeat(7500)); // Will be ~10000 chars when encoded
 
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: largeBase64,
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -319,7 +317,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
 
       // Test with field names as they come from the API
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'QVBJIHJlc3BvbnNl',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from initialization_vector
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from auth_tag
@@ -347,7 +345,7 @@ describe('decryptSnippet', () => {
         .mockResolvedValueOnce(decryptedContent.buffer);
 
       // Test with field names as they come from the API
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'UGFzc3dvcmQ=',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from initialization_vector
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==', // maps from auth_tag
@@ -368,7 +366,7 @@ describe('decryptSnippet', () => {
     it('should handle empty DEK from URL hash', async () => {
       // This simulates the case where window.location.hash.substring(1) returns empty string
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -385,7 +383,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
       mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
 
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'eyJjb2RlIjogImNvbnNvbGU=',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -406,7 +404,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
       mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
 
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: 'ZnVuY3Rpb24gaGVsbG8=',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -451,7 +449,7 @@ describe('decryptSnippet', () => {
 
       for (const testCase of testCases) {
         await expect(
-          decryptSnippet(testCase.params),
+          DecryptionService.decryptSnippet(testCase.params),
         ).rejects.toThrow();
       }
     });
@@ -467,7 +465,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.decrypt.mockRejectedValueOnce(new Error('Failed to decrypt DEK'));
 
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'U2VjcmV0',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -501,7 +499,7 @@ describe('decryptSnippet', () => {
         .mockRejectedValueOnce(new Error('Failed to decrypt content')); // Content decryption fails
 
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'U2VjcmV0',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -520,7 +518,7 @@ describe('decryptSnippet', () => {
 
     it('should handle very short DEK', async () => {
       await expect(
-        decryptSnippet({
+        DecryptionService.decryptSnippet({
           encryptedContent: 'SGVsbG8=',
           iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
           authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',
@@ -537,7 +535,7 @@ describe('decryptSnippet', () => {
       mockCrypto.subtle.importKey.mockResolvedValue(mockKey);
       mockCrypto.subtle.decrypt.mockResolvedValue(decryptedData.buffer);
 
-      const result = await decryptSnippet({
+      const result = await DecryptionService.decryptSnippet({
         encryptedContent: '5L2g5aW95LiW55WM',
         iv: 'AAAAAAAAAAAAAAAAAAAAAA==',
         authTag: 'AAAAAAAAAAAAAAAAAAAAAA==',

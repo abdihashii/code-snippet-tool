@@ -11,20 +11,17 @@ import prettier from 'prettier/standalone';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { PasswordStrengthAnalysis } from '@/lib/utils/password-strength';
+import type { PasswordStrengthAnalysis } from '@/lib/schemas';
 
 import {
   SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
 import { createSnippet } from '@/lib/api/snippets-api';
+import { PasswordStrengthLevel } from '@/lib/schemas';
+import { PasswordService, RateLimitService } from '@/lib/services';
 import { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from '@/lib/utils';
-import {
-  checkPasswordStrength,
-  PasswordStrength,
-} from '@/lib/utils/password-strength';
-import { generateStrongPassword } from '@/lib/utils/password-utils';
-import { RateLimitError } from '@/lib/utils/rate-limit-utils';
+import { checkPasswordStrength } from '@/lib/utils/password-utils';
 
 const MAX_CODE_LENGTH = 10_000;
 
@@ -158,7 +155,7 @@ export function useSnippetForm({
   const handleGeneratePassword = useCallback(() => {
     posthog.capture('password_generate_button_click');
 
-    const newPassword = generateStrongPassword();
+    const newPassword = PasswordService.generateStrongPassword();
     setSnippetPassword(newPassword);
 
     toast.info('Strong password generated and filled!');
@@ -371,7 +368,7 @@ export function useSnippetForm({
       console.error('Error creating snippet:', error);
 
       // First, check if the error is a rate limit error
-      if (error instanceof RateLimitError) {
+      if (error instanceof RateLimitService.RateLimitError) {
         setIsRateLimited(true);
         setRateLimitInfo(error.rateLimitInfo);
         toast.error(error.message);
@@ -412,16 +409,16 @@ export function useSnippetForm({
   }, [code, language, setCode]);
 
   // Helper function for color based on strength
-  function getPasswordStrengthColor(strength: PasswordStrength) {
+  function getPasswordStrengthColor(strength: PasswordStrengthLevel) {
     switch (strength) {
-      case PasswordStrength.TooShort:
-      case PasswordStrength.Weak:
+      case PasswordStrengthLevel.TooShort:
+      case PasswordStrengthLevel.Weak:
         return 'text-red-500';
-      case PasswordStrength.Medium:
+      case PasswordStrengthLevel.Medium:
         return 'text-yellow-500';
-      case PasswordStrength.Strong:
+      case PasswordStrengthLevel.Strong:
         return 'text-green-500';
-      case PasswordStrength.VeryStrong:
+      case PasswordStrengthLevel.VeryStrong:
         return 'text-emerald-600'; // Or a stronger green
       default:
         return 'text-slate-500';

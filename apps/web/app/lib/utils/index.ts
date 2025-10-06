@@ -4,9 +4,5 @@ export { cn } from './class-name-utils';
 export { arrayBufferToBase64, exportKeyToUrlSafeBase64 } from './crypto-utils';
 export { formatExpiryTimestamp, formatTimestamp } from './date-utils';
 export { hasExpiredByTime, hasReachedMaxViews } from './expiry-utils';
-export {
-  extractRateLimitInfo,
-  formatRateLimitMessage,
-  RateLimitError,
-} from './rate-limit-utils';
+export { checkPasswordStrength } from './password-utils';
 /* c8 ignore end */

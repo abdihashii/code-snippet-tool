@@ -4,7 +4,7 @@ import { signupSchema } from '@snippet-share/schemas';
 import { useState } from 'react';
 
 import { signUp } from '@/lib/api/auth-apis';
-import { RateLimitError } from '@/lib/utils/rate-limit-utils';
+import { RateLimitService } from '@/lib/services';
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -52,7 +52,7 @@ export function useAuth() {
       console.error('Signup error:', signupError);
 
       // First, check if the error is a rate limit error
-      if (signupError instanceof RateLimitError) {
+      if (signupError instanceof RateLimitService.RateLimitError) {
         setIsRateLimited(true);
         setRateLimitInfo(signupError.rateLimitInfo);
         setError(signupError.message);

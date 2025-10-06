@@ -32,13 +32,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { getSnippetById } from '@/lib/api/snippets-api';
-import {
-  formatExpiryTimestamp,
-  formatTimestamp,
-  hasExpiredByTime,
-  hasReachedMaxViews,
-} from '@/lib/utils';
-import { decryptSnippet } from '@/lib/utils/crypto';
+import { DecryptionService } from '@/lib/services';
+import { formatExpiryTimestamp, formatTimestamp, hasExpiredByTime, hasReachedMaxViews } from '@/lib/utils';
 
 type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 
@@ -102,7 +97,7 @@ function RouteComponent() {
     setDecryptionError(null);
 
     try {
-      const decrypted = await decryptSnippet({
+      const decrypted = await DecryptionService.decryptSnippet({
         encryptedContent: snippetData.encrypted_content,
         iv: snippetData.initialization_vector,
         authTag: snippetData.auth_tag,
@@ -138,7 +133,7 @@ function RouteComponent() {
         throw new Error('No decryption key found in URL');
       }
 
-      const decrypted = await decryptSnippet({
+      const decrypted = await DecryptionService.decryptSnippet({
         encryptedContent: snippetData.encrypted_content,
         iv: snippetData.initialization_vector,
         authTag: snippetData.auth_tag,

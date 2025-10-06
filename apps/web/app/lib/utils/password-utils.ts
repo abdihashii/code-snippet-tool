@@ -1,91 +1,114 @@
-const LOWERCASE_CHARS = 'abcdefghijklmnopqrstuvwxyz';
-const UPPERCASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const NUMBER_CHARS = '0123456789';
-const SYMBOL_CHARS = '!@#$%^&*(),.?":{}|<>=_-';
+import type { PasswordCriterionDetails, PasswordStrengthAnalysis } from '@/lib/schemas';
 
-// All characters that can be used to generate a password.
-const ALL_CHARS
-= LOWERCASE_CHARS + UPPERCASE_CHARS + NUMBER_CHARS + SYMBOL_CHARS;
+import {
+  MIN_PASSWORD_LENGTH,
+  PasswordCriterion,
+  PasswordStrengthLevel,
+} from '@/lib/schemas';
 
-/**
- * Generates a cryptographically secure random number within a range.
- *
- * @param max The exclusive maximum value.
- * @returns A random number between 0 (inclusive) and max (exclusive).
- */
-function getRandomInt(max: number): number {
-  // First, generate a random number between 0 and 2^32 - 1.
-  const randomBuffer = new Uint32Array(1);
-  // Then, use the crypto API to fill the buffer with a cryptographically
-  // secure random number.
-  crypto.getRandomValues(randomBuffer);
-  // Finally, return the modulo of the random number and the max value.
-  return randomBuffer[0] % max;
-}
+// Helper functions to check if a password contains certain criteria
+const hasUpperCase = (str: string) => /[A-Z]/.test(str);
+const hasLowerCase = (str: string) => /[a-z]/.test(str);
+const hasNumber = (str: string) => /\d/.test(str);
+const hasSymbol = (str: string) => /[!@#$%^&*(),.?":{}|<>=]/.test(str);
 
 /**
- * Shuffles an array in place using the Fisher-Yates algorithm.
+ * Checks the strength of a password based on the following criteria:
+ * - Length: at least 8 characters
+ * - Uppercase letter: at least one uppercase letter
+ * - Lowercase letter: at least one lowercase letter
+ * - Number: at least one number
+ * - Symbol: at least one symbol
  *
- * @param array The array to shuffle.
- * @returns The shuffled array.
+ * @param password - The password to check the strength of
+ * @returns The strength of the password and the criteria that were met
  */
-function shuffleArray<T>(array: T[]): T[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = getRandomInt(i + 1);
-    [array[i], array[j]] = [array[j], array[i]];
+export function checkPasswordStrength(password: string): PasswordStrengthAnalysis {
+  const criteriaChecks: PasswordCriterionDetails[] = [
+    {
+      key: PasswordCriterion.Length,
+      label: `Be at least ${MIN_PASSWORD_LENGTH} characters long`,
+      isMet: password.length >= MIN_PASSWORD_LENGTH,
+    },
+    {
+      key: PasswordCriterion.UpperCase,
+      label: 'Include an uppercase letter',
+      isMet: hasUpperCase(password),
+    },
+    {
+      key: PasswordCriterion.LowerCase,
+      label: 'Include a lowercase letter',
+      isMet: hasLowerCase(password),
+    },
+    {
+      key: PasswordCriterion.Number,
+      label: 'Include a number',
+      isMet: hasNumber(password),
+    },
+    {
+      key: PasswordCriterion.Symbol,
+      label: 'Include a symbol',
+      isMet: hasSymbol(password),
+    },
+  ];
+
+  // Calculate the score based on the criteria that were met.
+  let score = 0;
+
+  if (
+    !criteriaChecks.find((c) => c.key === PasswordCriterion.Length)?.isMet
+  ) {
+    // If too short, the strength is "Too Short", score is 0.
+    // All other criteria's 'isMet' status is still relevant for UI display.
+    return {
+      strength: PasswordStrengthLevel.TooShort,
+      score: 0,
+      criteria: criteriaChecks,
+    };
   }
-  return array;
-}
 
-/**
- * Generates a strong, random password that meets defined criteria.
- * The password will be 16 characters long and include at least one lowercase
- * letter, one uppercase letter, one number, and one symbol.
- *
- * @returns A randomly generated strong password.
- */
-export function generateStrongPassword(): string {
-  const passwordLength = 16;
-  const passwordChars: string[] = [];
-
-  // 1. Ensure at least one of each required character type
-  passwordChars.push(LOWERCASE_CHARS[getRandomInt(LOWERCASE_CHARS.length)]);
-  passwordChars.push(UPPERCASE_CHARS[getRandomInt(UPPERCASE_CHARS.length)]);
-  passwordChars.push(NUMBER_CHARS[getRandomInt(NUMBER_CHARS.length)]);
-  passwordChars.push(SYMBOL_CHARS[getRandomInt(SYMBOL_CHARS.length)]);
-
-  // 2. Fill the remaining length with random characters from all allowed types
-  const remainingLength = passwordLength - passwordChars.length;
-  for (let i = 0; i < remainingLength; i++) {
-    passwordChars.push(ALL_CHARS[getRandomInt(ALL_CHARS.length)]);
+  // Calculate score based on met criteria (excluding length for this part of
+  // scoring, as it's a base requirement)
+  if (criteriaChecks.find(
+    (c) => c.key === PasswordCriterion.UpperCase,
+  )?.isMet) {
+    score++;
+  }
+  if (criteriaChecks.find(
+    (c) => c.key === PasswordCriterion.LowerCase,
+  )?.isMet) {
+    score++;
+  } // Technically, a good password needs both, but we score them individually.
+  if (criteriaChecks.find(
+    (c) => c.key === PasswordCriterion.Number,
+  )?.isMet) {
+    score++;
+  }
+  if (criteriaChecks.find(
+    (c) => c.key === PasswordCriterion.Symbol,
+  )?.isMet) {
+    score++;
   }
 
-  // 3. Shuffle the array to ensure randomness and avoid predictable patterns
-  shuffleArray(passwordChars);
+  // Additional score for length beyond the minimum (if MIN_LENGTH is met)
+  if (password.length >= 12) { // This implies MIN_LENGTH is met
+    score++;
+  }
+  // Max score can be 5 (4 from char types + 1 from length >= 12)
 
-  return passwordChars.join('');
+  // Determine the strength of the password based on the score.
+  let strength: PasswordStrengthLevel;
+  if (score === 0) { // Only min length met, none of the char types
+    strength = PasswordStrengthLevel.Weak;
+  } else if (score === 1) {
+    strength = PasswordStrengthLevel.Weak;
+  } else if (score === 2) {
+    strength = PasswordStrengthLevel.Medium;
+  } else if (score === 3 || score === 4) {
+    strength = PasswordStrengthLevel.Strong;
+  } else { // score >= 5
+    strength = PasswordStrengthLevel.VeryStrong;
+  }
+
+  return { strength, score, criteria: criteriaChecks };
 }
-
-// Example of how you might use it with the schema (for testing or other utils):
-/*
-import { PasswordSchema } from './password-strength';
-
-export function generateAndValidatePassword(): string {
-  let password = '';
-  let isValid = false;
-  let attempts = 0;
-
-  do {
-    password = generateStrongPassword();
-    const validationResult = PasswordSchema.safeParse(password);
-    isValid = validationResult.success;
-    attempts++;
-    if (attempts > 10 && !isValid) { // Safety break for unexpected issues
-      console.error("Failed to generate a valid password after 10 attempts", validationResult.error?.errors);
-      throw new Error("Password generation failed to meet schema requirements.");
-    }
-  } while (!isValid);
-
-  return password;
-}
-*/
