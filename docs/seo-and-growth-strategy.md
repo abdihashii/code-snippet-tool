@@ -44,11 +44,10 @@
 - [ ] Add per-page meta tags:
   - [ ] Homepage: "Snippet Share - Secure Code Sharing with Zero-Knowledge Encryption"
   - [ ] `/new`: "Create Secure Code Snippet | Snippet Share"
-  - [ ] `/signup`: "Sign Up for Snippet Share - Secure Code Sharing"
 
 ### Update Sitemap
 
-- [ ] Add missing routes to sitemap (signup, blog when created, landing pages)
+- [ ] Add missing routes to sitemap (blog when created, landing pages)
 - [ ] Consider dynamic sitemap generation for blog posts
 - [ ] Create separate blog sitemap when blog is launched
 
@@ -100,9 +99,19 @@
    - Keywords: AES-256 encryption, military-grade encryption
    - Technical deep-dive with code examples
 
-**Use Case Articles**: 6. [ ] "Code Review Security: Share Proprietary Code Safely" 7. [ ] "Remote Team Collaboration: Secure Code Snippet Sharing" 8. [ ] "Developer Privacy Guide: Anonymous Code Sharing"
+**Use Case Articles**:
 
-**Comparison Articles**: 9. [ ] "GitHub Gist vs Snippet Share: Security Comparison" 10. [ ] "Password-Protected Code Snippets: Implementation Guide"
+6. [ ] "Code Review Security: Share Proprietary Code Safely"
+
+7. [ ] "Remote Team Collaboration: Secure Code Snippet Sharing"
+
+8. [ ] "Developer Privacy Guide: Anonymous Code Sharing"
+
+**Comparison Articles**:
+
+9. [ ] "GitHub Gist vs Snippet Share: Security Comparison"
+
+10. [ ] "Password-Protected Code Snippets: Implementation Guide"
 
 ### Content Distribution
 
@@ -307,9 +316,9 @@
 
 **Conversion Metrics**:
 
-- Traffic to signup conversion
 - Organic visitor to snippet creation
 - User retention from organic traffic
+- Engagement rate (bounce rate, time on site)
 
 ---
 
