@@ -92,6 +92,17 @@ const searchSchema = z.object({
 }).catch({});
 
 export const Route = createFileRoute('/new/')({
+  head: () => ({
+    meta: [
+      {
+        title: 'Create Secure Code Snippet | Snippet Share',
+      },
+      {
+        name: 'description',
+        content: 'Create encrypted code snippets with password protection, custom expiration, and zero-knowledge encryption. Share code securely.',
+      },
+    ],
+  }),
   component: RouteComponent,
   validateSearch: searchSchema,
 });
