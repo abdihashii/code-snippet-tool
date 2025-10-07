@@ -9,17 +9,21 @@
 - `robots.txt` and `sitemap.xml` exist
 - Website live on Cloudflare Pages
 - Quality OG image present
+- **Schema.org structured data** (WebApplication, FAQPage, Organization)
+- **Long-tail keywords** optimized
+- **Per-page meta tags** for homepage and /new
+- **Canonical URLs** configured
 
 ### Critical Issues 🚨
 
-- Sitemap only has 2 URLs (homepage, /new)
-- No structured data (Schema.org JSON-LD)
-- No blog or content marketing
-- Generic keywords, need long-tail SEO
-- No per-page meta optimization
-- Missing use-case landing pages
-- Not listed in directories or communities
-- No developer tools (CLI, extensions)
+- ~~Sitemap only has 2 URLs~~ ✅ Dates updated, ready for future content
+- ~~No structured data (Schema.org JSON-LD)~~ ✅ Completed
+- ~~Generic keywords, need long-tail SEO~~ ✅ Updated with long-tail keywords
+- ~~No per-page meta optimization~~ ✅ Homepage and /new optimized
+- No blog or content marketing (Phase 2)
+- Missing use-case landing pages (Phase 3)
+- Not listed in directories or communities (Phase 5)
+- No developer tools - CLI, extensions (Phase 5)
 
 ---
 
@@ -27,27 +31,30 @@
 
 ### Add Schema.org Structured Data
 
-- [ ] Add WebApplication schema to homepage
-- [ ] Add FAQPage schema to FAQ section
-- [ ] Add Organization schema
+- [x] Add WebApplication schema to homepage
+- [x] Add FAQPage schema to FAQ section
+- [x] Add Organization schema
 - [ ] Add BreadcrumbList schema (when applicable)
 
-**Implementation location**: `app/routes/__root.tsx` or per-route head configs
+**Implementation location**: `app/routes/index.tsx` (completed)
 
 ### Improve Keywords & Meta Tags
 
-- [ ] Update keywords from generic to long-tail variations:
+- [x] Update keywords from generic to long-tail variations:
 
   - Current: `snippet, share, code, developer, tools`
   - Improved: `secure code sharing, encrypted pastebin, zero-knowledge encryption, private code snippets, self-destructing code, pastebin alternative, encrypted snippet tool, password protected snippets`
+  - **Status**: Updated in `app/lib/constants.ts`
 
-- [ ] Add per-page meta tags:
-  - [ ] Homepage: "Snippet Share - Secure Code Sharing with Zero-Knowledge Encryption"
-  - [ ] `/new`: "Create Secure Code Snippet | Snippet Share"
+- [x] Add per-page meta tags:
+  - [x] Homepage: "Snippet Share - Secure Code Sharing with Zero-Knowledge Encryption"
+  - [x] `/new`: "Create Secure Code Snippet | Snippet Share"
 
 ### Update Sitemap
 
-- [ ] Add missing routes to sitemap (blog when created, landing pages)
+- [x] Update lastmod dates (completed - updated to 2025-10-06)
+- [ ] Add blog routes when created
+- [ ] Add landing pages when created
 - [ ] Consider dynamic sitemap generation for blog posts
 - [ ] Create separate blog sitemap when blog is launched
 
@@ -158,9 +165,9 @@
 
 ### Enhanced Features
 
+- [x] Ensure canonical URLs on all pages (already configured in `__root.tsx`)
 - [ ] Generate dynamic OG images for blog posts
 - [ ] Add breadcrumb navigation with structured data
-- [ ] Ensure canonical URLs on all pages
 - [ ] Automate sitemap generation (build-time or runtime)
 
 ---
@@ -326,11 +333,11 @@
 
 Highest-impact tasks to do first:
 
-- [ ] Add Schema.org structured data to homepage
-- [ ] Add FAQ schema to FAQ section
-- [ ] Update keywords in `app/lib/constants.ts`
-- [ ] Add per-page meta descriptions to routes
-- [ ] Update sitemap.xml with missing pages
+- [x] Add Schema.org structured data to homepage
+- [x] Add FAQ schema to FAQ section
+- [x] Update keywords in `app/lib/constants.ts`
+- [x] Add per-page meta descriptions to routes
+- [x] Update sitemap.xml dates
 - [ ] Submit sitemap to Google Search Console
 - [ ] Submit sitemap to Bing Webmaster Tools
 - [ ] Write first 2 blog posts (secure code sharing guide, pastebin alternatives)
