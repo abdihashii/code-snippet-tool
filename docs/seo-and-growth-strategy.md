@@ -60,10 +60,10 @@
 
 ### Search Console Setup
 
-- [ ] Submit sitemap to Google Search Console
-- [ ] Submit sitemap to Bing Webmaster Tools
-- [ ] Verify site ownership
-- [ ] Monitor index coverage
+- [x] Submit sitemap to Google Search Console
+- [x] Submit sitemap to Bing Webmaster Tools
+- [x] Verify site ownership
+- [x] Monitor index coverage
 
 ---
 
