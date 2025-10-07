@@ -13,6 +13,83 @@ import {
 import { useLandingAnalytics } from '@/hooks/use-landing-analytics';
 
 export const Route = createFileRoute('/')({
+  head: () => {
+    // Schema.org structured data
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        // WebApplication schema
+        {
+          '@type': 'WebApplication',
+          'name': 'Snippet Share',
+          'url': 'https://snippet-share.com',
+          'description': 'Secure code sharing platform with zero-knowledge encryption, self-destructing snippets, and password protection.',
+          'applicationCategory': 'DeveloperApplication',
+          'operatingSystem': 'Any',
+          'offers': {
+            '@type': 'Offer',
+            'price': '0',
+            'priceCurrency': 'USD',
+          },
+          'featureList': [
+            'AES-256-GCM encryption',
+            'Zero-knowledge architecture',
+            'Self-destructing snippets',
+            'Password protection',
+            'Custom expiration times',
+            'Syntax highlighting for 50+ languages',
+          ],
+        },
+        // Organization schema
+        {
+          '@type': 'Organization',
+          'name': 'Snippet Share',
+          'url': 'https://snippet-share.com',
+          'logo': 'https://snippet-share.com/logo.png',
+          'sameAs': [],
+        },
+        // FAQPage schema
+        {
+          '@type': 'FAQPage',
+          'mainEntity': [
+            {
+              '@type': 'Question',
+              'name': 'How secure is this?',
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': 'We use AES-256-GCM encryption with a randomly generated key in your browser. The key is never sent to our servers - it stays in the URL fragment. This means we literally cannot decrypt your code, even under legal compulsion. It would take all the world\'s computers over 1,000 years to crack a single snippet.',
+              },
+            },
+            {
+              '@type': 'Question',
+              'name': 'What happens to my code?',
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': 'Your code is encrypted before leaving your browser and stored encrypted on our servers. When the expiration time is reached or view limit is hit, it\'s permanently deleted. We also offer "burn after reading" which deletes immediately after the first view. There\'s no way to recover deleted snippets.',
+              },
+            },
+            {
+              '@type': 'Question',
+              'name': 'Can I password protect snippets?',
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': 'Yes! You can add an additional password layer on top of the encryption. You can also set custom expiration times (1 hour to never), view limits, and use syntax highlighting for 50+ programming languages. All features are free - no premium tiers, no ads, no tracking.',
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    return {
+      scripts: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify(structuredData),
+        },
+      ],
+    };
+  },
   component: Home,
 });
 
