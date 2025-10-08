@@ -33,7 +33,7 @@ Medium Priority
   - [x] llms.txt file for AI discoverability
   - [x] Create social media images (og-image.png) - og-image.png exists (1600x840)
   - [ ] Create twitter-image.png - dedicated Twitter image (1200x600px recommended)
-  - [ ] Add JSON-LD structured data for SoftwareApplication schema
+  - [x] Add JSON-LD structured data for SoftwareApplication schema
   - [ ] Create manifest.json for PWA features
   - [ ] Add security.txt file
   - [ ] Consider humans.txt file (optional)
