@@ -26,7 +26,7 @@ export default function createConfig(options, ...userConfigs) {
       }],
       'unicorn/filename-case': ['error', {
         case: 'kebabCase',
-        ignore: ['README.md'],
+        ignore: ['README.md', 'CLAUDE.md'],
       }],
       'style/brace-style': ['error', '1tbs', {
         allowSingleLine: true,
@@ -42,6 +42,28 @@ export default function createConfig(options, ...userConfigs) {
       //   ignoreStrings: true,
       //   ignoreTemplateLiterals: true,
       // }],
+    },
+  }, {
+    files: ['**/*.md/**'],
+    rules: {
+      // Disable all linting for code blocks in markdown - treat them as examples only
+      '@typescript-eslint/no-unused-vars': 'off',
+      'ts/no-unused-vars': 'off',
+      'ts/no-redeclare': 'off',
+      'ts/no-undef': 'off',
+      'ts/consistent-type-definitions': 'off',
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      'no-console': 'off',
+      'unused-imports/no-unused-vars': 'off',
+      'import/no-unresolved': 'off',
+      'node/prefer-global/buffer': 'off',
+      'node/prefer-global/process': 'off',
+      'style/semi': 'off',
+      'style/comma-dangle': 'off',
+      'style/quotes': 'off',
+      'antfu/no-import-dist': 'off',
+      'antfu/no-import-node-modules-by-path': 'off',
     },
   }, ...userConfigs);
 }
