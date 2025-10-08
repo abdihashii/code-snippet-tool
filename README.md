@@ -103,23 +103,34 @@ pnpm dev:api
 
 The web app will be available at `http://localhost:3000` and the API at `http://localhost:8787`.
 
-### Building
+### Building & Deployment
 
-Build all applications:
+#### Building Shared Packages
+
+If you need to build shared packages individually:
 
 ```bash
-# Build shared packages first
-pnpm build:types
-pnpm build:schemas
+pnpm run build:types
+pnpm run build:schemas
+```
 
-# Build and deploy web app to Cloudflare Pages
-cd apps/web
-pnpm run build
-pnpm run deploy
+#### Building & Deploying Web App
 
-# Build and deploy api app to Cloudflare Workers
-cd apps/api
-pnpm run deploy
+```bash
+# Build web app (automatically builds shared packages first)
+pnpm run build:web
+
+# Deploy to Cloudflare Pages
+pnpm run deploy:web
+```
+
+#### Deploying API
+
+The API doesn't require a separate build step—Wrangler handles building during deployment:
+
+```bash
+# Deploy to Cloudflare Workers
+pnpm run deploy:api
 ```
 
 ## 📁 Project Structure
