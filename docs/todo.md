@@ -14,7 +14,7 @@ Critical Priority
 
 High Priority
 
-- [ ] Content Security Policy (CSP) - No CSP headers implemented for XSS protection (PRD NFR1.8)
+- [x] Content Security Policy (CSP) - CSP headers implemented for both API and web app (PRD NFR1.8)
 - [ ] Input Validation & Sanitization - Partial implementation (has SQL injection protection and CSRF, missing Zod validation for snippet creation and XSS sanitization)
 - [ ] Proper Logging & Monitoring - Basic console.error but no structured logging/alerting
 - [x] Database Connection Pooling - No connection management for Supabase client
