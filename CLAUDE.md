@@ -73,9 +73,24 @@ pnpm dev:api  # Start API at http://localhost:8787
 **Important**: Only deploy if explicitly requested by the user.
 
 ```bash
-pnpm --filter @snippet-share/web deploy  # Deploy to Cloudflare Pages
-pnpm --filter @snippet-share/api deploy  # Deploy to Cloudflare Workers
+# Deploy web app to Cloudflare Pages
+pnpm --filter @snippet-share/web deploy
+
+# Deploy security worker for CSP and security headers (after Pages deployment)
+pnpm --filter @snippet-share/web deploy:worker:prod
+# OR from root: pnpm deploy:web:worker
+
+# Deploy API to Cloudflare Workers
+pnpm --filter @snippet-share/api deploy
 ```
+
+**Deployment Order**:
+
+1. Deploy the web app to Cloudflare Pages first
+2. Deploy the security worker to inject CSP and security headers
+3. Deploy the API to Cloudflare Workers
+
+**Security Worker**: The security worker ([apps/web/worker.js](apps/web/worker.js)) is a Cloudflare Worker that intercepts all requests to the Pages application and adds CSP and other security headers. It must be deployed to the same domain as the Pages app using routes configured in [apps/web/wrangler-worker.toml](apps/web/wrangler-worker.toml).
 
 ## Architecture
 
