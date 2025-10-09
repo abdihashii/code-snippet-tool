@@ -19,6 +19,20 @@ app.use('*', csrf({
   origin: (_, c) => c.env.FRONTEND_URL,
 }));
 
+// Security headers middleware
+// Note: CSP is not included here since this API only returns JSON responses
+// CSP headers are configured in the web application's Cloudflare Worker
+app.use('*', async (c, next) => {
+  await next();
+
+  // Security headers for API responses
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('X-Frame-Options', 'DENY');
+  c.header('X-XSS-Protection', '1; mode=block');
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  c.header('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+});
+
 // Rate limit all requests to 100 requests per 15 minutes
 // TODO: Implement tiered global rate limiting when user authentication is added:
 // - Anonymous users: 100/15min (current)
