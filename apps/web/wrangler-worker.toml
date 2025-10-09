@@ -1,0 +1,27 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "snippet-share-web-security"
+main = "worker.js"
+compatibility_date = "2025-10-09"
+
+# Environment variables
+[vars]
+# API_URL will be set based on environment
+
+# Production environment configuration
+[env.production]
+routes = [
+  { pattern = "snippet-share.com/*", zone_name = "snippet-share.com" },
+  { pattern = "www.snippet-share.com/*", zone_name = "snippet-share.com" }
+]
+
+[env.production.vars]
+API_URL = "https://api.abdirahman-haji-13.workers.dev"
+
+# Staging environment configuration (if needed)
+# [env.staging]
+# routes = [
+#   { pattern = "staging.snippet-share.com/*", zone_name = "snippet-share.com" }
+# ]
+
+# [env.staging.vars]
+# API_URL = "https://api.abdirahman-haji-13.workers.dev"
