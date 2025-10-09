@@ -9,6 +9,8 @@
     "build": "vinxi build",
     "start": "vinxi start",
     "deploy": "wrangler --cwd dist/ pages deploy",
+    "deploy:worker": "wrangler deploy --config wrangler-worker.toml",
+    "deploy:worker:prod": "wrangler deploy --config wrangler-worker.toml --env production",
     "lint": "eslint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
