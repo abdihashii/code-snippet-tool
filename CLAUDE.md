@@ -92,6 +92,19 @@ pnpm --filter @snippet-share/api deploy
 
 **Security Worker**: The security worker ([apps/web/worker.js](apps/web/worker.js)) is a Cloudflare Worker that intercepts all requests to the Pages application and adds CSP and other security headers. It must be deployed to the same domain as the Pages app using routes configured in [apps/web/wrangler-worker.toml](apps/web/wrangler-worker.toml).
 
+### Worker Naming Convention
+
+All Cloudflare Workers follow the `snippet-share-<component>` naming convention:
+
+| Component     | Worker Name                   | Config File                                                    | Purpose                                       |
+| ------------- | ----------------------------- | -------------------------------------------------------------- | --------------------------------------------- |
+| Web App       | `snippet-share-web`           | [apps/web/wrangler.toml](apps/web/wrangler.toml)               | Cloudflare Pages application                  |
+| API           | `snippet-share-api`           | [apps/api/wrangler.jsonc](apps/api/wrangler.jsonc)             | API backend                                   |
+| Security      | `snippet-share-web-security`  | [apps/web/wrangler-worker.toml](apps/web/wrangler-worker.toml) | CSP and security headers                      |
+| PostHog Proxy | `snippet-share-posthog-proxy` | Manual (CF dashboard)                                          | PostHog analytics proxy to bypass ad blockers |
+
+**Note**: The PostHog proxy worker was created manually in the Cloudflare dashboard and should be renamed from its legacy name `code-snippet-tool-proxy` to match the naming convention.
+
 ## Architecture
 
 ### Zero-Knowledge Security Model
