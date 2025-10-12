@@ -25,6 +25,7 @@ export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
   { value: 'SQL', label: 'SQL', hljsId: 'sql' },
   { value: 'JSON', label: 'JSON', hljsId: 'json' },
   { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
+  { value: 'RUST', label: 'Rust', hljsId: 'rust' },
   { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
 ];
 
@@ -44,6 +45,7 @@ const languageLoaders: Record<string, () => Promise<any>> = {
   sql: () => import('highlight.js/lib/languages/sql'),
   markdown: () => import('highlight.js/lib/languages/markdown'),
   csharp: () => import('highlight.js/lib/languages/csharp'),
+  rust: () => import('highlight.js/lib/languages/rust'),
 };
 
 interface UseCodeHighlightingProps {

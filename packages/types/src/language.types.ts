@@ -10,4 +10,5 @@ export type Language =
   | 'BASH'
   | 'MARKDOWN'
   | 'CSHARP'
-  | 'SQL';
+  | 'SQL'
+  | 'RUST';
