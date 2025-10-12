@@ -16,14 +16,14 @@ export async function signUp(
     },
   });
 
-  const responseData: ApiResponse<{ userData: any }> = await response.json();
-
-  // Check for rate limiting first
+  // Check for rate limiting BEFORE parsing JSON
   if (response.status === 429) {
     const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
     const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
     throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
+
+  const responseData: ApiResponse<{ userData: any }> = await response.json();
 
   // Check if the response indicates an error
   if (!response.ok || !responseData.success) {

@@ -20,14 +20,14 @@ export async function createSnippet(
     },
   });
 
-  const responseData: ApiResponse<{ id: string }> = await response.json();
-
-  // Check for rate limiting first
+  // Check for rate limiting BEFORE parsing JSON
   if (response.status === 429) {
     const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
     const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
     throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
+
+  const responseData: ApiResponse<{ id: string }> = await response.json();
 
   if (!response.ok || !responseData.success) {
     // Return error response instead of throwing
@@ -47,14 +47,15 @@ export async function getSnippetById(
   id: string,
 ): Promise<ApiResponse<GetSnippetByIdResponse>> {
   const response = await fetch(`${API_URL}/snippets/${id}`);
-  const responseData: ApiResponse<GetSnippetByIdResponse> = await response.json();
 
-  // Check for rate limiting first
+  // Check for rate limiting BEFORE parsing JSON
   if (response.status === 429) {
     const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
     const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
     throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
+
+  const responseData: ApiResponse<GetSnippetByIdResponse> = await response.json();
 
   if (!response.ok || !responseData.success) {
     // Return error response instead of throwing or mixing types
