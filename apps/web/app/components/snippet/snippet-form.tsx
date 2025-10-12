@@ -62,7 +62,7 @@ function SnippetFormComponent({
   initialLanguage,
   initialTitle,
 }: SnippetFormProps) {
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(true);
 
   const {
     // Form field states and setters
@@ -270,7 +270,7 @@ function SnippetFormComponent({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Snippet Title */}
                     <div className="space-y-2">
-                      <Label htmlFor="title">Snippet Title (Optional)</Label>
+                      <Label htmlFor="title">Snippet Title</Label>
                       <Input
                         id="title"
                         placeholder="My Awesome Code"
@@ -282,7 +282,7 @@ function SnippetFormComponent({
                     {/* Uploader Info */}
                     <div className="space-y-2">
                       <Label htmlFor="uploader-info">
-                        Your Name/Note (Optional, shown to recipient)
+                        Your Name/Note (Shown to recipient)
                       </Label>
                       <Input
                         id="uploader-info"
