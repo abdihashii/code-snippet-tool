@@ -33,7 +33,7 @@ export interface CodeEditorProps {
   title?: string;
   language?: Language;
   onLanguageChange?: (language: Language) => void;
-  supportedLanguages?: readonly { value: Language; label: string }[];
+  supportedLanguages?: readonly { value: Language; label: string; icon?: React.ComponentType<any> }[];
   isLanguageSelectDisabled?: boolean;
 }
 
@@ -129,7 +129,16 @@ function CodeEditorComponent({
                 className="h-8 w-[145px] justify-between bg-background/90 text-xs shadow-sm hover:bg-background"
               >
                 {language
-                  ? supportedLanguages.find((lang) => lang.value === language)?.label
+                  ? (() => {
+                      const selectedLang = supportedLanguages.find((lang) => lang.value === language);
+                      const Icon = selectedLang?.icon;
+                      return (
+                        <>
+                          {Icon && <Icon size={14} className="mr-1.5 shrink-0" />}
+                          {selectedLang?.label}
+                        </>
+                      );
+                    })()
                   : 'Select language'}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -140,24 +149,28 @@ function CodeEditorComponent({
                 <CommandList>
                   <CommandEmpty>No language found.</CommandEmpty>
                   <CommandGroup>
-                    {supportedLanguages.map((lang) => (
-                      <CommandItem
-                        key={lang.value}
-                        value={lang.value}
-                        onSelect={(currentValue) => {
-                          onLanguageChange(currentValue as Language);
-                          setOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            language === lang.value ? 'opacity-100' : 'opacity-0',
-                          )}
-                        />
-                        {lang.label}
-                      </CommandItem>
-                    ))}
+                    {supportedLanguages.map((lang) => {
+                      const Icon = lang.icon;
+                      return (
+                        <CommandItem
+                          key={lang.value}
+                          value={lang.value}
+                          onSelect={(currentValue) => {
+                            onLanguageChange(currentValue as Language);
+                            setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              language === lang.value ? 'opacity-100' : 'opacity-0',
+                            )}
+                          />
+                          {Icon && <Icon size={16} className="mr-2 shrink-0" />}
+                          {lang.label}
+                        </CommandItem>
+                      );
+                    })}
                   </CommandGroup>
                 </CommandList>
               </Command>

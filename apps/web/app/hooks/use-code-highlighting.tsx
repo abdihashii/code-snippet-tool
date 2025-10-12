@@ -1,32 +1,47 @@
 import type { Language } from '@snippet-share/types';
 
+import {
+  SiCss,
+  SiGnubash,
+  SiHtml5,
+  SiJavascript,
+  SiMarkdown,
+  SiMysql,
+  SiOpenjdk,
+  SiPython,
+  SiRust,
+  SiSharp,
+  SiTypescript,
+} from '@icons-pack/react-simple-icons';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
 import plaintext from 'highlight.js/lib/languages/plaintext';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import 'highlight.js/styles/atom-one-dark.css';
+import { BracesIcon, FileCodeIcon } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface LanguageOption {
   value: Language;
   label: string;
   hljsId: string;
+  icon?: React.ComponentType<{ size?: number; className?: string }>;
 }
 
 // Single source of truth for supported languages, primarily for hljsId here
 export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
-  { value: 'JAVASCRIPT', label: 'JavaScript / JSX', hljsId: 'javascript' },
-  { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript' },
-  { value: 'PYTHON', label: 'Python', hljsId: 'python' },
-  { value: 'HTML', label: 'HTML', hljsId: 'xml' }, // HTML uses the 'xml' grammar in hljs
-  { value: 'CSS', label: 'CSS', hljsId: 'css' },
-  { value: 'JAVA', label: 'Java', hljsId: 'java' },
-  { value: 'CSHARP', label: 'C#', hljsId: 'csharp' },
-  { value: 'BASH', label: 'Bash', hljsId: 'bash' },
-  { value: 'SQL', label: 'SQL', hljsId: 'sql' },
-  { value: 'JSON', label: 'JSON', hljsId: 'json' },
-  { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown' },
-  { value: 'RUST', label: 'Rust', hljsId: 'rust' },
-  { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext' },
+  { value: 'JAVASCRIPT', label: 'JavaScript / JSX', hljsId: 'javascript', icon: SiJavascript },
+  { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript', icon: SiTypescript },
+  { value: 'PYTHON', label: 'Python', hljsId: 'python', icon: SiPython },
+  { value: 'HTML', label: 'HTML', hljsId: 'xml', icon: SiHtml5 }, // HTML uses the 'xml' grammar in hljs
+  { value: 'CSS', label: 'CSS', hljsId: 'css', icon: SiCss },
+  { value: 'JAVA', label: 'Java', hljsId: 'java', icon: SiOpenjdk },
+  { value: 'CSHARP', label: 'C#', hljsId: 'csharp', icon: SiSharp },
+  { value: 'BASH', label: 'Bash', hljsId: 'bash', icon: SiGnubash },
+  { value: 'SQL', label: 'SQL', hljsId: 'sql', icon: SiMysql },
+  { value: 'JSON', label: 'JSON', hljsId: 'json', icon: BracesIcon },
+  { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown', icon: SiMarkdown },
+  { value: 'RUST', label: 'Rust', hljsId: 'rust', icon: SiRust },
+  { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext', icon: FileCodeIcon },
 ];
 
 // languageLoaders: keys are hljsId, ensure they match
