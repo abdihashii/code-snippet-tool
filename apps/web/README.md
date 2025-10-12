@@ -56,7 +56,7 @@ The Snippet Share web app is the frontend for the secure code snippet sharing pl
 
 2. **Set up environment variables**
 
-   Create `.env.local` file:
+   Create `.env.local` file for local development:
 
    ```bash
    # Required - API endpoint
@@ -66,6 +66,8 @@ The Snippet Share web app is the frontend for the secure code snippet sharing pl
    VITE_PUBLIC_POSTHOG_KEY=your-posthog-key
    VITE_PUBLIC_POSTHOG_API_HOST=https://app.posthog.com
    ```
+
+   **Important**: `.env` files are only used for local development. For Cloudflare Pages deployment, environment variables must be set in `wrangler.toml` (see [Deployment](#deployment) section).
 
 ### Development
 
@@ -239,15 +241,38 @@ The web app is configured for deployment to Cloudflare Pages with Workers compat
 
 - **Build Output**: `./dist`
 - **Node.js Compatibility**: Enabled
-- **Environment Variables**: Set in Cloudflare dashboard
+- **Environment Variables**: Set in `wrangler.toml` (NOT in Cloudflare dashboard)
 
-**Environment Variables** (Production):
+**Environment Variables Configuration**:
 
-```bash
-VITE_API_URL=https://api.your-domain.com
-VITE_PUBLIC_POSTHOG_KEY=your-production-posthog-key
-VITE_PUBLIC_POSTHOG_API_HOST=https://app.posthog.com
+⚠️ **Important**: When using `wrangler.toml` with `pages_build_output_dir`, environment variables MUST be defined in the `[vars]` section of the file. The Cloudflare dashboard becomes read-only for these settings. `.env` files are NOT used by Cloudflare Pages.
+
+Add environment variables to `wrangler.toml`:
+
+```toml
+[vars]
+VITE_API_URL = "https://snippet-share-api.your-account.workers.dev"
+VITE_PUBLIC_POSTHOG_KEY = "your-production-posthog-key"
+VITE_PUBLIC_POSTHOG_API_HOST = "https://app.posthog.com"
 ```
+
+**Environment-specific configuration** (optional):
+
+```toml
+# Default vars for all environments
+[vars]
+VITE_API_URL = "https://snippet-share-api.your-account.workers.dev"
+
+# Override for preview deployments only
+[env.preview.vars]
+VITE_API_URL = "https://preview-api.your-account.workers.dev"
+
+# Override for production only
+[env.production.vars]
+VITE_API_URL = "https://api.your-domain.com"
+```
+
+After updating `wrangler.toml`, commit and push - Cloudflare Pages will automatically redeploy with the new variables.
 
 ### Performance Optimizations
 
