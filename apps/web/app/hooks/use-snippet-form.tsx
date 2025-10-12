@@ -28,12 +28,13 @@ const MAX_CODE_LENGTH = 10_000;
 interface LanguageOption {
   value: Language;
   label: string;
+  icon?: React.ComponentType<{ size?: number; className?: string; color?: string }>;
 }
 
 export const SUPPORTED_LANGUAGES_FOR_FORM: LanguageOption[]
 = SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING
   .map(
-    ({ value, label }) => ({ value, label }),
+    ({ value, label, icon }) => ({ value, label, icon }),
   );
 
 interface PrettierConfig {
