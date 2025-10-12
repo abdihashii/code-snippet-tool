@@ -2,3 +2,6 @@ name = "snippet-share-web"
 pages_build_output_dir = "./dist"
 compatibility_flags = [ "nodejs_compat" ]
 compatibility_date = "2025-10-11"
+
+[vars]
+VITE_API_URL = "https://snippet-share-api.abdirahman-haji-13.workers.dev"
