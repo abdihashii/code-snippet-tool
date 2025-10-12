@@ -1,18 +1,24 @@
 import type { Language } from '@snippet-share/types';
 
-import { CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
+import { Check, ChevronsUpDown, CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
 import { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 
 import { CodeEditorErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
@@ -46,6 +52,7 @@ function CodeEditorComponent({
   isLanguageSelectDisabled,
 }: CodeEditorProps) {
   const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -112,25 +119,50 @@ function CodeEditorComponent({
 
         {/* Language Selection dropdown (only visible in edit mode) */}
         {supportedLanguages && onLanguageChange && language && (
-          <Select
-            value={language}
-            onValueChange={onLanguageChange}
-            disabled={isLanguageSelectDisabled || isReadOnly}
-          >
-            <SelectTrigger
-              size="sm"
-              className="h-8 w-[145px] bg-background/90 text-xs shadow-sm hover:cursor-pointer hover:bg-background"
-            >
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              {supportedLanguages.map((lang) => (
-                <SelectItem key={lang.value} value={lang.value} className="text-xs hover:cursor-pointer">
-                  {lang.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                disabled={isLanguageSelectDisabled || isReadOnly}
+                className="h-8 w-[145px] justify-between bg-background/90 text-xs shadow-sm hover:bg-background"
+              >
+                {language
+                  ? supportedLanguages.find((lang) => lang.value === language)?.label
+                  : 'Select language'}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Search language..." />
+                <CommandList>
+                  <CommandEmpty>No language found.</CommandEmpty>
+                  <CommandGroup>
+                    {supportedLanguages.map((lang) => (
+                      <CommandItem
+                        key={lang.value}
+                        value={lang.value}
+                        onSelect={(currentValue) => {
+                          onLanguageChange(currentValue as Language);
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            language === lang.value ? 'opacity-100' : 'opacity-0',
+                          )}
+                        />
+                        {lang.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
       <pre
