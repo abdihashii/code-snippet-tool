@@ -1,26 +1,52 @@
 # Language Support Roadmap
 
-This document tracks programming language support in Snippet Share, including both syntax highlighting and code prettification features.
+This document tracks programming language support in Snippet Share, including syntax highlighting, code prettification, and language icon support.
 
 Last updated: 2025-10-12
 
+## Language Icon Support
+
+### Icon Library
+
+We use **@icons-pack/react-simple-icons** for programming language brand icons:
+
+- 3,000+ brand and technology icons
+- Tree-shakable (only imported icons bundled)
+- TypeScript support
+- Consistent design and sizing
+- Official recommendation from Lucide (which doesn't support brand logos)
+
+### Installation
+
+```bash
+pnpm --filter @snippet-share/web add @icons-pack/react-simple-icons
+```
+
+### Implementation
+
+Icons are integrated into the language dropdown (`code-editor.tsx`) to help users:
+
+- Quickly identify languages visually
+- Navigate long language lists more easily
+- Enjoy a more modern, professional UX
+
 ## Currently Supported Languages (14)
 
-| Language   | Syntax Highlighting | Code Prettification | Notes                            |
-| ---------- | ------------------- | ------------------- | -------------------------------- |
-| JavaScript | ✅                  | ✅                  | Parser: babel                    |
-| TypeScript | ✅                  | ✅                  | Parser: typescript               |
-| Python     | ✅                  | ❌                  | No browser-compatible formatter  |
-| HTML       | ✅                  | ✅                  | Parser: html                     |
-| CSS        | ✅                  | ✅                  | Parser: css                      |
-| Java       | ✅                  | ✅                  | Plugin: prettier-plugin-java     |
-| C#         | ✅                  | ❌                  | No browser-compatible formatter  |
-| Bash       | ✅                  | ❌                  | No browser-compatible formatter  |
-| SQL        | ✅                  | ❌                  | No browser-compatible formatter  |
-| JSON       | ✅                  | ✅                  | Parser: json5                    |
-| Markdown   | ✅                  | ✅                  | Parser: markdown                 |
-| Rust       | ✅                  | ❌                  | Plugin incompatible with browser |
-| Plaintext  | ✅                  | ❌                  | N/A                              |
+| Language   | Syntax Highlighting | Code Prettification | Icon Available | Icon Import         | Notes                            |
+| ---------- | ------------------- | ------------------- | -------------- | ------------------- | -------------------------------- |
+| JavaScript | ✅                  | ✅                  | ✅             | `SiJavascript`      | Parser: babel                    |
+| TypeScript | ✅                  | ✅                  | ✅             | `SiTypescript`      | Parser: typescript               |
+| Python     | ✅                  | ❌                  | ✅             | `SiPython`          | No browser-compatible formatter  |
+| HTML       | ✅                  | ✅                  | ✅             | `SiHtml5`           | Parser: html                     |
+| CSS        | ✅                  | ✅                  | ✅             | `SiCss3`            | Parser: css                      |
+| Java       | ✅                  | ✅                  | ✅             | `SiOpenjdk`         | Plugin: prettier-plugin-java     |
+| C#         | ✅                  | ❌                  | ✅             | `SiCsharp`          | No browser-compatible formatter  |
+| Bash       | ✅                  | ❌                  | ✅             | `SiGnubash`         | No browser-compatible formatter  |
+| SQL        | ✅                  | ❌                  | ✅             | `SiMysql`           | No browser-compatible formatter  |
+| JSON       | ✅                  | ✅                  | ✅             | `SiJson`            | Parser: json5                    |
+| Markdown   | ✅                  | ✅                  | ✅             | `SiMarkdown`        | Parser: markdown                 |
+| Rust       | ✅                  | ❌                  | ✅             | `SiRust`            | Plugin incompatible with browser |
+| Plaintext  | ✅                  | ❌                  | ⚠️             | `FileCode` (lucide) | N/A                              |
 
 ## Missing Popular Languages
 
@@ -91,26 +117,134 @@ These languages use native binaries that cannot run in browsers:
 
 For these languages, we can only provide syntax highlighting.
 
-## Implementation Checklist
+## Implementation Checklists
 
-When adding a new language:
+### Adding Icon Support to Existing Languages (One-Time Setup)
 
-### For All Languages (Syntax Highlighting)
+This is a one-time implementation to add icon support to the language dropdown.
+
+1. [ ] **Install icon package**: `pnpm --filter @snippet-share/web add @icons-pack/react-simple-icons`
+
+2. [ ] **Update LanguageOption interface** in `apps/web/app/hooks/use-code-highlighting.tsx`:
+
+   ```typescript
+   interface LanguageOption {
+     value: Language;
+     label: string;
+     hljsId: string;
+     icon?: React.ComponentType<{ size?: number; className?: string }>; // Add this
+   }
+   ```
+
+3. [ ] **Import all language icons** at top of `use-code-highlighting.tsx`:
+
+   ```typescript
+   import {
+     SiCsharp,
+     SiCss3,
+     SiGnubash,
+     SiHtml5,
+     SiJavascript,
+     SiJson,
+     SiMarkdown,
+     SiMysql,
+     SiOpenjdk,
+     SiPython,
+     SiRust,
+     SiTypescript
+   } from '@icons-pack/react-simple-icons';
+   import { FileCode } from 'lucide-react';
+   ```
+
+4. [ ] **Add icon property to each language** in `SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING` array:
+
+   ```typescript
+   export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
+     { value: 'JAVASCRIPT', label: 'JavaScript / JSX', hljsId: 'javascript', icon: SiJavascript },
+     { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript', icon: SiTypescript },
+     // ... etc for all languages
+     { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext', icon: FileCode },
+   ];
+   ```
+
+5. [ ] **Update CodeEditor component** in `apps/web/app/components/snippet/code-editor.tsx`:
+
+   a. Update the `supportedLanguages` prop type (line 36):
+
+   ```typescript
+   supportedLanguages?: readonly { value: Language; label: string; icon?: React.ComponentType<any> }[];
+   ```
+
+   b. Modify CommandItem rendering (around line 143-159):
+
+   ```typescript
+   {supportedLanguages.map((lang) => {
+     const Icon = lang.icon;
+     return (
+       <CommandItem
+         key={lang.value}
+         value={lang.value}
+         onSelect={(currentValue) => {
+           onLanguageChange(currentValue as Language);
+           setOpen(false);
+         }}
+       >
+         <Check
+           className={cn(
+             'mr-2 h-4 w-4',
+             language === lang.value ? 'opacity-100' : 'opacity-0',
+           )}
+         />
+         {Icon && <Icon size={16} className="mr-2 shrink-0" />}
+         {lang.label}
+       </CommandItem>
+     );
+   })}
+   ```
+
+   c. Update Popover trigger button to show icon (around line 130-134):
+
+   ```typescript
+   {language
+     ? (() => {
+         const selectedLang = supportedLanguages.find((lang) => lang.value === language);
+         const Icon = selectedLang?.icon;
+         return (
+           <>
+             {Icon && <Icon size={14} className="mr-1.5 shrink-0" />}
+             {selectedLang?.label}
+           </>
+         );
+       })()
+     : 'Select language'}
+   ```
+
+6. [ ] **Test in browser**: Verify icons appear in dropdown and in selected button
+
+### Adding a New Language (Syntax Highlighting Only)
+
+When adding a new language without prettification support:
 
 1. [ ] Add language constant to `packages/types/src/language.types.ts`
-2. [ ] Add to `SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING` in `apps/web/app/hooks/use-code-highlighting.tsx`
-3. [ ] Add language loader import in `use-code-highlighting.tsx`
-4. [ ] Run `pnpm build:types` to rebuild the types package
-5. [ ] Test syntax highlighting works in the UI
+2. [ ] Find icon from [@icons-pack/react-simple-icons](https://react-icons.github.io/react-icons/icons/si/)
+3. [ ] Import icon in `apps/web/app/hooks/use-code-highlighting.tsx`
+4. [ ] Add to `SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING` with all properties: `value`, `label`, `hljsId`, `icon`
+5. [ ] Add language loader import in `use-code-highlighting.tsx` `languageLoaders` object
+6. [ ] Run `pnpm build:types` to rebuild the types package
+7. [ ] Test syntax highlighting and icon display work in the UI
 
-### Additional Steps for Prettification Support
+### Adding a New Language with Prettification Support
 
-6. [ ] Install Prettier plugin: `pnpm --filter @snippet-share/web add -D <plugin-name>`
-7. [ ] Import plugin in `apps/web/app/hooks/use-snippet-form.tsx`
-8. [ ] Add to `externalCommunityPlugins` array
-9. [ ] Add entry to `PRETTIER_SUPPORT_MAP` with correct parser name
-10. [ ] Test prettification works in the browser
-11. [ ] If it fails, remove prettification support (steps 6-9)
+When adding a new language WITH prettification support:
+
+Follow steps 1-7 above, then:
+
+8. [ ] Install Prettier plugin: `pnpm --filter @snippet-share/web add -D <plugin-name>`
+9. [ ] Import plugin in `apps/web/app/hooks/use-snippet-form.tsx`
+10. [ ] Add to `externalCommunityPlugins` array
+11. [ ] Add entry to `PRETTIER_SUPPORT_MAP` with correct parser name
+12. [ ] Test prettification works in the browser
+13. [ ] If it fails, remove prettification support (undo steps 8-11)
 
 ## Recommended Implementation Order
 
@@ -162,6 +296,12 @@ Based on popularity and ease of implementation:
 - [prettier-plugin-ruby](https://github.com/prettier/plugin-ruby)
 - [prettier-plugin-java](https://github.com/jhipster/prettier-plugin-java)
 - [prettier-plugin-kotlin](https://github.com/Angry-Potato/prettier-plugin-kotlin)
+
+### Icon Libraries
+
+- [@icons-pack/react-simple-icons](https://github.com/icons-pack/react-simple-icons) - React wrapper for Simple Icons
+- [Simple Icons](https://simpleicons.org/) - 3000+ SVG icons for popular brands
+- [Lucide Brand Logo Statement](https://github.com/lucide-icons/lucide/blob/main/BRAND_LOGOS_STATEMENT.md) - Why Lucide doesn't support brand logos
 
 ## Status Legend
 
