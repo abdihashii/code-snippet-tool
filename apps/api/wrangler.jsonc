@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "code-snippet-tool-proxy-api",
+  "name": "snippet-share-api",
   "main": "src/index.ts",
   "compatibility_date": "2025-05-18",
   "compatibility_flags": [
