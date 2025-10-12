@@ -126,7 +126,7 @@ function CodeEditorComponent({
                 role="combobox"
                 aria-expanded={open}
                 disabled={isLanguageSelectDisabled || isReadOnly}
-                className="h-8 w-[145px] justify-between bg-background/90 text-xs shadow-sm hover:bg-background"
+                className="h-8 w-[200px] justify-between bg-background/90 text-xs shadow-sm hover:bg-background"
               >
                 {language
                   ? (() => {
@@ -134,7 +134,7 @@ function CodeEditorComponent({
                       const Icon = selectedLang?.icon;
                       return (
                         <>
-                          {Icon && <Icon size={14} className="mr-1.5 shrink-0" />}
+                          {Icon && <Icon size={14} color="currentColor" className="mr-1.5 shrink-0" />}
                           {selectedLang?.label}
                         </>
                       );
@@ -166,7 +166,7 @@ function CodeEditorComponent({
                               language === lang.value ? 'opacity-100' : 'opacity-0',
                             )}
                           />
-                          {Icon && <Icon size={16} className="mr-2 shrink-0" />}
+                          {Icon && <Icon size={16} color="currentColor" className="mr-2 shrink-0" />}
                           {lang.label}
                         </CommandItem>
                       );
