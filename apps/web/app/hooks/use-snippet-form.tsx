@@ -33,6 +33,7 @@ interface LanguageOption {
 
 export const SUPPORTED_LANGUAGES_FOR_FORM: LanguageOption[]
 = SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING
+  .filter(({ value }) => value !== 'PLAINTEXT') // Exclude PLAINTEXT from dropdown (Text tab handles plain text)
   .map(
     ({ value, label, icon }) => ({ value, label, icon }),
   );
