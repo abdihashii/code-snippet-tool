@@ -54,6 +54,7 @@ interface SnippetFormProps {
   initialCode?: string;
   initialLanguage?: Language;
   initialTitle?: string;
+  placeholderTexts?: string[]; // For cycling placeholder in CodeEditor
 }
 
 function SnippetFormComponent({
@@ -61,6 +62,7 @@ function SnippetFormComponent({
   initialCode,
   initialLanguage,
   initialTitle,
+  placeholderTexts,
 }: SnippetFormProps) {
   const [isOptionsOpen, setIsOptionsOpen] = useState(true);
 
@@ -153,6 +155,7 @@ function SnippetFormComponent({
                   onLanguageChange={(value) => setLanguage(value as Language)}
                   supportedLanguages={SUPPORTED_LANGUAGES}
                   isLanguageSelectDisabled={selectedTab === 'text'}
+                  placeholderTexts={placeholderTexts}
                 />
               </TabsContent>
               <TabsContent value="text">

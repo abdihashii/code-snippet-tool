@@ -20,6 +20,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
+import { usePlaceholderCycle } from '@/hooks/use-placeholder-cycle';
 import { cn } from '@/lib/utils';
 
 export interface CodeEditorProps {
@@ -30,6 +31,7 @@ export interface CodeEditorProps {
   isReadOnly?: boolean;
   MAX_CODE_LENGTH: number;
   placeholder?: string;
+  placeholderTexts?: string[]; // Array of texts to cycle through
   title?: string;
   language?: Language;
   onLanguageChange?: (language: Language) => void;
@@ -45,6 +47,7 @@ function CodeEditorComponent({
   isReadOnly = false,
   MAX_CODE_LENGTH,
   placeholder = 'Paste your code here...',
+  placeholderTexts,
   title,
   language,
   onLanguageChange,
@@ -53,6 +56,15 @@ function CodeEditorComponent({
 }: CodeEditorProps) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
+
+  // Use cycling placeholder if placeholderTexts is provided
+  const { text: cyclingPlaceholder, isVisible } = usePlaceholderCycle(
+    placeholderTexts || [],
+    Boolean(placeholderTexts && !code), // Only cycle when empty and placeholderTexts provided
+  );
+
+  // Determine which placeholder to use
+  const effectivePlaceholder = placeholderTexts ? cyclingPlaceholder : placeholder;
 
   const handleCopy = async () => {
     try {
@@ -191,7 +203,7 @@ function CodeEditorComponent({
         />
       </pre>
       <Textarea
-        placeholder={placeholder}
+        placeholder={placeholderTexts ? '' : placeholder} // Empty when cycling, static when not
         className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         value={code}
         onChange={(e) => {
@@ -206,6 +218,19 @@ function CodeEditorComponent({
         spellCheck="false"
         disabled={isReadOnly}
       />
+      {/* Custom cycling placeholder with fade animation */}
+      {placeholderTexts && !code && (
+        <div
+          className="absolute top-0 left-0 px-3 py-2 pointer-events-none font-mono text-sm text-muted-foreground/50"
+          style={{
+            transition: 'opacity 200ms ease-in-out',
+            opacity: isVisible ? 1 : 0,
+            minWidth: '100%',
+          }}
+        >
+          {effectivePlaceholder}
+        </div>
+      )}
     </div>
   );
 }

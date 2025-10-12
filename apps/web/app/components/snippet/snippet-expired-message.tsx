@@ -26,14 +26,14 @@ export function SnippetExpiredMessage({
         {message}
       </p>
       {showGoHomeButton && (
-        <Link to="/new">
+        <Link to="/">
           <Button
             variant="outline"
             size="sm"
             className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 flex items-center gap-2 mx-auto"
           >
             <ArrowLeftIcon className="h-4 w-4" />
-            Back to Home
+            Home
           </Button>
         </Link>
       )}
