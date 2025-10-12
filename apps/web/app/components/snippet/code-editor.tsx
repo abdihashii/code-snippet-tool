@@ -166,7 +166,7 @@ function CodeEditorComponent({
                               language === lang.value ? 'opacity-100' : 'opacity-0',
                             )}
                           />
-                          {Icon && <Icon size={16} color="currentColor" className="mr-2 shrink-0" />}
+                          {Icon && <Icon size={16} color="currentColor" className="mr-2 shrink-0 text-current" />}
                           {lang.label}
                         </CommandItem>
                       );
