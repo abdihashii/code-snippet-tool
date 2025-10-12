@@ -272,7 +272,19 @@ VITE_API_URL = "https://preview-api.your-account.workers.dev"
 VITE_API_URL = "https://api.your-domain.com"
 ```
 
-After updating `wrangler.toml`, commit and push - Cloudflare Pages will automatically redeploy with the new variables.
+**Applying changes**:
+
+After updating `wrangler.toml`, you must rebuild and redeploy:
+
+```bash
+# Build the app with new environment variables
+pnpm build
+
+# Deploy to Cloudflare Pages
+pnpm run deploy
+```
+
+Note: If using GitHub integration, commit and push - Cloudflare Pages will automatically rebuild and redeploy with the new variables.
 
 ### Performance Optimizations
 
