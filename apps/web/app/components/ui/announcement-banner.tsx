@@ -13,7 +13,7 @@ export function AnnouncementBanner({ message, onDismiss, show }: AnnouncementBan
 
   return (
     <div className="w-full flex justify-center animate-in fade-in slide-in-from-top-2 duration-300 px-4 py-2">
-      <Badge variant="default" className="w-full max-w-5xl px-3 py-1.5 flex items-center justify-center relative">
+      <Badge variant="default" className="inline-flex px-3 py-1.5 items-center justify-center relative">
         <div className="flex items-center gap-2">
           <SparklesIcon className="h-3.5 w-3.5" />
           <span className="text-xs font-medium">{message}</span>
