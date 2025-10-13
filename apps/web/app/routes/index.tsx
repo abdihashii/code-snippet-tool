@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/layout/app-layout';
 import { SnippetForm } from '@/components/snippet/snippet-form';
+import { AnnouncementBanner } from '@/components/ui/announcement-banner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { useAnnouncementBanner } from '@/hooks/use-announcement-banner';
 import { useLandingAnalytics } from '@/hooks/use-landing-analytics';
 
 export const Route = createFileRoute('/')({
@@ -118,6 +120,9 @@ function Home() {
   // Track landing page analytics
   const { trackFunnelStep } = useLandingAnalytics();
 
+  // Announcement banner
+  const { isDismissed, dismiss } = useAnnouncementBanner();
+
   // Track funnel start
   useEffect(() => {
     trackFunnelStep('view_landing');
@@ -148,6 +153,13 @@ function Home() {
   return (
     <AppLayout>
       <div className="min-h-[calc(100vh-4rem)] flex flex-col">
+        {/* Announcement Banner */}
+        <AnnouncementBanner
+          message="New: Rust syntax highlighting support"
+          onDismiss={dismiss}
+          show={!isDismissed}
+        />
+
         {/* Hero Section with Integrated Demo */}
         <section className="flex-1 flex flex-col justify-center px-4 lg:px-6 py-8 lg:py-12 max-w-5xl mx-auto w-full">
           {/* Minimalist header */}
