@@ -152,171 +152,169 @@ function Home() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col">
-        {/* Announcement Banner */}
-        <AnnouncementBanner
-          message="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
-          mobileMessage="New languages added! 🎉"
-          desktopMessage="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
-          onDismiss={dismiss}
-          show={!isDismissed}
-        />
+      {/* Announcement Banner */}
+      <AnnouncementBanner
+        message="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
+        mobileMessage="New languages added! 🎉"
+        desktopMessage="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
+        onDismiss={dismiss}
+        show={!isDismissed}
+      />
 
-        {/* Hero Section with Integrated Demo */}
-        <section className="flex flex-col px-4 lg:px-6 py-6 lg:py-8 max-w-5xl mx-auto w-full">
-          {/* Minimalist header */}
-          <div className="text-center mb-8 space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-              Share code snippets. Truly private.
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Encrypted in your browser before upload. We literally can't read your code.
-            </p>
+      {/* Hero Section with Integrated Demo */}
+      <section className="max-w-5xl mx-auto px-4 lg:px-6 py-6 lg:py-8">
+        {/* Minimalist header */}
+        <div className="text-center mb-8 space-y-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+            Share code snippets. Truly private.
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Encrypted in your browser before upload. We literally can't read your code.
+          </p>
 
-            {/* Trust indicators without numbers */}
-            <div className="flex justify-center items-center gap-4 sm:gap-6 text-sm">
-              <Badge variant="secondary" className="px-3 py-1">
-                <LockIcon className="h-3 w-3 mr-1" />
-                AES-256 Encryption
-              </Badge>
-              <Badge variant="secondary" className="px-3 py-1">
-                <ShieldIcon className="h-3 w-3 mr-1" />
-                Zero-Knowledge
-              </Badge>
-            </div>
+          {/* Trust indicators without numbers */}
+          <div className="flex justify-center items-center gap-4 sm:gap-6 text-sm">
+            <Badge variant="secondary" className="px-3 py-1">
+              <LockIcon className="h-3 w-3 mr-1" />
+              AES-256 Encryption
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1">
+              <ShieldIcon className="h-3 w-3 mr-1" />
+              Zero-Knowledge
+            </Badge>
           </div>
+        </div>
 
-          {/* Snippet Form - Main Focus */}
-          <div className="w-full">
-            {!showSuccess
-              ? (
-                  <SnippetForm
-                    onSnippetCreated={handleSnippetCreated}
-                    initialLanguage={'PLAINTEXT' as Language}
-                    placeholderTexts={PLACEHOLDER_TEXTS}
-                  />
-                )
-              : (
-                  <div className="rounded-lg border-2 shadow-xl bg-card p-6 space-y-4">
-                    <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                      <CheckIcon className="h-5 w-5" />
-                      <span className="font-medium">Snippet created successfully!</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={snippetLink}
-                        readOnly
-                        className="flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
-                      />
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleCopyLink}
-                      >
-                        {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
-                        <span className="ml-1">{copied ? 'Copied' : 'Copy'}</span>
-                      </Button>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={handleCreateAnother}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        Create Another
-                      </Button>
-                      <Button
-                        onClick={() => navigate({ to: snippetLink.replace(window.location.origin, '') })}
-                        className="flex-1"
-                      >
-                        View Snippet
-                      </Button>
-                    </div>
+        {/* Snippet Form - Main Focus */}
+        <div className="w-full">
+          {!showSuccess
+            ? (
+                <SnippetForm
+                  onSnippetCreated={handleSnippetCreated}
+                  initialLanguage={'PLAINTEXT' as Language}
+                  placeholderTexts={PLACEHOLDER_TEXTS}
+                />
+              )
+            : (
+                <div className="rounded-lg border-2 shadow-xl bg-card p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                    <CheckIcon className="h-5 w-5" />
+                    <span className="font-medium">Snippet created successfully!</span>
                   </div>
-                )}
-          </div>
 
-          {/* Single line trust statement */}
-          {!showSuccess && (
-            <p className="text-center text-sm text-muted-foreground mt-6">
-              Expires when you want. Deleted forever after.
-            </p>
-          )}
-        </section>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={snippetLink}
+                      readOnly
+                      className="flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCopyLink}
+                    >
+                      {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
+                      <span className="ml-1">{copied ? 'Copied' : 'Copy'}</span>
+                    </Button>
+                  </div>
 
-        {/* Minimal FAQ Section */}
-        <section className="px-4 lg:px-6 py-8 border-t">
-          <div className="max-w-3xl mx-auto space-y-4">
-            <h2 className="text-xl font-semibold text-center mb-6">Questions?</h2>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleCreateAnother}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Create Another
+                    </Button>
+                    <Button
+                      onClick={() => navigate({ to: snippetLink.replace(window.location.origin, '') })}
+                      className="flex-1"
+                    >
+                      View Snippet
+                    </Button>
+                  </div>
+                </div>
+              )}
+        </div>
 
-            <Collapsible
-              open={faqOpen === 'secure'}
-              onOpenChange={(open) => setFaqOpen(open ? 'secure' : null)}
-            >
-              <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                <span className="font-medium">How secure is this?</span>
-                <ChevronDownIcon className={`h-4 w-4 transition-transform ${
-                  faqOpen === 'secure' ? 'rotate-180' : ''
-                }`}
-                />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4 pb-4">
-                <p className="text-muted-foreground">
-                  We use AES-256-GCM encryption with a randomly generated key in your browser.
-                  The key is never sent to our servers - it stays in the URL fragment.
-                  This means we literally cannot decrypt your code, even under legal compulsion.
-                  It would take all the world's computers over 1,000 years to crack a single snippet.
-                </p>
-              </CollapsibleContent>
-            </Collapsible>
+        {/* Single line trust statement */}
+        {!showSuccess && (
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Expires when you want. Deleted forever after.
+          </p>
+        )}
+      </section>
 
-            <Collapsible
-              open={faqOpen === 'data'}
-              onOpenChange={(open) => setFaqOpen(open ? 'data' : null)}
-            >
-              <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                <span className="font-medium">What happens to my code?</span>
-                <ChevronDownIcon className={`h-4 w-4 transition-transform ${
-                  faqOpen === 'data' ? 'rotate-180' : ''
-                }`}
-                />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4 pb-4">
-                <p className="text-muted-foreground">
-                  Your code is encrypted before leaving your browser and stored encrypted on our servers.
-                  When the expiration time is reached or view limit is hit, it's permanently deleted.
-                  We also offer "burn after reading" which deletes immediately after the first view.
-                  There's no way to recover deleted snippets.
-                </p>
-              </CollapsibleContent>
-            </Collapsible>
+      {/* Minimal FAQ Section */}
+      <section className="max-w-3xl mx-auto px-4 lg:px-6 py-8 border-t">
+        <h2 className="text-xl font-semibold text-center mb-6">Questions?</h2>
 
-            <Collapsible
-              open={faqOpen === 'features'}
-              onOpenChange={(open) => setFaqOpen(open ? 'features' : null)}
-            >
-              <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                <span className="font-medium">Can I password protect snippets?</span>
-                <ChevronDownIcon className={`h-4 w-4 transition-transform ${
-                  faqOpen === 'features' ? 'rotate-180' : ''
-                }`}
-                />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4 pb-4">
-                <p className="text-muted-foreground">
-                  Yes! You can add an additional password layer on top of the encryption.
-                  You can also set custom expiration times (1 hour to never),
-                  view limits, and use syntax highlighting for 50+ programming languages.
-                  All features are free - no premium tiers, no ads, no tracking.
-                </p>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        </section>
-      </div>
+        <div className="space-y-4">
+          <Collapsible
+            open={faqOpen === 'secure'}
+            onOpenChange={(open) => setFaqOpen(open ? 'secure' : null)}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
+              <span className="font-medium">How secure is this?</span>
+              <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                faqOpen === 'secure' ? 'rotate-180' : ''
+              }`}
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4">
+              <p className="text-muted-foreground">
+                We use AES-256-GCM encryption with a randomly generated key in your browser.
+                The key is never sent to our servers - it stays in the URL fragment.
+                This means we literally cannot decrypt your code, even under legal compulsion.
+                It would take all the world's computers over 1,000 years to crack a single snippet.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible
+            open={faqOpen === 'data'}
+            onOpenChange={(open) => setFaqOpen(open ? 'data' : null)}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
+              <span className="font-medium">What happens to my code?</span>
+              <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                faqOpen === 'data' ? 'rotate-180' : ''
+              }`}
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4">
+              <p className="text-muted-foreground">
+                Your code is encrypted before leaving your browser and stored encrypted on our servers.
+                When the expiration time is reached or view limit is hit, it's permanently deleted.
+                We also offer "burn after reading" which deletes immediately after the first view.
+                There's no way to recover deleted snippets.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible
+            open={faqOpen === 'features'}
+            onOpenChange={(open) => setFaqOpen(open ? 'features' : null)}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
+              <span className="font-medium">Can I password protect snippets?</span>
+              <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                faqOpen === 'features' ? 'rotate-180' : ''
+              }`}
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4">
+              <p className="text-muted-foreground">
+                Yes! You can add an additional password layer on top of the encryption.
+                You can also set custom expiration times (1 hour to never),
+                view limits, and use syntax highlighting for 50+ programming languages.
+                All features are free - no premium tiers, no ads, no tracking.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+      </section>
     </AppLayout>
   );
 }

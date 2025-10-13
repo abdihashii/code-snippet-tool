@@ -138,7 +138,7 @@ function ReleaseCard({ entry }: { entry: ChangelogEntry }) {
 function Changelog() {
   return (
     <AppLayout>
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">

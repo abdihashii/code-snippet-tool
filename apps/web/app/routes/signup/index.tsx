@@ -47,7 +47,7 @@ function RouteComponent() {
   if (error) {
     return (
       <AppLayout>
-        <div className="flex flex-col gap-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 flex flex-col gap-4">
           <p>
             There was an error:
           </p>
@@ -60,7 +60,7 @@ function RouteComponent() {
   if (userData) {
     return (
       <AppLayout>
-        <div className="flex flex-col gap-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 flex flex-col gap-4">
           <p>
             Sign up successful:
           </p>
@@ -72,108 +72,110 @@ function RouteComponent() {
 
   return (
     <AppLayout>
-      <Card className="w-1/2 shadow-md border-slate-200 bg-white mx-auto">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="mb-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="signup_email">Email</Label>
-                <Input
-                  id="signup_email"
-                  type="email"
-                  {...register('email')}
-                />
-                {errors.email && (
-                  <span className="text-sm text-red-600">
-                    {errors.email.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="signup_password">Password</Label>
-                <div className="relative">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8">
+        <Card className="w-1/2 shadow-md border-slate-200 bg-white mx-auto">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <CardContent className="mb-4">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="signup_email">Email</Label>
                   <Input
-                    id="signup_password"
-                    type={showPassword ? 'text' : 'password'}
-                    {...register('password')}
+                    id="signup_email"
+                    type="email"
+                    {...register('email')}
                   />
-                  <div
-                    className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-3"
-                  >
-                    <span
-                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword
-                        ? <EyeIcon className="h-4 w-4" />
-                        : <EyeOffIcon className="h-4 w-4" />}
+                  {errors.email && (
+                    <span className="text-sm text-red-600">
+                      {errors.email.message}
                     </span>
-                  </div>
-                </div>
-                {errors.password && (
-                  <span className="text-sm text-red-600">
-                    {errors.password.message}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="signup_confirm_password">Confirm Password</Label>
-                <div className="relative">
-                  <Input
-                    id="signup_confirm_password"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    {...register('confirmPassword')}
-                  />
-                  <div
-                    className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-3"
-                  >
-                    <span
-                      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-                      onClick={
-                        () => setShowConfirmPassword(!showConfirmPassword)
-                      }
-                    >
-                      {showConfirmPassword
-                        ? <EyeIcon className="h-4 w-4" />
-                        : <EyeOffIcon className="h-4 w-4" />}
-                    </span>
-                  </div>
-                </div>
-                {errors.confirmPassword && (
-                  <span className="text-sm text-red-600">
-                    {errors.confirmPassword.message}
-                  </span>
-                )}
-              </div>
-            </div>
-          </CardContent>
-
-          <CardFooter className="flex justify-center">
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
-              disabled={isLoading}
-            >
-              {isLoading
-                ? (
-                    <>
-                      <Loader2Icon className="h-4 w-4 animate-spin" />
-                      Signing Up
-                    </>
-                  )
-                : (
-                    <>
-                      <LogInIcon className="h-4 w-4" />
-                      Sign Up
-                    </>
                   )}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="signup_password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="signup_password"
+                      type={showPassword ? 'text' : 'password'}
+                      {...register('password')}
+                    />
+                    <div
+                      className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-3"
+                    >
+                      <span
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword
+                          ? <EyeIcon className="h-4 w-4" />
+                          : <EyeOffIcon className="h-4 w-4" />}
+                      </span>
+                    </div>
+                  </div>
+                  {errors.password && (
+                    <span className="text-sm text-red-600">
+                      {errors.password.message}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="signup_confirm_password">Confirm Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="signup_confirm_password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      {...register('confirmPassword')}
+                    />
+                    <div
+                      className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-3"
+                    >
+                      <span
+                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                        onClick={
+                          () => setShowConfirmPassword(!showConfirmPassword)
+                        }
+                      >
+                        {showConfirmPassword
+                          ? <EyeIcon className="h-4 w-4" />
+                          : <EyeOffIcon className="h-4 w-4" />}
+                      </span>
+                    </div>
+                  </div>
+                  {errors.confirmPassword && (
+                    <span className="text-sm text-red-600">
+                      {errors.confirmPassword.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex justify-center">
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 hover:cursor-pointer flex items-center justify-center gap-2"
+                disabled={isLoading}
+              >
+                {isLoading
+                  ? (
+                      <>
+                        <Loader2Icon className="h-4 w-4 animate-spin" />
+                        Signing Up
+                      </>
+                    )
+                  : (
+                      <>
+                        <LogInIcon className="h-4 w-4" />
+                        Sign Up
+                      </>
+                    )}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
     </AppLayout>
   );
 }
