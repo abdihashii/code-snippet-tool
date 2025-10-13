@@ -15,15 +15,69 @@
 - **Rate limit:** 25 snippets/month
 - **Expiry:** Up to 7 days
 - **Size limit:** 100KB
-- **Features:** Custom short URLs, snippet history, dashboard
-- **No:** Password protection, analytics, custom domains
+- **Features:** Custom short URLs, snippet history, dashboard, password protection _(already implemented)_
+- **No:** Analytics, custom domains, API access
 
 ### 💎 Pro ($8/mo or $80/yr)
 
 - **Rate limit:** Unlimited
 - **Expiry:** Up to 1 year or permanent
 - **Size limit:** 10MB
-- **Features:** Everything + password protection, custom expiry, analytics (views, geo), API access (1K calls/mo), custom domains
+- **Features:** Everything + analytics (views, geo), API access (1K calls/mo), custom domains, priority support
+
+---
+
+## Technical Prerequisites
+
+Before implementing monetization, the following must be built:
+
+### Authentication System
+- [ ] Complete login/logout flow (currently only signup endpoint exists)
+- [ ] Session management with Supabase Auth
+- [ ] Protected routes and auth middleware
+- [ ] OAuth providers (GitHub, Google) via Supabase
+
+### Database Schema
+- [ ] Create `public.profiles` table (see schema section below)
+- [ ] Add Row Level Security (RLS) policies
+- [ ] Foreign key from `snippets.user_id` to `profiles.id`
+- [ ] Migration for existing anonymous snippets
+
+### User Dashboard
+- [ ] Dashboard route (`/dashboard`)
+- [ ] List user's snippets with metadata
+- [ ] Usage stats display ("12/25 snippets this month")
+- [ ] Delete snippet functionality
+
+### Feature Gates
+- [ ] Tier-aware size validation (50KB/100KB/10MB)
+- [ ] Tier-aware expiry options (24h/7d/1yr)
+- [ ] Monthly quota tracking system (see **Quota Tracking Strategy** below)
+
+### Quota Tracking Strategy
+
+**Decision needed:** How to enforce "25 snippets/month" for free users?
+
+**Option A: Database Counter (Recommended)**
+- ✅ Accurate: Guarantees exact quota enforcement
+- ✅ Simple: Use `profiles.snippets_this_month` + PostgreSQL trigger
+- ✅ Audit trail: Easy to query user's monthly usage
+- ❌ DB hit: Every snippet creation requires a database UPDATE
+- **Implementation:** Increment counter on snippet create, reset via scheduled function
+
+**Option B: Cloudflare KV with Monthly Window**
+- ✅ Fast: No database hit, uses existing rate limiter
+- ❌ Approximate: KV expiration not exact (eventual consistency)
+- ❌ No history: Can't query "how many snippets did user create last month?"
+- **Implementation:** Use `keyGenerator: (c) => user.id` with 30-day window
+
+**Recommended:** Option A (database counter). More accurate and provides better analytics for niche discovery.
+
+### Stripe Integration (Phase 3)
+- [ ] Stripe account + API keys
+- [ ] Webhook endpoint for subscription events
+- [ ] Customer creation on signup
+- [ ] Subscription management UI
 
 ---
 
@@ -65,11 +119,20 @@ posthog.capture('upgrade_cta_clicked', {
 **Set user properties:**
 
 ```javascript
-posthog.identify(userId, {
-  tier: 'free',
-  signup_date: '2025-10-13',
-  snippets_created_total: 47,
-  snippets_this_month: 12
+// After user signs up and profile is created
+const { data: { user } } = await supabase.auth.getUser();
+const { data: profile } = await supabase
+  .from('profiles')
+  .select('tier, created_at, snippets_this_month')
+  .eq('id', user.id)
+  .single();
+
+posthog.identify(user.id, {
+  email: user.email,
+  tier: profile.tier, // 'free' or 'pro'
+  signup_date: profile.created_at,
+  snippets_created_total: profile.snippets_created_total || 0,
+  snippets_this_month: profile.snippets_this_month
 })
 ```
 
@@ -129,19 +192,95 @@ Let PostHog handle display logic and response collection.
 
 ## Database Schema
 
-```sql
--- users table (Supabase)
-ALTER TABLE users ADD COLUMN tier TEXT DEFAULT 'free';
-ALTER TABLE users ADD COLUMN stripe_customer_id TEXT;
-ALTER TABLE users ADD COLUMN stripe_subscription_id TEXT;
-ALTER TABLE users ADD COLUMN snippets_this_month INT DEFAULT 0;
-ALTER TABLE users ADD COLUMN quota_reset_date TIMESTAMP;
+**Note:** Supabase provides `auth.users` table (private, managed by Supabase Auth). We create a public `profiles` table for application-specific user data.
 
--- snippets table
-ALTER TABLE snippets ADD COLUMN user_id UUID REFERENCES users(id) NULL;
-ALTER TABLE snippets ADD COLUMN is_password_protected BOOLEAN DEFAULT false;
-ALTER TABLE snippets ADD COLUMN custom_expiry_date TIMESTAMP;
+```sql
+-- Create public.profiles table (linked to auth.users)
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+
+  -- Subscription info
+  tier TEXT NOT NULL DEFAULT 'free' CHECK (tier IN ('free', 'pro')),
+  stripe_customer_id TEXT UNIQUE,
+  stripe_subscription_id TEXT UNIQUE,
+
+  -- Quota tracking (for monthly snippet limit)
+  snippets_this_month INT NOT NULL DEFAULT 0,
+  snippets_created_total INT NOT NULL DEFAULT 0,
+  quota_reset_date TIMESTAMP NOT NULL DEFAULT (NOW() + INTERVAL '1 month'),
+
+  -- Timestamps
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Enable Row Level Security
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can view only their own profile
+CREATE POLICY "Users can view own profile"
+  ON public.profiles FOR SELECT
+  USING (auth.uid() = id);
+
+-- Policy: Users can update only their own profile
+CREATE POLICY "Users can update own profile"
+  ON public.profiles FOR UPDATE
+  USING (auth.uid() = id);
+
+-- Create index for faster lookups
+CREATE INDEX idx_profiles_stripe_customer ON public.profiles(stripe_customer_id);
+CREATE INDEX idx_profiles_tier ON public.profiles(tier);
+
+-- Update snippets table to reference profiles
+-- Note: snippets.user_id already exists from migration 20250518212657
+ALTER TABLE public.snippets
+  DROP CONSTRAINT IF EXISTS snippets_user_id_fkey;
+
+ALTER TABLE public.snippets
+  ADD CONSTRAINT snippets_user_id_fkey
+  FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+  ON DELETE SET NULL;
+
+-- Create function to auto-create profile on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, tier, created_at)
+  VALUES (NEW.id, 'free', NOW());
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to create profile when auth.users row is created
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Create function to reset monthly quota
+CREATE OR REPLACE FUNCTION public.reset_monthly_quotas()
+RETURNS void AS $$
+BEGIN
+  UPDATE public.profiles
+  SET
+    snippets_this_month = 0,
+    quota_reset_date = NOW() + INTERVAL '1 month'
+  WHERE quota_reset_date <= NOW();
+END;
+$$ LANGUAGE plpgsql;
+
+-- Note: Schedule this function to run daily via Supabase Edge Functions or pg_cron
 ```
+
+### Migration Plan for Existing Anonymous Snippets
+
+**Current state:** All existing snippets have `user_id = NULL` (anonymous).
+
+**Options:**
+1. **Keep as anonymous** - No action needed. When users sign up, only new snippets will have `user_id` set.
+2. **Claim via cookie** - If user had a cookie before signup, link their anonymous snippets to new account.
+
+**Recommended:** Option 1 (keep as anonymous). It's simpler and respects zero-knowledge principle - we don't know who created them.
 
 ---
 
