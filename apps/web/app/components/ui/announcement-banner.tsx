@@ -36,7 +36,8 @@ export function AnnouncementBanner({ message, mobileMessage, desktopMessage, onD
           : 'animate-in fade-in slide-in-from-top-2'
       }`}
     >
-      <Badge variant="default" className="inline-flex max-w-full px-3 py-1.5 pr-11 sm:pr-10 items-center relative">
+      <div className="max-w-5xl mx-auto w-full flex justify-center">
+        <Badge variant="default" className="inline-flex max-w-full px-3 py-1.5 pr-11 sm:pr-10 items-center relative">
         <div className="flex items-center gap-2 min-w-0">
           <SparklesIcon className="h-3.5 w-3.5 flex-shrink-0" />
           <span className="text-xs font-medium truncate">
@@ -54,6 +55,7 @@ export function AnnouncementBanner({ message, mobileMessage, desktopMessage, onD
           <XIcon className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
         </Button>
       </Badge>
+      </div>
     </div>
   );
 }

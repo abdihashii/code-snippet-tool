@@ -162,7 +162,7 @@ function Home() {
       />
 
       {/* Hero Section with Integrated Demo */}
-      <section className="max-w-5xl mx-auto px-4 lg:px-6 py-6 lg:py-8">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Minimalist header */}
         <div className="text-center mb-8 space-y-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
@@ -247,7 +247,7 @@ function Home() {
       </section>
 
       {/* Minimal FAQ Section */}
-      <section className="max-w-3xl mx-auto px-4 lg:px-6 py-8 border-t">
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t">
         <h2 className="text-xl font-semibold text-center mb-6">Questions?</h2>
 
         <div className="space-y-4">
