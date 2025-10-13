@@ -152,7 +152,7 @@ function Home() {
 
   return (
     <AppLayout>
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col">
+      <div className="flex flex-col">
         {/* Announcement Banner */}
         <AnnouncementBanner
           message="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
@@ -163,7 +163,7 @@ function Home() {
         />
 
         {/* Hero Section with Integrated Demo */}
-        <section className="flex-1 flex flex-col justify-center px-4 lg:px-6 py-8 lg:py-12 max-w-5xl mx-auto w-full">
+        <section className="flex flex-col px-4 lg:px-6 py-6 lg:py-8 max-w-5xl mx-auto w-full">
           {/* Minimalist header */}
           <div className="text-center mb-8 space-y-4">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
@@ -248,7 +248,7 @@ function Home() {
         </section>
 
         {/* Minimal FAQ Section */}
-        <section className="px-4 lg:px-6 py-12 border-t">
+        <section className="px-4 lg:px-6 py-8 border-t">
           <div className="max-w-3xl mx-auto space-y-4">
             <h2 className="text-xl font-semibold text-center mb-6">Questions?</h2>
 
