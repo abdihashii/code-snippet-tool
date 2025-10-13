@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { ArrowLeftIcon } from 'lucide-react';
 
+import { AppLayout } from '@/components/layout/app-layout';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/404')({
@@ -8,12 +10,26 @@ export const Route = createFileRoute('/404')({
 
 export function NotFound() {
   return (
-    <div className="flex flex-col gap-2">
-      <h1>404 - Not Found</h1>
-      <p>The page you are looking for does not exist.</p>
-      <Button asChild>
-        <Link to="/">Go to Home</Link>
-      </Button>
-    </div>
+    <AppLayout>
+      <div className="min-h-[calc(100vh-16rem)] flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+            404 - Page Not Found
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            The page you are looking for does not exist.
+          </p>
+          <div className="flex justify-center pt-4">
+            <Button asChild size="lg">
+              <Link to="/">
+                <ArrowLeftIcon />
+                {' '}
+                Home
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </AppLayout>
   );
 }
