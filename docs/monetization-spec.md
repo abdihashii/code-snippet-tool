@@ -15,15 +15,15 @@
 - **Rate limit:** 25 snippets/month
 - **Expiry:** Up to 7 days
 - **Size limit:** 100KB
-- **Features:** Custom short URLs, snippet history, dashboard, password protection _(already implemented)_
-- **No:** Analytics, custom domains, API access
+- **Features:** Custom short URLs, snippet history, dashboard
+- **No:** Password protection, analytics, custom domains, API access
 
 ### 💎 Pro ($8/mo or $80/yr)
 
 - **Rate limit:** Unlimited
 - **Expiry:** Up to 1 year or permanent
 - **Size limit:** 10MB
-- **Features:** Everything + analytics (views, geo), API access (1K calls/mo), custom domains, priority support
+- **Features:** Everything + **password protection** _(already implemented, needs feature gate)_, analytics (views, geo), API access (1K calls/mo), custom domains, priority support
 
 ---
 
