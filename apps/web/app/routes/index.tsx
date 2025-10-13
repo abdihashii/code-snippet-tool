@@ -155,7 +155,7 @@ function Home() {
       <div className="min-h-[calc(100vh-4rem)] flex flex-col">
         {/* Announcement Banner */}
         <AnnouncementBanner
-          message="New: Rust syntax highlighting support"
+          message="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
           onDismiss={dismiss}
           show={!isDismissed}
         />
