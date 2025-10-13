@@ -30,23 +30,24 @@ Icons are integrated into the language dropdown (`code-editor.tsx`) to help user
 - Navigate long language lists more easily
 - Enjoy a more modern, professional UX
 
-## Currently Supported Languages (14)
+## Currently Supported Languages (15)
 
-| Language   | Syntax Highlighting | Code Prettification | Icon Available | Icon Import         | Notes                            |
-| ---------- | ------------------- | ------------------- | -------------- | ------------------- | -------------------------------- |
-| JavaScript | ✅                  | ✅                  | ✅             | `SiJavascript`      | Parser: babel                    |
-| TypeScript | ✅                  | ✅                  | ✅             | `SiTypescript`      | Parser: typescript               |
-| Python     | ✅                  | ❌                  | ✅             | `SiPython`          | No browser-compatible formatter  |
-| HTML       | ✅                  | ✅                  | ✅             | `SiHtml5`           | Parser: html                     |
-| CSS        | ✅                  | ✅                  | ✅             | `SiCss3`            | Parser: css                      |
-| Java       | ✅                  | ✅                  | ✅             | `SiOpenjdk`         | Plugin: prettier-plugin-java     |
-| C#         | ✅                  | ❌                  | ✅             | `SiCsharp`          | No browser-compatible formatter  |
-| Bash       | ✅                  | ❌                  | ✅             | `SiGnubash`         | No browser-compatible formatter  |
-| SQL        | ✅                  | ❌                  | ✅             | `SiMysql`           | No browser-compatible formatter  |
-| JSON       | ✅                  | ✅                  | ✅             | `SiJson`            | Parser: json5                    |
-| Markdown   | ✅                  | ✅                  | ✅             | `SiMarkdown`        | Parser: markdown                 |
-| Rust       | ✅                  | ❌                  | ✅             | `SiRust`            | Plugin incompatible with browser |
-| Plaintext  | ✅                  | ❌                  | ⚠️             | `FileCode` (lucide) | N/A                              |
+| Language   | Syntax Highlighting | Code Prettification | Icon Available | Icon Import         | Notes                                  |
+| ---------- | ------------------- | ------------------- | -------------- | ------------------- | -------------------------------------- |
+| JavaScript | ✅                  | ✅                  | ✅             | `SiJavascript`      | Parser: babel                          |
+| TypeScript | ✅                  | ✅                  | ✅             | `SiTypescript`      | Parser: typescript                     |
+| Python     | ✅                  | ❌                  | ✅             | `SiPython`          | No browser-compatible formatter        |
+| HTML       | ✅                  | ✅                  | ✅             | `SiHtml5`           | Parser: html                           |
+| CSS        | ✅                  | ✅                  | ✅             | `SiCss3`            | Parser: css                            |
+| Java       | ✅                  | ✅                  | ✅             | `SiOpenjdk`         | Plugin: prettier-plugin-java           |
+| PHP        | ✅                  | ❌                  | ✅             | `SiPhp`             | Plugin uses Node.js APIs (process.cwd) |
+| C#         | ✅                  | ❌                  | ✅             | `SiCsharp`          | No browser-compatible formatter        |
+| Bash       | ✅                  | ❌                  | ✅             | `SiGnubash`         | No browser-compatible formatter        |
+| SQL        | ✅                  | ❌                  | ✅             | `SiMysql`           | No browser-compatible formatter        |
+| JSON       | ✅                  | ✅                  | ✅             | `SiJson`            | Parser: json5                          |
+| Markdown   | ✅                  | ✅                  | ✅             | `SiMarkdown`        | Parser: markdown                       |
+| Rust       | ✅                  | ❌                  | ✅             | `SiRust`            | Plugin incompatible with browser       |
+| Plaintext  | ✅                  | ❌                  | ⚠️             | `FileCode` (lucide) | N/A                                    |
 
 ## Missing Popular Languages
 
@@ -56,12 +57,12 @@ Based on 2025 programming language rankings (TIOBE, PYPL, RedMonk, Stack Overflo
 
 Languages in the top 10 of major programming language indexes.
 
-| Language | Global Rank | Use Cases                     | Highlight.js | Prettier Support          | Status |
-| -------- | ----------- | ----------------------------- | ------------ | ------------------------- | ------ |
-| PHP      | #6-7        | Web backend, WordPress        | ✅           | ✅ `@prettier/plugin-php` | TODO   |
-| C        | #2-3        | Systems, embedded             | ✅           | ❌ (uses clang-format)    | TODO   |
-| C++      | #3-5        | Game dev, high-performance    | ✅           | ❌ (uses clang-format)    | TODO   |
-| Go       | #8-12       | Cloud, backend, microservices | ✅           | ❌ (uses gofmt)           | TODO   |
+| Language | Global Rank | Use Cases                     | Highlight.js | Prettier Support       | Status   |
+| -------- | ----------- | ----------------------------- | ------------ | ---------------------- | -------- |
+| PHP      | #6-7        | Web backend, WordPress        | ✅           | ❌ (uses Node.js APIs) | ✅ ADDED |
+| C        | #2-3        | Systems, embedded             | ✅           | ❌ (uses clang-format) | TODO     |
+| C++      | #3-5        | Game dev, high-performance    | ✅           | ❌ (uses clang-format) | TODO     |
+| Go       | #8-12       | Cloud, backend, microservices | ✅           | ❌ (uses gofmt)        | TODO     |
 
 ### Tier 2: Medium Priority (Top 15-20 Globally)
 
@@ -93,9 +94,8 @@ Languages with specific use cases or legacy support.
 
 These can provide full prettification support:
 
-- ✅ **@prettier/plugin-php** - Official, well-maintained
-- ✅ **prettier-plugin-ruby** - Official, well-maintained
-- ✅ **prettier-plugin-java** - Already implemented
+- ✅ **prettier-plugin-ruby** - Official, well-maintained (needs testing)
+- ✅ **prettier-plugin-java** - Already implemented and working
 
 ### Plugins with Unknown Browser Compatibility
 
@@ -106,8 +106,12 @@ These may or may not work with `prettier/standalone`:
 
 ### Native Formatters (Not Browser-Compatible)
 
-These languages use native binaries that cannot run in browsers:
+These languages use native binaries or Node.js-specific APIs that cannot run in browsers:
 
+- ❌ **@prettier/plugin-php** - Uses `process.cwd()`, requires `fs` and `path` modules (Node.js APIs)
+  - **Note**: Despite having a `standalone.js` file, the plugin's dependency `php-parser` v3.2.5 calls Node.js APIs
+  - The standalone build includes `require("fs")` and `require("path")` which don't exist in browsers
+  - Error: `TypeError: process.cwd is not a function`
 - ❌ **C/C++** - Uses `clang-format` (C++ native tool)
 - ❌ **Go** - Uses `gofmt` (Go native tool)
 - ❌ **Rust** - Uses `rustfmt` (Rust native tool)
@@ -252,8 +256,8 @@ Based on popularity and ease of implementation:
 
 1. **Phase 1 - Quick Wins** (High Priority + Easy)
 
-   - PHP (with prettify)
-   - Ruby (with prettify)
+   - ✅ ~~PHP (highlighting only)~~ - **COMPLETED**
+   - Ruby (highlighting only, test prettify if possible)
    - Go (highlighting only)
    - C (highlighting only)
    - C++ (highlighting only)

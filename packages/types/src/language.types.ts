@@ -11,4 +11,5 @@ export type Language =
   | 'MARKDOWN'
   | 'CSHARP'
   | 'SQL'
-  | 'RUST';
+  | 'RUST'
+  | 'PHP';

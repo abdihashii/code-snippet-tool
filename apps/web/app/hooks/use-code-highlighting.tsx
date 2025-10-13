@@ -8,6 +8,7 @@ import {
   SiMarkdown,
   SiMysql,
   SiOpenjdk,
+  SiPhp,
   SiPython,
   SiRust,
   SiSharp,
@@ -35,6 +36,7 @@ export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
   { value: 'HTML', label: 'HTML', hljsId: 'xml', icon: SiHtml5 }, // HTML uses the 'xml' grammar in hljs
   { value: 'CSS', label: 'CSS', hljsId: 'css', icon: SiCss },
   { value: 'JAVA', label: 'Java', hljsId: 'java', icon: SiOpenjdk },
+  { value: 'PHP', label: 'PHP', hljsId: 'php', icon: SiPhp },
   { value: 'CSHARP', label: 'C#', hljsId: 'csharp', icon: SiSharp },
   { value: 'BASH', label: 'Bash', hljsId: 'bash', icon: SiGnubash },
   { value: 'SQL', label: 'SQL', hljsId: 'sql', icon: SiMysql },
@@ -56,6 +58,7 @@ const languageLoaders: Record<string, () => Promise<any>> = {
   css: () => import('highlight.js/lib/languages/css'),
   typescript: () => import('highlight.js/lib/languages/typescript'),
   java: () => import('highlight.js/lib/languages/java'),
+  php: () => import('highlight.js/lib/languages/php'),
   bash: () => import('highlight.js/lib/languages/bash'),
   sql: () => import('highlight.js/lib/languages/sql'),
   markdown: () => import('highlight.js/lib/languages/markdown'),
