@@ -47,7 +47,7 @@ function RouteComponent() {
   if (error) {
     return (
       <AppLayout>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 flex flex-col gap-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-4">
           <p>
             There was an error:
           </p>
@@ -60,7 +60,7 @@ function RouteComponent() {
   if (userData) {
     return (
       <AppLayout>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 flex flex-col gap-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-4">
           <p>
             Sign up successful:
           </p>
@@ -72,8 +72,8 @@ function RouteComponent() {
 
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8">
-        <Card className="w-1/2 shadow-md border-slate-200 bg-white mx-auto">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="w-full max-w-md shadow-md border-slate-200 bg-white mx-auto">
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="mb-4">
               <div className="flex flex-col gap-4">
