@@ -13,4 +13,7 @@ export type Language =
   | 'SQL'
   | 'RUST'
   | 'PHP'
-  | 'RUBY';
+  | 'RUBY'
+  | 'GO'
+  | 'C'
+  | 'CPP';

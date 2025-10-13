@@ -1,8 +1,11 @@
 import type { Language } from '@snippet-share/types';
 
 import {
+  SiC,
+  SiCplusplus,
   SiCss,
   SiGnubash,
+  SiGo,
   SiHtml5,
   SiJavascript,
   SiMarkdown,
@@ -39,6 +42,9 @@ export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
   { value: 'JAVA', label: 'Java', hljsId: 'java', icon: SiOpenjdk },
   { value: 'PHP', label: 'PHP', hljsId: 'php', icon: SiPhp },
   { value: 'RUBY', label: 'Ruby', hljsId: 'ruby', icon: SiRuby },
+  { value: 'GO', label: 'Go', hljsId: 'go', icon: SiGo },
+  { value: 'C', label: 'C', hljsId: 'c', icon: SiC },
+  { value: 'CPP', label: 'C++', hljsId: 'cpp', icon: SiCplusplus },
   { value: 'CSHARP', label: 'C#', hljsId: 'csharp', icon: SiSharp },
   { value: 'BASH', label: 'Bash', hljsId: 'bash', icon: SiGnubash },
   { value: 'SQL', label: 'SQL', hljsId: 'sql', icon: SiMysql },
@@ -62,6 +68,9 @@ const languageLoaders: Record<string, () => Promise<any>> = {
   java: () => import('highlight.js/lib/languages/java'),
   php: () => import('highlight.js/lib/languages/php'),
   ruby: () => import('highlight.js/lib/languages/ruby'),
+  go: () => import('highlight.js/lib/languages/go'),
+  c: () => import('highlight.js/lib/languages/c'),
+  cpp: () => import('highlight.js/lib/languages/cpp'),
   bash: () => import('highlight.js/lib/languages/bash'),
   sql: () => import('highlight.js/lib/languages/sql'),
   markdown: () => import('highlight.js/lib/languages/markdown'),

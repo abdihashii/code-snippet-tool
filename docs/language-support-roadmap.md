@@ -30,7 +30,7 @@ Icons are integrated into the language dropdown (`code-editor.tsx`) to help user
 - Navigate long language lists more easily
 - Enjoy a more modern, professional UX
 
-## Currently Supported Languages (16)
+## Currently Supported Languages (19)
 
 | Language   | Syntax Highlighting | Code Prettification | Icon Available | Icon Import         | Notes                                  |
 | ---------- | ------------------- | ------------------- | -------------- | ------------------- | -------------------------------------- |
@@ -42,6 +42,9 @@ Icons are integrated into the language dropdown (`code-editor.tsx`) to help user
 | Java       | ✅                  | ✅                  | ✅             | `SiOpenjdk`         | Plugin: prettier-plugin-java           |
 | PHP        | ✅                  | ❌                  | ✅             | `SiPhp`             | Plugin uses Node.js APIs (process.cwd) |
 | Ruby       | ✅                  | ❌                  | ✅             | `SiRuby`            | Plugin requires Ruby runtime process   |
+| Go         | ✅                  | ❌                  | ✅             | `SiGo`              | Uses gofmt (native Go tool)            |
+| C          | ✅                  | ❌                  | ✅             | `SiC`               | Uses clang-format (native tool)        |
+| C++        | ✅                  | ❌                  | ✅             | `SiCplusplus`       | Uses clang-format (native tool)        |
 | C#         | ✅                  | ❌                  | ✅             | `SiCsharp`          | No browser-compatible formatter        |
 | Bash       | ✅                  | ❌                  | ✅             | `SiGnubash`         | No browser-compatible formatter        |
 | SQL        | ✅                  | ❌                  | ✅             | `SiMysql`           | No browser-compatible formatter        |
@@ -61,22 +64,22 @@ Languages in the top 10 of major programming language indexes.
 | Language | Global Rank | Use Cases                     | Highlight.js | Prettier Support       | Status   |
 | -------- | ----------- | ----------------------------- | ------------ | ---------------------- | -------- |
 | PHP      | #6-7        | Web backend, WordPress        | ✅           | ❌ (uses Node.js APIs) | ✅ ADDED |
-| C        | #2-3        | Systems, embedded             | ✅           | ❌ (uses clang-format) | TODO     |
-| C++      | #3-5        | Game dev, high-performance    | ✅           | ❌ (uses clang-format) | TODO     |
-| Go       | #8-12       | Cloud, backend, microservices | ✅           | ❌ (uses gofmt)        | TODO     |
+| C        | #2-3        | Systems, embedded             | ✅           | ❌ (uses clang-format) | ✅ ADDED |
+| C++      | #3-5        | Game dev, high-performance    | ✅           | ❌ (uses clang-format) | ✅ ADDED |
+| Go       | #8-12       | Cloud, backend, microservices | ✅           | ❌ (uses gofmt)        | ✅ ADDED |
 
 ### Tier 2: Medium Priority (Top 15-20 Globally)
 
 Languages frequently used in specific domains or platforms.
 
-| Language | Global Rank | Use Cases                    | Highlight.js | Prettier Support               | Status      |
-| -------- | ----------- | ---------------------------- | ------------ | ------------------------------ | ----------- |
-| Ruby     | #9-15       | Web (Rails), scripting       | ✅           | ❌ (requires Ruby runtime)     | ✅ ADDED    |
-| Kotlin   | #12-15      | Android, JVM                 | ✅           | ⚠️ Community plugin (untested) | TODO        |
-| Swift    | #11-15      | iOS, macOS                   | ✅           | ⚠️ Plugin deprecated/unstable  | TODO        |
-| R        | #15-18      | Data science, statistics     | ✅           | ❌ No plugin                   | TODO        |
-| Scala    | #15-20      | Big data (Spark), functional | ✅           | ❌ (uses Scalafmt)             | TODO        |
-| Dart     | #16-20      | Flutter mobile               | ✅           | ❌ (uses dart format)          | TODO        |
+| Language | Global Rank | Use Cases                    | Highlight.js | Prettier Support               | Status   |
+| -------- | ----------- | ---------------------------- | ------------ | ------------------------------ | -------- |
+| Ruby     | #9-15       | Web (Rails), scripting       | ✅           | ❌ (requires Ruby runtime)     | ✅ ADDED |
+| Kotlin   | #12-15      | Android, JVM                 | ✅           | ⚠️ Community plugin (untested) | TODO     |
+| Swift    | #11-15      | iOS, macOS                   | ✅           | ⚠️ Plugin deprecated/unstable  | TODO     |
+| R        | #15-18      | Data science, statistics     | ✅           | ❌ No plugin                   | TODO     |
+| Scala    | #15-20      | Big data (Spark), functional | ✅           | ❌ (uses Scalafmt)             | TODO     |
+| Dart     | #16-20      | Flutter mobile               | ✅           | ❌ (uses dart format)          | TODO     |
 
 ### Tier 3: Lower Priority (Top 20-30 or Niche)
 
@@ -259,13 +262,13 @@ Follow steps 1-7 above, then:
 
 Based on popularity and ease of implementation:
 
-1. **Phase 1 - Quick Wins** (High Priority + Easy)
+1. **Phase 1 - Quick Wins** (High Priority + Easy) - ✅ **COMPLETED**
 
    - ✅ ~~PHP (highlighting only)~~ - **COMPLETED**
    - ✅ ~~Ruby (highlighting only)~~ - **COMPLETED**
-   - Go (highlighting only)
-   - C (highlighting only)
-   - C++ (highlighting only)
+   - ✅ ~~Go (highlighting only)~~ - **COMPLETED**
+   - ✅ ~~C (highlighting only)~~ - **COMPLETED**
+   - ✅ ~~C++ (highlighting only)~~ - **COMPLETED**
 
 2. **Phase 2 - Mobile Development** (Medium Priority)
 
