@@ -11,7 +11,7 @@ export const Route = createFileRoute('/404')({
 export function NotFound() {
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 min-h-[calc(100vh-16rem)] flex items-center justify-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-16rem)] flex items-center justify-center">
         <div className="text-center space-y-6">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
             404 - Page Not Found
