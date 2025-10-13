@@ -64,7 +64,7 @@ function SnippetFormComponent({
   initialTitle,
   placeholderTexts,
 }: SnippetFormProps) {
-  const [isOptionsOpen, setIsOptionsOpen] = useState(true);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
   const {
     // Form field states and setters
