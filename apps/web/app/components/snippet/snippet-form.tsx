@@ -54,6 +54,7 @@ interface SnippetFormProps {
   initialCode?: string;
   initialLanguage?: Language;
   initialTitle?: string;
+  placeholderTexts?: string[]; // For cycling placeholder in CodeEditor
 }
 
 function SnippetFormComponent({
@@ -61,6 +62,7 @@ function SnippetFormComponent({
   initialCode,
   initialLanguage,
   initialTitle,
+  placeholderTexts,
 }: SnippetFormProps) {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
 
@@ -153,6 +155,7 @@ function SnippetFormComponent({
                   onLanguageChange={(value) => setLanguage(value as Language)}
                   supportedLanguages={SUPPORTED_LANGUAGES}
                   isLanguageSelectDisabled={selectedTab === 'text'}
+                  placeholderTexts={placeholderTexts}
                 />
               </TabsContent>
               <TabsContent value="text">
@@ -270,7 +273,7 @@ function SnippetFormComponent({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Snippet Title */}
                     <div className="space-y-2">
-                      <Label htmlFor="title">Snippet Title (Optional)</Label>
+                      <Label htmlFor="title">Snippet Title</Label>
                       <Input
                         id="title"
                         placeholder="My Awesome Code"
@@ -282,7 +285,7 @@ function SnippetFormComponent({
                     {/* Uploader Info */}
                     <div className="space-y-2">
                       <Label htmlFor="uploader-info">
-                        Your Name/Note (Optional, shown to recipient)
+                        Your Name/Note (Shown to recipient)
                       </Label>
                       <Input
                         id="uploader-info"

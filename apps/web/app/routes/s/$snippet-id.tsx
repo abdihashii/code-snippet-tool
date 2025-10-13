@@ -209,14 +209,14 @@ function RouteComponent() {
           <p className="text-muted-foreground mb-6">
             {loadedData.message}
           </p>
-          <Link to="/new">
+          <Link to="/">
             <Button
               variant="outline"
               size="sm"
               className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 flex items-center gap-2 mx-auto"
             >
               <ArrowLeftIcon className="h-4 w-4" />
-              Back to Home
+              Home
             </Button>
           </Link>
         </div>
@@ -406,14 +406,14 @@ function RouteComponent() {
           </CardContent>
 
           <CardFooter className="flex justify-center">
-            <Link to="/new">
+            <Link to="/">
               <Button
                 variant="outline"
                 size="sm"
                 className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
-                Back to Home
+                Home
               </Button>
             </Link>
           </CardFooter>

@@ -1,15 +1,22 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRightIcon, ChevronDownIcon, LockIcon, ShieldIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import type { Language } from '@snippet-share/types';
 
-import { InteractiveDemo } from '@/components/landing/interactive-demo';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { CheckIcon, ChevronDownIcon, CopyIcon, LockIcon, ShieldIcon } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
 import { AppLayout } from '@/components/layout/app-layout';
+import { SnippetForm } from '@/components/snippet/snippet-form';
+import { AnnouncementBanner } from '@/components/ui/announcement-banner';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { useAnnouncementBanner } from '@/hooks/use-announcement-banner';
 import { useLandingAnalytics } from '@/hooks/use-landing-analytics';
 
 export const Route = createFileRoute('/')({
@@ -93,20 +100,68 @@ export const Route = createFileRoute('/')({
   component: Home,
 });
 
+const PLACEHOLDER_TEXTS = [
+  'Paste an error log to debug with your team...',
+  'Share SQL queries without Slack formatting issues...',
+  'Send config files with proper syntax highlighting...',
+  'Share code snippets during interviews...',
+  'Send API responses without breaking JSON...',
+];
+
 function Home() {
   const [faqOpen, setFaqOpen] = useState<string | null>(null);
+  const [snippetLink, setSnippetLink] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const posthog = usePostHog();
+  const navigate = useNavigate();
 
   // Track landing page analytics
   const { trackFunnelStep } = useLandingAnalytics();
+
+  // Announcement banner
+  const { isDismissed, dismiss } = useAnnouncementBanner();
 
   // Track funnel start
   useEffect(() => {
     trackFunnelStep('view_landing');
   }, [trackFunnelStep]);
 
+  const handleSnippetCreated = (result: { link: string; passwordWasSet: boolean }) => {
+    setSnippetLink(result.link);
+    setShowSuccess(true);
+    posthog.capture('snippet_created', {
+      passwordProtected: result.passwordWasSet,
+    });
+  };
+
+  const handleCopyLink = () => {
+    if (snippetLink) {
+      navigator.clipboard.writeText(snippetLink);
+      setCopied(true);
+      toast.success('Link copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleCreateAnother = () => {
+    setShowSuccess(false);
+    setSnippetLink('');
+  };
+
   return (
     <AppLayout>
       <div className="min-h-[calc(100vh-4rem)] flex flex-col">
+        {/* Announcement Banner */}
+        <AnnouncementBanner
+          message="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
+          mobileMessage="New languages added! 🎉"
+          desktopMessage="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
+          onDismiss={dismiss}
+          show={!isDismissed}
+        />
+
         {/* Hero Section with Integrated Demo */}
         <section className="flex-1 flex flex-col justify-center px-4 lg:px-6 py-8 lg:py-12 max-w-5xl mx-auto w-full">
           {/* Minimalist header */}
@@ -131,23 +186,65 @@ function Home() {
             </div>
           </div>
 
-          {/* Interactive Demo - Main Focus */}
+          {/* Snippet Form - Main Focus */}
           <div className="w-full">
-            <InteractiveDemo className="border-2 shadow-xl" />
+            {!showSuccess
+              ? (
+                  <SnippetForm
+                    onSnippetCreated={handleSnippetCreated}
+                    initialLanguage={'PLAINTEXT' as Language}
+                    placeholderTexts={PLACEHOLDER_TEXTS}
+                  />
+                )
+              : (
+                  <div className="rounded-lg border-2 shadow-xl bg-card p-6 space-y-4">
+                    <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                      <CheckIcon className="h-5 w-5" />
+                      <span className="font-medium">Snippet created successfully!</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={snippetLink}
+                        readOnly
+                        className="flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleCopyLink}
+                      >
+                        {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
+                        <span className="ml-1">{copied ? 'Copied' : 'Copy'}</span>
+                      </Button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleCreateAnother}
+                        variant="outline"
+                        className="flex-1"
+                      >
+                        Create Another
+                      </Button>
+                      <Button
+                        onClick={() => navigate({ to: snippetLink.replace(window.location.origin, '') })}
+                        className="flex-1"
+                      >
+                        View Snippet
+                      </Button>
+                    </div>
+                  </div>
+                )}
           </div>
 
-          {/* Single line trust statement with CTA */}
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            Expires when you want. Deleted forever after.
-            {' '}
-            <Link
-              to="/new"
-              className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
-            >
-              Need more control?
-              <ArrowRightIcon className="h-3 w-3" />
-            </Link>
-          </p>
+          {/* Single line trust statement */}
+          {!showSuccess && (
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Expires when you want. Deleted forever after.
+            </p>
+          )}
         </section>
 
         {/* Minimal FAQ Section */}
@@ -193,14 +290,6 @@ function Home() {
                   When the expiration time is reached or view limit is hit, it's permanently deleted.
                   We also offer "burn after reading" which deletes immediately after the first view.
                   There's no way to recover deleted snippets.
-                  {' '}
-                  <Link
-                    to="/new"
-                    className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
-                  >
-                    Create your first snippet
-                    <ArrowRightIcon className="h-3 w-3" />
-                  </Link>
                 </p>
               </CollapsibleContent>
             </Collapsible>
@@ -222,14 +311,6 @@ function Home() {
                   You can also set custom expiration times (1 hour to never),
                   view limits, and use syntax highlighting for 50+ programming languages.
                   All features are free - no premium tiers, no ads, no tracking.
-                  {' '}
-                  <Link
-                    to="/new"
-                    className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
-                  >
-                    Try it now
-                    <ArrowRightIcon className="h-3 w-3" />
-                  </Link>
                 </p>
               </CollapsibleContent>
             </Collapsible>

@@ -1,19 +1,26 @@
 import type { Language } from '@snippet-share/types';
 
-import { CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
+import { Check, ChevronsUpDown, CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
 import { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 
 import { CodeEditorErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
+import { usePlaceholderCycle } from '@/hooks/use-placeholder-cycle';
 import { cn } from '@/lib/utils';
 
 export interface CodeEditorProps {
@@ -24,10 +31,11 @@ export interface CodeEditorProps {
   isReadOnly?: boolean;
   MAX_CODE_LENGTH: number;
   placeholder?: string;
+  placeholderTexts?: string[]; // Array of texts to cycle through
   title?: string;
   language?: Language;
   onLanguageChange?: (language: Language) => void;
-  supportedLanguages?: readonly { value: Language; label: string }[];
+  supportedLanguages?: readonly { value: Language; label: string; icon?: React.ComponentType<any> }[];
   isLanguageSelectDisabled?: boolean;
 }
 
@@ -39,6 +47,7 @@ function CodeEditorComponent({
   isReadOnly = false,
   MAX_CODE_LENGTH,
   placeholder = 'Paste your code here...',
+  placeholderTexts,
   title,
   language,
   onLanguageChange,
@@ -46,6 +55,16 @@ function CodeEditorComponent({
   isLanguageSelectDisabled,
 }: CodeEditorProps) {
   const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  // Use cycling placeholder if placeholderTexts is provided
+  const { text: cyclingPlaceholder, isVisible } = usePlaceholderCycle(
+    placeholderTexts || [],
+    Boolean(placeholderTexts && !code), // Only cycle when empty and placeholderTexts provided
+  );
+
+  // Determine which placeholder to use
+  const effectivePlaceholder = placeholderTexts ? cyclingPlaceholder : placeholder;
 
   const handleCopy = async () => {
     try {
@@ -112,25 +131,63 @@ function CodeEditorComponent({
 
         {/* Language Selection dropdown (only visible in edit mode) */}
         {supportedLanguages && onLanguageChange && language && (
-          <Select
-            value={language}
-            onValueChange={onLanguageChange}
-            disabled={isLanguageSelectDisabled || isReadOnly}
-          >
-            <SelectTrigger
-              size="sm"
-              className="h-8 w-[145px] bg-background/90 text-xs shadow-sm hover:cursor-pointer hover:bg-background"
-            >
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              {supportedLanguages.map((lang) => (
-                <SelectItem key={lang.value} value={lang.value} className="text-xs hover:cursor-pointer">
-                  {lang.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                disabled={isLanguageSelectDisabled || isReadOnly}
+                className="h-8 w-[200px] justify-between bg-background/90 text-xs shadow-sm hover:bg-background"
+              >
+                {language
+                  ? (() => {
+                      const selectedLang = supportedLanguages.find((lang) => lang.value === language);
+                      const Icon = selectedLang?.icon;
+                      return (
+                        <>
+                          {Icon && <Icon size={14} color="currentColor" className="mr-1.5 shrink-0" />}
+                          {selectedLang?.label}
+                        </>
+                      );
+                    })()
+                  : 'Select language'}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Search language..." />
+                <CommandList>
+                  <CommandEmpty>No language found.</CommandEmpty>
+                  <CommandGroup>
+                    {supportedLanguages.map((lang) => {
+                      const Icon = lang.icon;
+                      return (
+                        <CommandItem
+                          key={lang.value}
+                          value={lang.value}
+                          onSelect={(currentValue) => {
+                            onLanguageChange(currentValue as Language);
+                            setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              language === lang.value ? 'opacity-100' : 'opacity-0',
+                            )}
+                          />
+                          {Icon && <Icon size={16} color="currentColor" className="mr-2 shrink-0 text-current" />}
+                          {lang.label}
+                        </CommandItem>
+                      );
+                    })}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
       <pre
@@ -146,7 +203,7 @@ function CodeEditorComponent({
         />
       </pre>
       <Textarea
-        placeholder={placeholder}
+        placeholder={placeholderTexts ? '' : placeholder} // Empty when cycling, static when not
         className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         value={code}
         onChange={(e) => {
@@ -161,6 +218,19 @@ function CodeEditorComponent({
         spellCheck="false"
         disabled={isReadOnly}
       />
+      {/* Custom cycling placeholder with fade animation */}
+      {placeholderTexts && !code && (
+        <div
+          className="absolute top-0 left-0 px-3 py-2 pointer-events-none font-mono text-sm text-muted-foreground/50"
+          style={{
+            transition: 'opacity 200ms ease-in-out',
+            opacity: isVisible ? 1 : 0,
+            minWidth: '100%',
+          }}
+        >
+          {effectivePlaceholder}
+        </div>
+      )}
     </div>
   );
 }
