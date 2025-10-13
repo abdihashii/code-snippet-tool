@@ -63,6 +63,9 @@ const CHANGELOG_DATA: ChangelogEntry[] = [
   // },
 ];
 
+// Export the current version (latest release)
+export const CURRENT_VERSION = CHANGELOG_DATA[0]?.version ?? '';
+
 // Components
 function ChangeSection({
   icon: Icon,
