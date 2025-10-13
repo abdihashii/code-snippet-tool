@@ -156,6 +156,8 @@ function Home() {
         {/* Announcement Banner */}
         <AnnouncementBanner
           message="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
+          mobileMessage="New languages added! 🎉"
+          desktopMessage="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
           onDismiss={dismiss}
           show={!isDismissed}
         />
