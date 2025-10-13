@@ -30,7 +30,7 @@ Icons are integrated into the language dropdown (`code-editor.tsx`) to help user
 - Navigate long language lists more easily
 - Enjoy a more modern, professional UX
 
-## Currently Supported Languages (15)
+## Currently Supported Languages (16)
 
 | Language   | Syntax Highlighting | Code Prettification | Icon Available | Icon Import         | Notes                                  |
 | ---------- | ------------------- | ------------------- | -------------- | ------------------- | -------------------------------------- |
@@ -41,6 +41,7 @@ Icons are integrated into the language dropdown (`code-editor.tsx`) to help user
 | CSS        | ✅                  | ✅                  | ✅             | `SiCss3`            | Parser: css                            |
 | Java       | ✅                  | ✅                  | ✅             | `SiOpenjdk`         | Plugin: prettier-plugin-java           |
 | PHP        | ✅                  | ❌                  | ✅             | `SiPhp`             | Plugin uses Node.js APIs (process.cwd) |
+| Ruby       | ✅                  | ❌                  | ✅             | `SiRuby`            | Plugin requires Ruby runtime process   |
 | C#         | ✅                  | ❌                  | ✅             | `SiCsharp`          | No browser-compatible formatter        |
 | Bash       | ✅                  | ❌                  | ✅             | `SiGnubash`         | No browser-compatible formatter        |
 | SQL        | ✅                  | ❌                  | ✅             | `SiMysql`           | No browser-compatible formatter        |
@@ -68,14 +69,14 @@ Languages in the top 10 of major programming language indexes.
 
 Languages frequently used in specific domains or platforms.
 
-| Language | Global Rank | Use Cases                    | Highlight.js | Prettier Support               | Status |
-| -------- | ----------- | ---------------------------- | ------------ | ------------------------------ | ------ |
-| Ruby     | #9-15       | Web (Rails), scripting       | ✅           | ✅ `prettier-plugin-ruby`      | TODO   |
-| Kotlin   | #12-15      | Android, JVM                 | ✅           | ⚠️ Community plugin (untested) | TODO   |
-| Swift    | #11-15      | iOS, macOS                   | ✅           | ⚠️ Plugin deprecated/unstable  | TODO   |
-| R        | #15-18      | Data science, statistics     | ✅           | ❌ No plugin                   | TODO   |
-| Scala    | #15-20      | Big data (Spark), functional | ✅           | ❌ (uses Scalafmt)             | TODO   |
-| Dart     | #16-20      | Flutter mobile               | ✅           | ❌ (uses dart format)          | TODO   |
+| Language | Global Rank | Use Cases                    | Highlight.js | Prettier Support               | Status      |
+| -------- | ----------- | ---------------------------- | ------------ | ------------------------------ | ----------- |
+| Ruby     | #9-15       | Web (Rails), scripting       | ✅           | ❌ (requires Ruby runtime)     | ✅ ADDED    |
+| Kotlin   | #12-15      | Android, JVM                 | ✅           | ⚠️ Community plugin (untested) | TODO        |
+| Swift    | #11-15      | iOS, macOS                   | ✅           | ⚠️ Plugin deprecated/unstable  | TODO        |
+| R        | #15-18      | Data science, statistics     | ✅           | ❌ No plugin                   | TODO        |
+| Scala    | #15-20      | Big data (Spark), functional | ✅           | ❌ (uses Scalafmt)             | TODO        |
+| Dart     | #16-20      | Flutter mobile               | ✅           | ❌ (uses dart format)          | TODO        |
 
 ### Tier 3: Lower Priority (Top 20-30 or Niche)
 
@@ -94,7 +95,6 @@ Languages with specific use cases or legacy support.
 
 These can provide full prettification support:
 
-- ✅ **prettier-plugin-ruby** - Official, well-maintained (needs testing)
 - ✅ **prettier-plugin-java** - Already implemented and working
 
 ### Plugins with Unknown Browser Compatibility
@@ -112,6 +112,11 @@ These languages use native binaries or Node.js-specific APIs that cannot run in 
   - **Note**: Despite having a `standalone.js` file, the plugin's dependency `php-parser` v3.2.5 calls Node.js APIs
   - The standalone build includes `require("fs")` and `require("path")` which don't exist in browsers
   - Error: `TypeError: process.cwd is not a function`
+- ❌ **@prettier/plugin-ruby** - Requires Ruby runtime process (spawns Ruby server)
+  - **Note**: The plugin keeps a Ruby server running in the background that Prettier communicates with
+  - Uses the Syntax Tree gem which requires Ruby (version 2.7+) to be installed
+  - The parse function spawns a Ruby process using Ruby's own parser (Ripper)
+  - Cannot work in browser: spawning Ruby processes is impossible in browser environments
 - ❌ **C/C++** - Uses `clang-format` (C++ native tool)
 - ❌ **Go** - Uses `gofmt` (Go native tool)
 - ❌ **Rust** - Uses `rustfmt` (Rust native tool)
@@ -257,7 +262,7 @@ Based on popularity and ease of implementation:
 1. **Phase 1 - Quick Wins** (High Priority + Easy)
 
    - ✅ ~~PHP (highlighting only)~~ - **COMPLETED**
-   - Ruby (highlighting only, test prettify if possible)
+   - ✅ ~~Ruby (highlighting only)~~ - **COMPLETED**
    - Go (highlighting only)
    - C (highlighting only)
    - C++ (highlighting only)

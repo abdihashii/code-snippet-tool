@@ -12,4 +12,5 @@ export type Language =
   | 'CSHARP'
   | 'SQL'
   | 'RUST'
-  | 'PHP';
+  | 'PHP'
+  | 'RUBY';
