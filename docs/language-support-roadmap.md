@@ -123,9 +123,9 @@ For these languages, we can only provide syntax highlighting.
 
 This is a one-time implementation to add icon support to the language dropdown.
 
-1. [ ] **Install icon package**: `pnpm --filter @snippet-share/web add @icons-pack/react-simple-icons`
+1. [x] **Install icon package**: `pnpm --filter @snippet-share/web add @icons-pack/react-simple-icons`
 
-2. [ ] **Update LanguageOption interface** in `apps/web/app/hooks/use-code-highlighting.tsx`:
+2. [x] **Update LanguageOption interface** in `apps/web/app/hooks/use-code-highlighting.tsx`:
 
    ```typescript
    interface LanguageOption {
@@ -136,7 +136,7 @@ This is a one-time implementation to add icon support to the language dropdown.
    }
    ```
 
-3. [ ] **Import all language icons** at top of `use-code-highlighting.tsx`:
+3. [x] **Import all language icons** at top of `use-code-highlighting.tsx`:
 
    ```typescript
    import {
@@ -156,7 +156,7 @@ This is a one-time implementation to add icon support to the language dropdown.
    import { FileCode } from 'lucide-react';
    ```
 
-4. [ ] **Add icon property to each language** in `SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING` array:
+4. [x] **Add icon property to each language** in `SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING` array:
 
    ```typescript
    export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
@@ -167,7 +167,7 @@ This is a one-time implementation to add icon support to the language dropdown.
    ];
    ```
 
-5. [ ] **Update CodeEditor component** in `apps/web/app/components/snippet/code-editor.tsx`:
+5. [x] **Update CodeEditor component** in `apps/web/app/components/snippet/code-editor.tsx`:
 
    a. Update the `supportedLanguages` prop type (line 36):
 
@@ -219,7 +219,7 @@ This is a one-time implementation to add icon support to the language dropdown.
      : 'Select language'}
    ```
 
-6. [ ] **Test in browser**: Verify icons appear in dropdown and in selected button
+6. [x] **Test in browser**: Verify icons appear in dropdown and in selected button
 
 ### Adding a New Language (Syntax Highlighting Only)
 
