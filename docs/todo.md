@@ -1,9 +1,8 @@
-- [x] Encrypt the code before storing it
-- [x] Snippet shared page
-- [ ] Add proper file extensions based on language for download functionality
-
 Critical Priority
 
+- [x] Encrypt the code before storing it
+- [x] Snippet shared page
+- [x] Add proper file extensions based on language for download functionality
 - [x] Copy to Clipboard Functionality - The snippet view page shows decrypted code but lacks copy
       functionality (referenced in PRD FR4.5)
 - [x] Download Snippet Feature - Missing download capability for decrypted content (PRD FR4.6)
