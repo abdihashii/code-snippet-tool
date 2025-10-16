@@ -18,10 +18,11 @@ export function extractRateLimitInfo(response: Response): RateLimitInfo {
   };
 
   return {
-    limit: parseHeader(response.headers.get('RateLimit-Limit')),
-    remaining: parseHeader(response.headers.get('RateLimit-Remaining')),
-    reset: parseHeader(response.headers.get('RateLimit-Reset')),
-    retryAfter: parseHeader(response.headers.get('Retry-After')),
+    // Use lowercase header names to match hono-rate-limiter output
+    limit: parseHeader(response.headers.get('ratelimit-limit')),
+    remaining: parseHeader(response.headers.get('ratelimit-remaining')),
+    reset: parseHeader(response.headers.get('ratelimit-reset')),
+    retryAfter: parseHeader(response.headers.get('retry-after')),
   };
 }
 
