@@ -58,17 +58,20 @@ function postgresByteaStringToBuffer(
 // - Anonymous users: 5/day
 // - Signed-up users: 25/day
 // - Premium users: 100/day
-snippets.post('/', (c, next) => {
-  return rateLimiter({
+snippets.post('/', async (c, next) => {
+  // Create rate limiter with store instance per request context
+  const limiter = rateLimiter<{ Bindings: CloudflareBindings }, '/'>({
     windowMs: 24 * 60 * 60 * 1000, // 24 hours
     limit: 5, // Limit each IP to 5 snippet creations per day
     standardHeaders: 'draft-6',
     store: new WorkersKVStore({ namespace: c.env.RATE_LIMITER_KV }), // Use Cloudflare KV store
     keyGenerator: (c) =>
-      (c.env as CloudflareBindings)?.CF_CONNECTING_IP
+      c.env.CF_CONNECTING_IP
       || c.req.header('x-forwarded-for')
       || 'anonymous',
-  })(c as any, next);
+  });
+
+  return limiter(c, next);
 }, async (c) => {
   const {
     encrypted_content, // Comes in as a base64 encoded string
@@ -202,17 +205,20 @@ snippets.post('/', (c, next) => {
 // - Anonymous users: 50/minute (current)
 // - Signed-up users: 100/minute
 // - Premium users: 500/minute or unlimited
-snippets.get('/:id', (c, next) => {
-  return rateLimiter({
+snippets.get('/:id', async (c, next) => {
+  // Create rate limiter with store instance per request context
+  const limiter = rateLimiter<{ Bindings: CloudflareBindings }, '/:id'>({
     windowMs: 60 * 1000, // 1 minute
     limit: 50, // Limit each IP to 50 snippet retrievals per minute
     standardHeaders: 'draft-6',
     store: new WorkersKVStore({ namespace: c.env.RATE_LIMITER_KV }), // Use Cloudflare KV store
     keyGenerator: (c) =>
-      (c.env as CloudflareBindings)?.CF_CONNECTING_IP
+      c.env.CF_CONNECTING_IP
       || c.req.header('x-forwarded-for')
       || 'anonymous',
-  })(c as any, next);
+  });
+
+  return limiter(c, next);
 }, async (c) => {
   const snippetId = c.req.param('id');
 
