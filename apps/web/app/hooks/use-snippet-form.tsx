@@ -174,9 +174,9 @@ export function useSnippetForm({
 
     e.preventDefault();
 
-    // Clear previous rate limit state
-    setRateLimitInfo(null);
-    setIsRateLimited(false);
+    // Don't clear rate limit state - keep it visible to user
+    // setRateLimitInfo(null);
+    // setIsRateLimited(false);
 
     setIsSubmitting(true);
     try {
@@ -320,6 +320,12 @@ export function useSnippetForm({
 
       // Create the snippet by calling the createSnippet API.
       const createSnippetResponse = await createSnippet(payload);
+
+      // Extract and update rate limit info from successful response
+      if (createSnippetResponse.success && createSnippetResponse.data.rateLimitInfo) {
+        setRateLimitInfo(createSnippetResponse.data.rateLimitInfo);
+        setIsRateLimited(false);
+      }
 
       // If the snippet creation failed, handle error
       if (!createSnippetResponse.success) {

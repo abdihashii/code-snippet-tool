@@ -23,10 +23,11 @@ export function useAuth() {
     password: string,
     confirmPassword: string,
   ) {
-    // Clear previous errors and rate limit state
+    // Clear previous errors but keep rate limit state visible
     setError(null);
-    setRateLimitInfo(null);
-    setIsRateLimited(false);
+    // Don't clear rate limit state - keep it visible to user
+    // setRateLimitInfo(null);
+    // setIsRateLimited(false);
 
     // Second stage input validation
     const validationResult = signupSchema
@@ -39,15 +40,19 @@ export function useAuth() {
 
     setIsLoading(true);
     try {
-      const userData = await signUp(email, password, confirmPassword);
+      const result = await signUp(email, password, confirmPassword);
 
-      if (!userData) {
+      if (!result || !result.userData) {
         throw new Error(
           'User data was not received properly from the server.',
         );
       }
 
-      setUserDataState(userData);
+      // Update rate limit info from successful response
+      setRateLimitInfo(result.rateLimitInfo);
+      setIsRateLimited(false);
+
+      setUserDataState(result.userData);
     } catch (signupError: any) {
       console.error('Signup error:', signupError);
 
