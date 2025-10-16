@@ -78,6 +78,7 @@ function RouteComponent() {
   const {
     // Form field states and setters
     code,
+    language,
 
     // Derived/Computed values for rendering
     highlightedHtml,
@@ -394,6 +395,7 @@ function RouteComponent() {
                                 MAX_CODE_LENGTH={MAX_CODE_LENGTH}
                                 isReadOnly={true}
                                 title={title ?? 'Untitled Snippet'}
+                                language={language}
                               />
                             )
                           : (
