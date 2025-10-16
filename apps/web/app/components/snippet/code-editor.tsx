@@ -22,6 +22,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { usePlaceholderCycle } from '@/hooks/use-placeholder-cycle';
 import { cn } from '@/lib/utils';
+import { getFileExtensionForLanguage } from '@/lib/utils/language-utils';
 
 export interface CodeEditorProps {
   code: string;
@@ -79,12 +80,12 @@ function CodeEditorComponent({
   const handleDownload = () => {
     // Sanitize title for safe filename by removing special characters and converting to lowercase
     const fileName = title ? `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : 'snippet';
-    // TODO: Add proper file extensions based on language
+    const fileExtension = language ? getFileExtensionForLanguage(language) : '.txt';
     const blob = new Blob([code], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${fileName}.txt`;
+    a.download = `${fileName}${fileExtension}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
