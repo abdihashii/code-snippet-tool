@@ -27,89 +27,94 @@ import { ThemeService } from '@/lib/services';
 import { NotFound } from './404';
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      // General Tags
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
+  head: ({ match }) => {
+    // Generate dynamic canonical URL based on current route
+    const canonicalUrl = `${URL}${match.pathname}`;
 
-      // SEO Tags
-      {
-        title: TITLE,
-      },
-      {
-        name: 'description',
-        content: DESCRIPTION,
-      },
-      {
-        name: 'keywords',
-        content: KEYWORDS,
-      },
+    return {
+      meta: [
+        // General Tags
+        {
+          charSet: 'utf-8',
+        },
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1',
+        },
 
-      // Open Graph Tags (for social sharing)
-      {
-        name: 'og:title',
-        content: TITLE,
-      },
-      {
-        name: 'og:description',
-        content: DESCRIPTION,
-      },
-      {
-        name: 'og:type',
-        content: 'website',
-      },
-      {
-        name: 'og:url',
-        content: URL,
-      },
-      {
-        name: 'og:image',
-        content: '/og-image.png',
-      },
+        // SEO Tags
+        {
+          title: TITLE,
+        },
+        {
+          name: 'description',
+          content: DESCRIPTION,
+        },
+        {
+          name: 'keywords',
+          content: KEYWORDS,
+        },
 
-      // Twitter Tags (for Twitter sharing)
-      {
-        name: 'twitter:card',
-        content: 'summary_large_image',
-      },
-      {
-        name: 'twitter:title',
-        content: TITLE,
-      },
-      {
-        name: 'twitter:description',
-        content: DESCRIPTION,
-      },
-      {
-        name: 'twitter:image',
-        content: '/og-image.png',
-      },
-      {
-        name: 'twitter:url',
-        content: URL,
-      },
-    ],
-    links: [
-      {
-        rel: 'icon',
-        href: '/favicon.svg',
-      },
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
-      {
-        rel: 'canonical',
-        href: URL,
-      },
-    ],
-  }),
+        // Open Graph Tags (for social sharing)
+        {
+          name: 'og:title',
+          content: TITLE,
+        },
+        {
+          name: 'og:description',
+          content: DESCRIPTION,
+        },
+        {
+          name: 'og:type',
+          content: 'website',
+        },
+        {
+          name: 'og:url',
+          content: canonicalUrl,
+        },
+        {
+          name: 'og:image',
+          content: '/og-image.png',
+        },
+
+        // Twitter Tags (for Twitter sharing)
+        {
+          name: 'twitter:card',
+          content: 'summary_large_image',
+        },
+        {
+          name: 'twitter:title',
+          content: TITLE,
+        },
+        {
+          name: 'twitter:description',
+          content: DESCRIPTION,
+        },
+        {
+          name: 'twitter:image',
+          content: '/og-image.png',
+        },
+        {
+          name: 'twitter:url',
+          content: canonicalUrl,
+        },
+      ],
+      links: [
+        {
+          rel: 'icon',
+          href: '/favicon.svg',
+        },
+        {
+          rel: 'stylesheet',
+          href: appCss,
+        },
+        {
+          rel: 'canonical',
+          href: canonicalUrl,
+        },
+      ],
+    };
+  },
   component: RootComponent,
   loader: () => ThemeService.getThemeServerFn(),
   notFoundComponent: NotFound,
