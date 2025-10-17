@@ -13,6 +13,7 @@ const app = new Hono<{ Bindings: CloudflareBindings }>();
 
 app.use('*', cors({
   origin: (_, c) => c.env.FRONTEND_URL,
+  exposeHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset', 'RateLimit-Policy', 'Retry-After'],
 }));
 
 app.use('*', csrf({
