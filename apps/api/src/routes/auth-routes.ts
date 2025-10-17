@@ -1,6 +1,7 @@
-import { cloudflareRateLimiter } from '@hono-rate-limiter/cloudflare';
+import { DurableObjectStore } from '@hono-rate-limiter/cloudflare';
 import { signupSchema } from '@snippet-share/schemas';
 import { Hono } from 'hono';
+import { rateLimiter } from 'hono-rate-limiter';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
 
@@ -11,13 +12,17 @@ export const auth = new Hono<{ Bindings: CloudflareBindings }>();
 // Rate limit signup attempts to 3 per hour
 auth.post(
   '/signup',
-  cloudflareRateLimiter<{ Bindings: CloudflareBindings }>({
-    rateLimitBinding: (c) => c.env.SIGNUP_RATE_LIMITER,
-    keyGenerator: (c) =>
-      c.env.CF_CONNECTING_IP
-      || c.req.header('x-forwarded-for')
-      || 'anonymous',
-  }),
+  (c, next) =>
+    rateLimiter<{ Bindings: CloudflareBindings }>({
+      windowMs: 60 * 60 * 1000, // 1 hour
+      limit: 3,
+      standardHeaders: 'draft-6',
+      keyGenerator: (c) =>
+        `signup:${c.env.CF_CONNECTING_IP
+        || c.req.header('x-forwarded-for')
+        || 'anonymous'}`,
+      store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
+    })(c, next),
   async (c) => {
   // Get the email and passwords from the request body
     const body = await c.req.json();

@@ -1,5 +1,6 @@
-import { cloudflareRateLimiter } from '@hono-rate-limiter/cloudflare';
+import { DurableObjectRateLimiter, DurableObjectStore } from '@hono-rate-limiter/cloudflare';
 import { Hono } from 'hono';
+import { rateLimiter } from 'hono-rate-limiter';
 import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
 
@@ -23,10 +24,14 @@ app.use('*', csrf({
 // - Anonymous users: 100/15min (current)
 // - Signed-up users: 300/15min
 // - Premium users: 1000/15min or higher
-app.use('*', cloudflareRateLimiter<{ Bindings: CloudflareBindings }>({
-  rateLimitBinding: (c) => c.env.GLOBAL_RATE_LIMITER,
-  keyGenerator: (c) => c.env.CF_CONNECTING_IP || c.req.header('x-forwarded-for') || 'anonymous',
-}));
+app.use('*', (c, next) =>
+  rateLimiter<{ Bindings: CloudflareBindings }>({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100,
+    standardHeaders: 'draft-6',
+    keyGenerator: (c) => `global:${c.env.CF_CONNECTING_IP || c.req.header('x-forwarded-for') || 'anonymous'}`,
+    store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
+  })(c, next));
 
 app.get('/ping', () => {
   return new Response('Pong');
@@ -36,3 +41,4 @@ app.route('/snippets', snippets);
 app.route('/auth', auth);
 
 export default app;
+export { DurableObjectRateLimiter };

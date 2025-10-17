@@ -4,9 +4,10 @@ import type {
   Snippet,
 } from '@snippet-share/types';
 
-import { cloudflareRateLimiter } from '@hono-rate-limiter/cloudflare';
+import { DurableObjectStore } from '@hono-rate-limiter/cloudflare';
 import { addDays, addHours, isPast } from 'date-fns';
 import { Hono } from 'hono';
+import { rateLimiter } from 'hono-rate-limiter';
 import { Buffer } from 'node:buffer';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
@@ -59,13 +60,17 @@ function postgresByteaStringToBuffer(
 // - Premium users: 100/day
 snippets.post(
   '/',
-  cloudflareRateLimiter<{ Bindings: CloudflareBindings }>({
-    rateLimitBinding: (c) => c.env.SNIPPET_CREATE_RATE_LIMITER,
-    keyGenerator: (c) =>
-      c.env.CF_CONNECTING_IP
-      || c.req.header('x-forwarded-for')
-      || 'anonymous',
-  }),
+  (c, next) =>
+    rateLimiter<{ Bindings: CloudflareBindings }>({
+      windowMs: 24 * 60 * 60 * 1000, // 24 hours
+      limit: 5,
+      standardHeaders: 'draft-6',
+      keyGenerator: (c) =>
+        `snippet-create:${c.env.CF_CONNECTING_IP
+        || c.req.header('x-forwarded-for')
+        || 'anonymous'}`,
+      store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
+    })(c, next),
   async (c) => {
     const {
       encrypted_content, // Comes in as a base64 encoded string
@@ -202,13 +207,17 @@ snippets.post(
 // - Premium users: 500/minute or unlimited
 snippets.get(
   '/:id',
-  cloudflareRateLimiter<{ Bindings: CloudflareBindings }>({
-    rateLimitBinding: (c) => c.env.SNIPPET_GET_RATE_LIMITER,
-    keyGenerator: (c) =>
-      c.env.CF_CONNECTING_IP
-      || c.req.header('x-forwarded-for')
-      || 'anonymous',
-  }),
+  (c, next) =>
+    rateLimiter<{ Bindings: CloudflareBindings }>({
+      windowMs: 60 * 1000, // 1 minute
+      limit: 50,
+      standardHeaders: 'draft-6',
+      keyGenerator: (c) =>
+        `snippet-get:${c.env.CF_CONNECTING_IP
+        || c.req.header('x-forwarded-for')
+        || 'anonymous'}`,
+      store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
+    })(c, next),
   async (c) => {
     const snippetId = c.req.param('id');
 
