@@ -7,7 +7,7 @@ export async function signUp(
   email: string,
   password: string,
   confirmPassword: string,
-): Promise<{ userData: any; rateLimitInfo: RateLimitInfo }> {
+): Promise<ApiResponse<{ userData: any; rateLimitInfo: RateLimitInfo }>> {
   const response = await fetch(`${API_URL}/auth/signup`, {
     method: 'POST',
     body: JSON.stringify({ email, password, confirmPassword }),
@@ -33,12 +33,24 @@ export async function signUp(
       ? responseData.error
       : `HTTP ${response.status}: Failed to sign up ${email}`;
 
-    throw new Error(errorMessage);
+    // Return error response instead of throwing
+    return {
+      error: errorMessage,
+      success: false,
+      message: !responseData.success ? responseData.message : undefined,
+      data: {
+        userData: null,
+        rateLimitInfo,
+      },
+    };
   }
 
-  // Return both user data and rate limit info
+  // Return both user data and rate limit info in success response
   return {
-    userData: responseData.data.userData,
-    rateLimitInfo,
+    ...responseData,
+    data: {
+      userData: responseData.data.userData,
+      rateLimitInfo,
+    },
   };
 }

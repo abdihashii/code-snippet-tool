@@ -40,6 +40,10 @@ export async function createSnippet(
         : `HTTP ${response.status}: Failed to create snippet`,
       success: false,
       message: 'error' in responseData ? responseData.message : undefined,
+      data: {
+        id: '',
+        rateLimitInfo,
+      },
     };
   }
 
