@@ -18,34 +18,16 @@ export function extractRateLimitInfo(response: Response): RateLimitInfo {
   };
 
   return {
-    limit: parseHeader(response.headers.get('RateLimit-Limit')),
-    remaining: parseHeader(response.headers.get('RateLimit-Remaining')),
-    reset: parseHeader(response.headers.get('RateLimit-Reset')),
-    retryAfter: parseHeader(response.headers.get('Retry-After')),
+    // Use lowercase header names to match hono-rate-limiter output
+    limit: parseHeader(response.headers.get('ratelimit-limit')),
+    remaining: parseHeader(response.headers.get('ratelimit-remaining')),
+    reset: parseHeader(response.headers.get('ratelimit-reset')),
+    retryAfter: parseHeader(response.headers.get('retry-after')),
   };
 }
 
-export function formatRateLimitMessage(rateLimitInfo: RateLimitInfo): string {
-  const { retryAfter, reset } = rateLimitInfo;
-
-  if (retryAfter && retryAfter > 0) {
-    const minutes = Math.ceil(retryAfter / 60);
-    return minutes === 1
-      ? `Rate limit exceeded. Please try again in 1 minute.`
-      : `Rate limit exceeded. Please try again in ${minutes} minutes.`;
-  }
-
-  if (reset) {
-    const resetDate = new Date(reset * 1000);
-    const now = new Date();
-    const diffMinutes = Math.ceil((resetDate.getTime() - now.getTime()) / (1000 * 60));
-
-    if (diffMinutes > 0) {
-      return diffMinutes === 1
-        ? `Rate limit exceeded. Please try again in 1 minute.`
-        : `Rate limit exceeded. Please try again in ${diffMinutes} minutes.`;
-    }
-  }
-
-  return 'Rate limit exceeded. Please try again later.';
+export function formatRateLimitMessage(): string {
+  // Keep it simple and friendly - don't show specific times that can mismatch with the banner
+  // The banner's live countdown is the source of truth for exact timing
+  return 'Rate limit exceeded.';
 }

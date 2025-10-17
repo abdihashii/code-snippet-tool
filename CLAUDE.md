@@ -173,19 +173,26 @@ function postgresByteaStringToBuffer(byteaString: string): Buffer {
 
 ### Rate Limiting Strategy
 
-Tiered rate limiting based on user type:
+**Technical rate limits** (abuse prevention):
 
 - **Global**: 100 requests per 15 minutes (all users)
-- **Snippet creation**:
-  - Anonymous: 5/day
-  - Free users: 25/day (TODO)
-  - Premium: 100/day (TODO)
-- **Snippet retrieval**:
-  - Anonymous: 50/minute
-  - Free users: 100/minute (TODO)
-  - Premium: 500/minute (TODO)
+- **Snippet creation**: 5/day (anonymous, currently implemented)
+- **Snippet retrieval**: 50/minute (all users)
+- **Signup**: 3/hour
 
-Implementation uses `hono-rate-limiter` with Cloudflare KV store.
+**Business quotas** (separate from rate limits):
+
+- Anonymous: 5/day (no monthly quota)
+- Free accounts: 25 snippets/month
+- Pro: Unlimited
+
+See [docs/monetization-spec.md](docs/monetization-spec.md) for complete subscription tier details.
+
+**Implementation:** Uses `hono-rate-limiter` with Cloudflare Durable Objects (`DurableObjectRateLimiter`).
+
+**Critical:** Each rate limiter uses unique key prefixes (`global:`, `snippet-create:`, `snippet-get:`, `signup:`) to prevent counter collisions when sharing the same Durable Object namespace.
+
+See [docs/rate-limiting-strategy.md](docs/rate-limiting-strategy.md) for implementation details and troubleshooting.
 
 ### Client-Side Crypto Utilities
 
@@ -263,7 +270,7 @@ const decrypted = await crypto.subtle.decrypt(
 1. **Zero-knowledge architecture**: The server cannot decrypt snippets. This is not a feature—it's the core design.
 2. **CSRF protection**: Enabled via `hono/csrf` middleware
 3. **CORS**: Restricted to `FRONTEND_URL` environment variable
-4. **Rate limiting**: Prevents abuse with Cloudflare KV-backed storage
+4. **Rate limiting**: Prevents abuse with Cloudflare Durable Objects storage
 5. **Input validation**: Partial implementation (see [docs/todo.md](docs/todo.md) for gaps)
 6. **No plaintext storage**: All sensitive data stored as PostgreSQL bytea
 

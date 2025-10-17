@@ -2,6 +2,7 @@ import type {
   ApiResponse,
   CreateSnippetPayload,
   GetSnippetByIdResponse,
+  RateLimitInfo,
 } from '@snippet-share/types';
 
 import { API_URL } from '@/lib/constants';
@@ -11,7 +12,7 @@ import {
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,
-): Promise<ApiResponse<{ id: string }>> {
+): Promise<ApiResponse<{ id: string; rateLimitInfo?: RateLimitInfo }>> {
   const response = await fetch(`${API_URL}/snippets`, {
     method: 'POST',
     body: JSON.stringify(snippet),
@@ -20,10 +21,12 @@ export async function createSnippet(
     },
   });
 
+  // Extract rate limit info from headers (available on all responses)
+  const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
+
   // Check for rate limiting BEFORE parsing JSON
   if (response.status === 429) {
-    const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
-    const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
+    const message = RateLimitService.formatRateLimitMessage();
     throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
 
@@ -37,21 +40,34 @@ export async function createSnippet(
         : `HTTP ${response.status}: Failed to create snippet`,
       success: false,
       message: 'error' in responseData ? responseData.message : undefined,
+      data: {
+        id: '',
+        rateLimitInfo,
+      },
     };
   }
 
-  return responseData; // Return the full ApiResponse<{ id: string }>
+  // Attach rate limit info to successful response
+  return {
+    ...responseData,
+    data: {
+      ...responseData.data,
+      rateLimitInfo,
+    },
+  };
 }
 
 export async function getSnippetById(
   id: string,
-): Promise<ApiResponse<GetSnippetByIdResponse>> {
+): Promise<ApiResponse<GetSnippetByIdResponse & { rateLimitInfo?: RateLimitInfo }>> {
   const response = await fetch(`${API_URL}/snippets/${id}`);
+
+  // Extract rate limit info from headers (available on all responses)
+  const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
 
   // Check for rate limiting BEFORE parsing JSON
   if (response.status === 429) {
-    const rateLimitInfo = RateLimitService.extractRateLimitInfo(response);
-    const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
+    const message = RateLimitService.formatRateLimitMessage();
     throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
 
@@ -68,5 +84,12 @@ export async function getSnippetById(
     };
   }
 
-  return responseData; // Return the full ApiResponse<GetSnippetByIdResponse>
+  // Attach rate limit info to successful response
+  return {
+    ...responseData,
+    data: {
+      ...responseData.data,
+      rateLimitInfo,
+    },
+  };
 }

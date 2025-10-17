@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RateLimitBanner } from '@/components/ui/rate-limit-banner';
 import { useAuth } from '@/hooks/use-auth';
 
 export const Route = createFileRoute('/signup/')({
@@ -27,6 +28,10 @@ function RouteComponent() {
     setShowPassword,
     showConfirmPassword,
     setShowConfirmPassword,
+
+    // Rate limiting state
+    rateLimitInfo,
+    isRateLimited,
 
     // Actions
     signUp,
@@ -73,6 +78,13 @@ function RouteComponent() {
   return (
     <AppLayout>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {rateLimitInfo && (
+          <RateLimitBanner
+            rateLimitInfo={rateLimitInfo}
+            variant={isRateLimited ? 'error' : 'info'}
+            showCountdown={true}
+          />
+        )}
         <Card className="w-full max-w-md shadow-md border-slate-200 bg-white mx-auto">
           <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="mb-4">

@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "snippet-share-api",
   "main": "src/index.ts",
-  "compatibility_date": "2025-05-18",
+  "compatibility_date": "2025-10-16",
   "compatibility_flags": [
     "nodejs_compat",
     "nodejs_compat_populate_process_env"
@@ -29,10 +29,18 @@
       "secret_name": "SUPABASE_SERVICE_ROLE_KEY"
     }
   ],
-  "kv_namespaces": [
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "RATE_LIMITER",
+        "class_name": "DurableObjectRateLimiter"
+      }
+    ]
+  },
+  "migrations": [
     {
-      "binding": "RATE_LIMITER_KV",
-      "id": "b3ea027de36a41b98d068b7672938a8f"
+      "tag": "v1",
+      "new_classes": ["DurableObjectRateLimiter"]
     }
   ]
   // "r2_buckets": [
