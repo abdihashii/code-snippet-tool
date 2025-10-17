@@ -25,9 +25,6 @@ export function useAuth() {
   ) {
     // Clear previous errors but keep rate limit state visible
     setError(null);
-    // Don't clear rate limit state - keep it visible to user
-    // setRateLimitInfo(null);
-    // setIsRateLimited(false);
 
     // Second stage input validation
     const validationResult = signupSchema
