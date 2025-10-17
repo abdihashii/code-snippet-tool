@@ -174,10 +174,6 @@ export function useSnippetForm({
 
     e.preventDefault();
 
-    // Don't clear rate limit state - keep it visible to user
-    // setRateLimitInfo(null);
-    // setIsRateLimited(false);
-
     setIsSubmitting(true);
     try {
       // Generate a unique, cryptographically strong random Data Encryption Key
