@@ -21,7 +21,7 @@ export async function signUp(
 
   // Check for rate limiting BEFORE parsing JSON
   if (response.status === 429) {
-    const message = RateLimitService.formatRateLimitMessage(rateLimitInfo);
+    const message = RateLimitService.formatRateLimitMessage();
     throw new RateLimitService.RateLimitError(rateLimitInfo, message);
   }
 
