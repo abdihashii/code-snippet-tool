@@ -40,7 +40,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["DurableObjectRateLimiter"]
+      "new_sqlite_classes": ["DurableObjectRateLimiter"]
     }
   ]
   // "r2_buckets": [
