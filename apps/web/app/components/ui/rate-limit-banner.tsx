@@ -31,7 +31,8 @@ export function RateLimitBanner({
     }
 
     const updateCountdown = () => {
-      const resetDate = new Date(rateLimitInfo.reset! * 1000);
+      // reset is delta seconds (seconds from now), not a Unix timestamp
+      const resetDate = new Date(Date.now() + rateLimitInfo.reset! * 1000);
       const now = new Date();
       const diffSeconds = Math.ceil((resetDate.getTime() - now.getTime()) / 1000);
 
@@ -40,10 +41,13 @@ export function RateLimitBanner({
         return;
       }
 
-      const minutes = Math.floor(diffSeconds / 60);
+      const hours = Math.floor(diffSeconds / 3600);
+      const minutes = Math.floor((diffSeconds % 3600) / 60);
       const seconds = diffSeconds % 60;
 
-      if (minutes > 0) {
+      if (hours > 0) {
+        setTimeRemaining(`${hours}h ${minutes}m`);
+      } else if (minutes > 0) {
         setTimeRemaining(`${minutes}m ${seconds}s`);
       } else {
         setTimeRemaining(`${seconds}s`);
@@ -84,7 +88,7 @@ export function RateLimitBanner({
   // Generate message
   const getMessage = () => {
     if (isRateLimited) {
-      return `Rate limit reached. ${timeRemaining ? `Resets in ${timeRemaining}` : RateLimitService.formatRateLimitMessage(rateLimitInfo)}`;
+      return `Rate limit reached. ${timeRemaining ? `Resets in ${timeRemaining}` : RateLimitService.formatRateLimitMessage()}`;
     }
 
     if (rateLimitInfo.remaining !== null && rateLimitInfo.limit !== null) {
