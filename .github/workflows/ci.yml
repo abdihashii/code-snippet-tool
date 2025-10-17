@@ -26,11 +26,11 @@ jobs:
         with:
           filters: |
             eslintconfig:
-              - 'apps/eslint-config/**'
+              - 'packages/eslint-config/**'
             types:
-              - 'apps/types/**'
+              - 'packages/types/**'
             schemas:
-              - 'apps/schemas/**'
+              - 'packages/schemas/**'
             web:
               - 'apps/web/**'
             api:
