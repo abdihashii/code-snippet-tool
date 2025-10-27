@@ -7,7 +7,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
-      "@/*": ["./app/*"]
+      "@/*": ["./app/*"],
+      "@/.content-collections/generated": ["./.content-collections/generated"]
     },
     "strictNullChecks": true,
     "verbatimModuleSyntax": false,
