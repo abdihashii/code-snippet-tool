@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import React from 'react';
 
 import { Header } from '@/components/layout/header';
-import { CURRENT_VERSION } from '@/routes/changelog';
+import { APP_VERSION } from '@/lib/constants';
 
 export function AppLayout({ children }: {
   children: React.ReactNode;
@@ -32,7 +32,7 @@ export function AppLayout({ children }: {
             className="hover:text-primary transition-colors underline-offset-4 hover:underline"
           >
             v
-            {CURRENT_VERSION}
+            {APP_VERSION}
           </Link>
         </div>
       </footer>
