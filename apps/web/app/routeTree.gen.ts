@@ -17,7 +17,6 @@ import { Route as SignupIndexImport } from './routes/signup/index'
 import { Route as ChangelogIndexImport } from './routes/changelog/index'
 import { Route as BlogIndexImport } from './routes/blog/index'
 import { Route as SSnippetIdImport } from './routes/s/$snippet-id'
-import { Route as BlogSlugImport } from './routes/blog/$slug'
 
 // Create/Update Routes
 
@@ -57,12 +56,6 @@ const SSnippetIdRoute = SSnippetIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const BlogSlugRoute = BlogSlugImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
-  getParentRoute: () => rootRoute,
-} as any)
-
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -79,13 +72,6 @@ declare module '@tanstack/react-router' {
       path: '/404'
       fullPath: '/404'
       preLoaderRoute: typeof R404Import
-      parentRoute: typeof rootRoute
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/blog/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugImport
       parentRoute: typeof rootRoute
     }
     '/s/$snippet-id': {
@@ -124,7 +110,6 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/blog/$slug': typeof BlogSlugRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
   '/blog': typeof BlogIndexRoute
   '/changelog': typeof ChangelogIndexRoute
@@ -134,7 +119,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/blog/$slug': typeof BlogSlugRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
   '/blog': typeof BlogIndexRoute
   '/changelog': typeof ChangelogIndexRoute
@@ -145,7 +129,6 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/404': typeof R404Route
-  '/blog/$slug': typeof BlogSlugRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
   '/blog/': typeof BlogIndexRoute
   '/changelog/': typeof ChangelogIndexRoute
@@ -157,25 +140,16 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/404'
-    | '/blog/$slug'
     | '/s/$snippet-id'
     | '/blog'
     | '/changelog'
     | '/signup'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/404'
-    | '/blog/$slug'
-    | '/s/$snippet-id'
-    | '/blog'
-    | '/changelog'
-    | '/signup'
+  to: '/' | '/404' | '/s/$snippet-id' | '/blog' | '/changelog' | '/signup'
   id:
     | '__root__'
     | '/'
     | '/404'
-    | '/blog/$slug'
     | '/s/$snippet-id'
     | '/blog/'
     | '/changelog/'
@@ -186,7 +160,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R404Route: typeof R404Route
-  BlogSlugRoute: typeof BlogSlugRoute
   SSnippetIdRoute: typeof SSnippetIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ChangelogIndexRoute: typeof ChangelogIndexRoute
@@ -196,7 +169,6 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R404Route: R404Route,
-  BlogSlugRoute: BlogSlugRoute,
   SSnippetIdRoute: SSnippetIdRoute,
   BlogIndexRoute: BlogIndexRoute,
   ChangelogIndexRoute: ChangelogIndexRoute,
@@ -215,7 +187,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/404",
-        "/blog/$slug",
         "/s/$snippet-id",
         "/blog/",
         "/changelog/",
@@ -227,9 +198,6 @@ export const routeTree = rootRoute
     },
     "/404": {
       "filePath": "404.tsx"
-    },
-    "/blog/$slug": {
-      "filePath": "blog/$slug.tsx"
     },
     "/s/$snippet-id": {
       "filePath": "s/$snippet-id.tsx"
