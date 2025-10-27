@@ -87,8 +87,8 @@ function ChangeSection({
         <h3 className="text-lg font-medium">{title}</h3>
       </div>
       <ul className="list-disc space-y-2 ml-7 text-muted-foreground">
-        {items.map((item, index) => (
-          <li key={index}>{item}</li>
+        {items.map((item) => (
+          <li key={item}>{item}</li>
         ))}
       </ul>
     </div>
