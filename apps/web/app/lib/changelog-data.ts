@@ -11,6 +11,45 @@ export interface ChangelogEntry {
 // Changelog Data - Add new releases here
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: '2025.10.16',
+    date: 'October 16, 2025',
+    description: 'Rate Limiting System Overhaul',
+    features: [
+      'New rate limit banner component to inform users of their usage limits',
+    ],
+    improvements: [
+      'Complete rate limiting system refactor with better error handling',
+      'Updated rate limiting documentation with troubleshooting guide',
+      'Enhanced API response types for rate limit information',
+    ],
+    bugFixes: [
+      'Fixed rate limiting implementation across frontend and backend',
+      'Corrected Durable Object bindings in wrangler configuration',
+      'Fixed rate limit counter collisions with unique key prefixes',
+    ],
+  },
+  {
+    version: '2025.10.15',
+    date: 'October 15, 2025',
+    description: 'Download Experience Enhancement',
+    features: [
+      'Language-specific file extensions for snippet downloads (e.g., .js, .py, .rs, .html instead of .txt)',
+      'Added comprehensive test suite with 100% coverage for language utilities',
+    ],
+    improvements: [
+      'Improved IDE integration by using proper file extensions for downloaded snippets',
+    ],
+  },
+  {
+    version: '2025.10.13',
+    date: 'October 13, 2025',
+    description: 'Layout & Responsive Design Updates',
+    improvements: [
+      'Enhanced responsive layout across announcement banner and multiple pages',
+      'Improved mobile and desktop layout consistency',
+    ],
+  },
+  {
     version: '2025.10.12',
     date: 'October 12, 2025',
     description: 'Latest Updates',
