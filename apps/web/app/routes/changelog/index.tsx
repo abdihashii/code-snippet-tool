@@ -94,24 +94,26 @@ function ReleaseCard({ entry }: { entry: ChangelogEntry }) {
 function Changelog() {
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Header */}
-        <div className="space-y-2">
+        <div className="pt-12 pb-8 border-b">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Changelog
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-foreground mt-2">
             Latest updates and improvements
           </p>
         </div>
 
-        {/* Render all releases */}
-        {CHANGELOG_DATA.map((entry) => (
-          <ReleaseCard key={entry.version} entry={entry} />
-        ))}
+        {/* Changelog Entries */}
+        <div className="py-12 space-y-8">
+          {CHANGELOG_DATA.map((entry) => (
+            <ReleaseCard key={entry.version} entry={entry} />
+          ))}
 
-        <div className="text-center text-sm text-muted-foreground py-4">
-          More updates coming soon...
+          <div className="text-center text-sm text-muted-foreground py-8">
+            More updates coming soon...
+          </div>
         </div>
       </div>
     </AppLayout>
