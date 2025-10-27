@@ -58,6 +58,7 @@
     "vinxi": "^0.5.6"
   },
   "devDependencies": {
+    "@content-collections/vinxi": "^0.1.2",
     "@snippet-share/eslint-config": "workspace:*",
     "@tanstack/eslint-plugin-router": "^1.115.0",
     "@tanstack/router-plugin": "^1.120.3",

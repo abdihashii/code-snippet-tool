@@ -188,6 +188,9 @@ importers:
         specifier: ^0.5.6
         version: 0.5.6(@types/node@22.15.17)(db0@0.3.2)(ioredis@5.6.1)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.19.4)(yaml@2.7.1)
     devDependencies:
+      '@content-collections/vinxi':
+        specifier: ^0.1.2
+        version: 0.1.2(@content-collections/core@0.11.1(typescript@5.8.3))(vite@6.3.5(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.19.4)(yaml@2.7.1))
       '@snippet-share/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
@@ -521,6 +524,12 @@ packages:
       '@content-collections/core': 0.x
       react: '>= 18'
       react-dom: '>= 18'
+
+  '@content-collections/vinxi@0.1.2':
+    resolution: {integrity: sha512-SkZdYV3aPH7S9uQwRmbN+iyGgyYI8rHHRNTwms928QtQBeyTp4Cd1gZFPl5/XrXBXojgRUTHV4q7hm3z1XC1Pw==}
+    peerDependencies:
+      '@content-collections/core': ^0.x
+      vite: ^5 || ^6 || ^7
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -7288,6 +7297,11 @@ snapshots:
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
+
+  '@content-collections/vinxi@0.1.2(@content-collections/core@0.11.1(typescript@5.8.3))(vite@6.3.5(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.19.4)(yaml@2.7.1))':
+    dependencies:
+      '@content-collections/core': 0.11.1(typescript@5.8.3)
+      vite: 6.3.5(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.19.4)(yaml@2.7.1)
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
