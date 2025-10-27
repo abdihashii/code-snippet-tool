@@ -162,7 +162,7 @@ function Home() {
       />
 
       {/* Hero Section with Integrated Demo */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         {/* Minimalist header */}
         <div className="text-center mb-8 space-y-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">

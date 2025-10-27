@@ -14,8 +14,6 @@ interface AnnouncementBannerProps {
 export function AnnouncementBanner({ message, mobileMessage, desktopMessage, onDismiss, show }: AnnouncementBannerProps) {
   const [isExiting, setIsExiting] = useState(false);
 
-  if (!show && !isExiting) return null;
-
   const handleDismiss = () => {
     setIsExiting(true);
     setTimeout(() => {
@@ -30,10 +28,12 @@ export function AnnouncementBanner({ message, mobileMessage, desktopMessage, onD
 
   return (
     <div
-      className={`w-full flex justify-center px-4 py-2 transition-all duration-300 ${
+      className={`w-full flex justify-center px-4 py-2 my-8 transition-all duration-300 ${
+        !show && !isExiting ? 'invisible' : ''
+      } ${
         isExiting
           ? 'animate-out fade-out slide-out-to-top-2'
-          : 'animate-in fade-in slide-in-from-top-2'
+          : show ? 'animate-in fade-in slide-in-from-top-2' : ''
       }`}
     >
       <div className="max-w-5xl mx-auto w-full flex justify-center">
