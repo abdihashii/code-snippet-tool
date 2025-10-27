@@ -18,6 +18,7 @@
     "deploy:api": "pnpm run --filter @snippet-share/api deploy",
     "clean": "rm -rf node_modules dist",
     "clean:all": "pnpm clean && pnpm -r clean",
+    "clean:install": "pnpm clean:all && pnpm i",
     "lint": "pnpm run -r --parallel lint"
   },
   "dependencies": {
