@@ -32,3 +32,6 @@ app/__tests__/coverage
 .vinxi
 
 .wrangler
+
+# Content Collections
+.content-collections
