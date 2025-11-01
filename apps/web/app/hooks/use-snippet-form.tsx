@@ -229,7 +229,7 @@ export function useSnippetForm({
 
         // Encrypted content and related crypto params
         encrypted_content: arrayBufferToBase64(encryptedSnippetBlob),
-        initialization_vector: arrayBufferToBase64(ivContent),
+        initialization_vector: arrayBufferToBase64(ivContent.buffer),
         auth_tag: arrayBufferToBase64(authTagContent),
       };
 
@@ -296,11 +296,11 @@ export function useSnippetForm({
           ...basePayload,
           // Encrypted DEK and related crypto params
           encrypted_dek: arrayBufferToBase64(encryptedDek),
-          iv_for_dek: arrayBufferToBase64(ivForDek),
+          iv_for_dek: arrayBufferToBase64(ivForDek.buffer),
           auth_tag_for_dek: arrayBufferToBase64(authTagForDek),
 
           // KDF parameters
-          kdf_salt: arrayBufferToBase64(kdfSalt),
+          kdf_salt: arrayBufferToBase64(kdfSalt.buffer),
           kdf_parameters: {
             iterations: kdfParams.iterations,
             hash: kdfParams.hash,
