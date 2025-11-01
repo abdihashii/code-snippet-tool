@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { usePlaceholderCycle } from '@/hooks/use-placeholder-cycle';
+import { useProductAnalytics } from '@/hooks/use-product-analytics';
 import { cn } from '@/lib/utils';
 import { getFileExtensionForLanguage } from '@/lib/utils/language-utils';
 
@@ -58,6 +59,8 @@ function CodeEditorComponent({
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const { trackCodeCopied, trackSnippetDownloaded } = useProductAnalytics();
+
   // Use cycling placeholder if placeholderTexts is provided
   const { text: cyclingPlaceholder, isVisible } = usePlaceholderCycle(
     placeholderTexts || [],
@@ -72,6 +75,7 @@ function CodeEditorComponent({
       await navigator.clipboard.writeText(code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      trackCodeCopied();
     } catch (err) {
       console.error('Failed to copy code: ', err);
     }
@@ -90,6 +94,7 @@ function CodeEditorComponent({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    trackSnippetDownloaded({ language: language || undefined });
   };
   return (
     <div className="relative w-full">

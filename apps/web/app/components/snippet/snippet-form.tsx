@@ -11,7 +11,6 @@ import {
   ShieldIcon,
   Wand2Icon,
 } from 'lucide-react';
-import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 import { toast } from 'sonner';
@@ -119,7 +118,6 @@ function SnippetFormComponent({
     initialLanguage,
     initialTitle,
   });
-  const posthog = usePostHog();
 
   return (
     <>
@@ -143,10 +141,7 @@ function SnippetFormComponent({
             <div className="space-y-6">
               <Tabs
                 value={selectedTab}
-                onValueChange={(value) => {
-                  posthog.capture('snippet_tab_change', { tab: value });
-                  setSelectedTab(value as 'code' | 'text');
-                }}
+                onValueChange={(value) => setSelectedTab(value as 'code' | 'text')}
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-2">
@@ -322,8 +317,6 @@ function SnippetFormComponent({
                         id="enablePassword"
                         checked={isPasswordProtectionEnabled}
                         onCheckedChange={(checked) => {
-                          posthog.capture('password_protection_checkbox_click', { checked });
-
                           setIsPasswordProtectionEnabled(
                             checked === 'indeterminate' ? false : checked,
                           );

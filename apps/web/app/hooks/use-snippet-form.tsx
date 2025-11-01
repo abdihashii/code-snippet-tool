@@ -1,6 +1,5 @@
 import type { CreateSnippetPayload, Language, RateLimitInfo } from '@snippet-share/types';
 
-import { usePostHog } from 'posthog-js/react';
 import prettierPluginJava from 'prettier-plugin-java';
 import parserBabel from 'prettier/plugins/babel';
 import parserEstree from 'prettier/plugins/estree';
@@ -17,6 +16,7 @@ import {
   SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   useCodeHighlighting,
 } from '@/hooks/use-code-highlighting';
+import { useProductAnalytics } from '@/hooks/use-product-analytics';
 import { createSnippet } from '@/lib/api/snippets-api';
 import { PasswordStrengthLevel } from '@/lib/schemas';
 import { PasswordService, RateLimitService } from '@/lib/services';
@@ -118,7 +118,7 @@ export function useSnippetForm({
   const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo | null>(null);
   const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
 
-  const posthog = usePostHog();
+  const { trackRateLimitHit, trackLinkCopied } = useProductAnalytics();
 
   // Effect to reset language when switching tabs
   useEffect(() => {
@@ -155,13 +155,11 @@ export function useSnippetForm({
   }, [snippetPassword, isPasswordProtectionEnabled]);
 
   const handleGeneratePassword = useCallback(() => {
-    posthog.capture('password_generate_button_click');
-
     const newPassword = PasswordService.generateStrongPassword();
     setSnippetPassword(newPassword);
 
     toast.info('Strong password generated and filled!');
-  }, [setSnippetPassword, posthog]);
+  }, [setSnippetPassword]);
 
   const canPrettifyCurrentLanguage = useMemo(() => {
     return !!PRETTIER_SUPPORT_MAP[language];
@@ -362,6 +360,7 @@ export function useSnippetForm({
       // Copy the link to the clipboard.
       navigator.clipboard.writeText(link).then(() => {
         toast.info('Shareable link copied to clipboard!');
+        trackLinkCopied({ source: 'creation' });
       }).catch((err) => {
         console.warn('Failed to copy link to clipboard:', err);
         toast.warning(
@@ -375,6 +374,11 @@ export function useSnippetForm({
       if (error instanceof RateLimitService.RateLimitError) {
         setIsRateLimited(true);
         setRateLimitInfo(error.rateLimitInfo);
+        trackRateLimitHit({
+          endpoint: 'create_snippet',
+          limit: error.rateLimitInfo.limit ?? undefined,
+          remaining: error.rateLimitInfo.remaining ?? undefined,
+        });
         toast.error(error.message);
       } else {
         // If not a rate limit error, handle other errors

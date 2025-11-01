@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useProductAnalytics } from '@/hooks/use-product-analytics';
 
 interface LinkDisplayProps {
   link: string;
@@ -21,12 +22,14 @@ export function LinkDisplay(
   { link, onCreateAnother, passwordWasSet }: LinkDisplayProps,
 ) {
   const [copied, setCopied] = useState(false);
+  const { trackLinkCopied } = useProductAnalytics();
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(link);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      trackLinkCopied({ source: 'link_display' });
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }

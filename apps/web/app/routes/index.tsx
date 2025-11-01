@@ -2,8 +2,7 @@ import type { Language } from '@snippet-share/types';
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { CheckIcon, ChevronDownIcon, CopyIcon, LockIcon, ShieldIcon } from 'lucide-react';
-import { usePostHog } from 'posthog-js/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/layout/app-layout';
@@ -17,7 +16,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { useAnnouncementBanner } from '@/hooks/use-announcement-banner';
-import { useLandingAnalytics } from '@/hooks/use-landing-analytics';
+import { useProductAnalytics } from '@/hooks/use-product-analytics';
 
 export const Route = createFileRoute('/')({
   head: () => {
@@ -114,24 +113,16 @@ function Home() {
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const posthog = usePostHog();
   const navigate = useNavigate();
-
-  // Track landing page analytics
-  const { trackFunnelStep } = useLandingAnalytics();
+  const { trackSnippetCreated } = useProductAnalytics();
 
   // Announcement banner
   const { isDismissed, dismiss } = useAnnouncementBanner();
 
-  // Track funnel start
-  useEffect(() => {
-    trackFunnelStep('view_landing');
-  }, [trackFunnelStep]);
-
   const handleSnippetCreated = (result: { link: string; passwordWasSet: boolean }) => {
     setSnippetLink(result.link);
     setShowSuccess(true);
-    posthog.capture('snippet_created', {
+    trackSnippetCreated({
       passwordProtected: result.passwordWasSet,
     });
   };

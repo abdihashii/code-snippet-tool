@@ -30,6 +30,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useProductAnalytics } from '@/hooks/use-product-analytics';
 import { useSnippetForm } from '@/hooks/use-snippet-form';
 import { getSnippetById } from '@/lib/api/snippets-api';
 import { DecryptionService } from '@/lib/services';
@@ -54,6 +55,12 @@ function RouteComponent() {
   ] = useState<string | null>(null);
   const [decryptionError, setDecryptionError] = useState<string | null>(null);
   const [isDecrypting, setIsDecrypting] = useState(false);
+
+  const {
+    trackSnippetViewed,
+    trackSnippetDecrypted,
+    trackDecryptionFailed,
+  } = useProductAnalytics();
 
   // Get the loader data as ApiResponse<GetSnippetByIdResponse>
   const loadedData = Route.useLoaderData() as LoaderResponse;
@@ -112,9 +119,14 @@ function RouteComponent() {
 
       setDecryptedContent(decrypted);
       setDecryptionError(null);
+      trackSnippetDecrypted();
     } catch (err) {
       console.error('Failed to decrypt with password:', err);
       setDecryptionError('Invalid password. Please try again.');
+      trackDecryptionFailed({
+        reason: 'wrong_password',
+        isPasswordProtected: true,
+      });
     } finally {
       setIsDecrypting(false);
     }
@@ -148,14 +160,21 @@ function RouteComponent() {
       setDecryptionError(
         'Failed to decrypt snippet. The link may be invalid or corrupted.',
       );
+      trackDecryptionFailed({
+        reason: 'invalid_key',
+        isPasswordProtected: false,
+      });
     } finally {
       setIsDecrypting(false);
     }
-  }, [snippetData, setDecryptedContent, setDecryptionError, setIsDecrypting]);
+  }, [snippetData, setDecryptedContent, setDecryptionError, setIsDecrypting, trackDecryptionFailed]);
 
-  // Attempt decryption when component mounts
+  // Track snippet view and attempt decryption when component mounts
   useEffect(() => {
     if (!snippetData) return;
+
+    // Track snippet viewed on successful load
+    trackSnippetViewed({ isPasswordProtected: !!isPasswordProtected });
 
     // If not password protected, and not yet decrypted or decrypting, try to
     // decrypt.
@@ -169,6 +188,7 @@ function RouteComponent() {
     decryptedContent,
     isDecrypting,
     handleRegularDecryption,
+    trackSnippetViewed,
   ]);
 
   // Now handle error cases after all hooks are called
