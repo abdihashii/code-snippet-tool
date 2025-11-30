@@ -8,4 +8,15 @@ export interface CloudflareBindings {
 
   // Durable Object binding for rate limiting
   RATE_LIMITER: DurableObjectNamespace<DurableObjectRateLimiter>;
+
+  // Better Auth bindings
+  SUPABASE_DB_URL: string;
+  BETTER_AUTH_SECRET: string;
+  API_URL: string;
+
+  // OAuth provider credentials
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  GITHUB_CLIENT_ID: string;
+  GITHUB_CLIENT_SECRET: string;
 }

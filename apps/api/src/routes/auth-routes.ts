@@ -1,72 +1,29 @@
-import { DurableObjectStore } from '@hono-rate-limiter/cloudflare';
-import { signupSchema } from '@snippet-share/schemas';
 import { Hono } from 'hono';
-import { rateLimiter } from 'hono-rate-limiter';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
 
-import { getSupabaseClient } from '@/utils/supabase-client';
+import { createAuth } from '@/lib/auth';
 
 export const auth = new Hono<{ Bindings: CloudflareBindings }>();
 
-// Rate limit signup attempts to 3 per hour
-auth.post(
-  '/signup',
-  (c, next) =>
-    rateLimiter<{ Bindings: CloudflareBindings }>({
-      windowMs: 60 * 60 * 1000, // 1 hour
-      limit: 3,
-      standardHeaders: 'draft-6',
-      keyGenerator: (c) =>
-        `signup:${c.env.CF_CONNECTING_IP
-        || c.req.header('x-forwarded-for')
-        || 'anonymous'}`,
-      store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
-    })(c, next),
-  async (c) => {
-  // Get the email and passwords from the request body
-    const body = await c.req.json();
+// Mount Better Auth handler for all auth routes
+// Better Auth handles:
+// - /api/auth/sign-in/social
+// - /api/auth/sign-out
+// - /api/auth/session
+// - /api/auth/callback/*
+// - etc.
+auth.on(['POST', 'GET'], '/*', async (c) => {
+  const authInstance = createAuth({
+    SUPABASE_DB_URL: c.env.SUPABASE_DB_URL,
+    BETTER_AUTH_SECRET: c.env.BETTER_AUTH_SECRET,
+    FRONTEND_URL: c.env.FRONTEND_URL,
+    API_URL: c.env.API_URL,
+    GOOGLE_CLIENT_ID: c.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: c.env.GOOGLE_CLIENT_SECRET,
+    GITHUB_CLIENT_ID: c.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: c.env.GITHUB_CLIENT_SECRET,
+  });
 
-    // Final input validation stage
-    const validationResult = signupSchema
-      .safeParse(body);
-
-    if (!validationResult.success) {
-      return c.json({
-        error: validationResult.error.message,
-        success: false,
-      }, 400);
-    }
-
-    const { email, password } = validationResult.data;
-
-    try {
-    // Get the supabase client
-      const supabase = getSupabaseClient(c.env);
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-      // Return 400 for client errors (validation, user already exists, etc.)
-        return c.json({
-          error: error.message,
-          success: false,
-        }, 400);
-      }
-
-      return c.json({
-        data: { userData: data },
-        success: true,
-        message: 'User registered successfully',
-      }, 201); // 201 for successful resource creation
-    } catch (signupError) {
-      return c.json({
-        error: `Unknown signup error: ${signupError}`,
-        success: false,
-      }, 500);
-    }
-  },
-);
+  return authInstance.handler(c.req.raw);
+});

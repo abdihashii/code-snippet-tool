@@ -7,8 +7,24 @@ import type {
 
 import { API_URL } from '@/lib/constants';
 import {
+  AuthService,
   RateLimitService,
 } from '@/lib/services';
+
+/**
+ * Get headers for authenticated API requests.
+ * Includes Bearer token if available.
+ */
+function getAuthHeaders(): HeadersInit {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+}
 
 export async function createSnippet(
   snippet: CreateSnippetPayload,
@@ -16,9 +32,7 @@ export async function createSnippet(
   const response = await fetch(`${API_URL}/snippets`, {
     method: 'POST',
     body: JSON.stringify(snippet),
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: getAuthHeaders(),
   });
 
   // Extract rate limit info from headers (available on all responses)

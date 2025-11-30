@@ -11,12 +11,17 @@ import { snippets } from '@/routes/snippet-routes';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
+// CORS middleware - include Authorization header for Bearer tokens
 app.use('*', cors({
   origin: (_, c) => c.env.FRONTEND_URL,
-  exposeHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset', 'RateLimit-Policy', 'Retry-After'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  exposeHeaders: ['RateLimit-Limit', 'RateLimit-Remaining', 'RateLimit-Reset', 'RateLimit-Policy', 'Retry-After', 'set-auth-token'],
+  credentials: true,
 }));
 
-app.use('*', csrf({
+// CSRF middleware - apply to non-auth routes only (Better Auth handles its own CSRF)
+app.use('/snippets/*', csrf({
   origin: (_, c) => c.env.FRONTEND_URL,
 }));
 
@@ -39,7 +44,7 @@ app.get('/ping', () => {
 });
 
 app.route('/snippets', snippets);
-app.route('/auth', auth);
+app.route('/api/auth', auth);
 
 export default app;
 export { DurableObjectRateLimiter };
