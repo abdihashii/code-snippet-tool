@@ -5,15 +5,17 @@
 ### What's Working ✅
 
 - Basic meta tags configured
-- OpenGraph and Twitter Card tags
+- OpenGraph and Twitter Card tags (using correct `property` attribute)
 - `robots.txt` and `sitemap.xml` exist
 - Website live on Cloudflare Pages
-- Quality OG image present
+- Quality OG image present (absolute URL configured)
 - **Schema.org structured data** (WebApplication, FAQPage, Organization)
 - **Long-tail keywords** optimized
-- **Per-page meta tags** for homepage and changelog
+- **Per-page meta tags** for homepage, changelog, and snippet view
 - **Dynamic canonical URLs** - Automatically generated per route
 - **All meta descriptions comply with Google guidelines** (concise, unique, user-focused)
+- **Snippet routes have `noindex`** - Ephemeral content excluded from search
+- **Optimized title length** - Under 60 characters for better SERP display
 
 ### Critical Issues 🚨
 
@@ -36,15 +38,15 @@
 
 - [ ] Use `site:snippet-share.com` search to confirm Google has indexed your pages
 - [ ] Use URL Inspection Tool in Google Search Console
-- [ ] Verify Googlebot can access CSS and JavaScript files
-- [ ] Confirm pages render properly for crawlers (not just users)
-- [ ] Check `robots.txt` isn't blocking critical resources
+- [x] Verify Googlebot can access CSS and JavaScript files (verified: CSS/JS links in server-rendered HTML)
+- [x] Confirm pages render properly for crawlers (verified: SSR working, head content server-rendered)
+- [x] Check `robots.txt` isn't blocking critical resources (verified: allows `/`, `/new`, blocks `/s/` appropriately)
 - [ ] Test mobile rendering and responsiveness
 
 ### Verify Resource Accessibility
 
-- [ ] Ensure all CSS files are accessible to crawlers
-- [ ] Ensure all JavaScript files are accessible to crawlers
+- [x] Ensure all CSS files are accessible to crawlers (verified: `/_build/assets/app-*.css` in HTML)
+- [x] Ensure all JavaScript files are accessible to crawlers (verified: `/_build/assets/client-*.js` in HTML)
 - [ ] Verify no server-side blocks for Googlebot
 - [ ] Check Cloudflare settings don't interfere with crawling
 
@@ -71,8 +73,9 @@
   - **Status**: Updated in `app/lib/constants.ts`
 
 - [x] Add per-page meta tags:
-  - [x] Homepage: "Snippet Share - Secure Code Sharing with Zero-Knowledge Encryption"
+  - [x] Homepage: "Snippet Share - Private Code Sharing" (optimized to 36 chars)
   - [x] `/new`: "Create Secure Code Snippet | Snippet Share"
+  - [x] `/s/$snippet-id`: "View Snippet - Snippet Share" (with noindex)
 
 ### Meta Description Best Practices
 
