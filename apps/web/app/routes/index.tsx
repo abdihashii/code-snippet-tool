@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/layout/app-layout';
 import { SnippetForm } from '@/components/snippet/snippet-form';
-import { AnnouncementBanner } from '@/components/ui/announcement-banner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +14,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { useAnnouncementBanner } from '@/hooks/use-announcement-banner';
 import { useProductAnalytics } from '@/hooks/use-product-analytics';
 
 export const Route = createFileRoute('/')({
@@ -116,9 +114,6 @@ function Home() {
   const navigate = useNavigate();
   const { trackSnippetCreated } = useProductAnalytics();
 
-  // Announcement banner
-  const { isDismissed, dismiss } = useAnnouncementBanner();
-
   const handleSnippetCreated = (result: { link: string; passwordWasSet: boolean }) => {
     setSnippetLink(result.link);
     setShowSuccess(true);
@@ -143,15 +138,6 @@ function Home() {
 
   return (
     <AppLayout>
-      {/* Announcement Banner */}
-      <AnnouncementBanner
-        message="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
-        mobileMessage="New languages added! 🎉"
-        desktopMessage="New: PHP, Ruby, Go, C, and C++ syntax highlighting support added! 🎉"
-        onDismiss={dismiss}
-        show={!isDismissed}
-      />
-
       {/* Hero Section with Integrated Demo */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         {/* Minimalist header */}
