@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import type { ErrorInfo } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 

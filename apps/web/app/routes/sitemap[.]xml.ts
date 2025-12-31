@@ -4,11 +4,9 @@ import { URL as SITE_URL } from '@/lib/constants';
 
 // Static routes that should always be in the sitemap
 const STATIC_ROUTES = [
-  { path: '/', changefreq: 'weekly', priority: '1.0' },
-  { path: '/changelog', changefreq: 'monthly', priority: '0.8' },
-  // Add new static routes here as they're created
-  // { path: '/for-developers', changefreq: 'monthly', priority: '0.8' },
-  // { path: '/security', changefreq: 'monthly', priority: '0.7' },
+  { path: '/', changefreq: 'daily', priority: '1.0' },
+  { path: '/new', changefreq: 'weekly', priority: '0.8' },
+  { path: '/changelog', changefreq: 'monthly', priority: '0.6' },
 ];
 
 function generateSitemap(): string {
@@ -29,7 +27,7 @@ ${urls}
 </urlset>`;
 }
 
-export const Route = createFileRoute('/sitemap[/]xml')({
+export const Route = createFileRoute('/sitemap.xml')({
   server: {
     handlers: {
       GET: () => {

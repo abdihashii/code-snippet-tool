@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import { useRouter } from '@tanstack/react-router';
 import { AlertTriangleIcon, HomeIcon, RefreshCwIcon } from 'lucide-react';
 import React from 'react';
@@ -34,7 +36,7 @@ export function ErrorFallback({
         className="p-4 border border-destructive/30 bg-destructive/10 text-destructive rounded-md"
       >
         <div className="flex items-start space-x-3">
-          <AlertTriangleIcon className="h-5 w-5 mt-0.5 flex-shrink-0" />
+          <AlertTriangleIcon className="h-5 w-5 mt-0.5 shrink-0" />
           <div className="flex-1">
             <h3 className="text-sm font-medium">
               {title || 'Error loading component'}
@@ -60,7 +62,7 @@ export function ErrorFallback({
             <summary className="cursor-pointer font-medium">
               Error Details (Development)
             </summary>
-            <pre className="mt-2 whitespace-pre-wrap break-words bg-background p-2 rounded border">
+            <pre className="mt-2 whitespace-pre-wrap wrap-break-words bg-background p-2 rounded border">
               {error.message}
               {error.stack && `\n\n${error.stack}`}
             </pre>
@@ -100,7 +102,7 @@ export function ErrorFallback({
                 Error Details (Development)
               </summary>
               <pre
-                className="mt-2 whitespace-pre-wrap break-words bg-background p-2 rounded border text-xs"
+                className="mt-2 whitespace-pre-wrap wrap-break-words bg-background p-2 rounded border text-xs"
               >
                 {error.message}
                 {error.stack && `\n\n${error.stack}`}
@@ -140,7 +142,7 @@ export function ErrorFallback({
                 <summary className="cursor-pointer font-medium mb-2">
                   Error Details (Development Only)
                 </summary>
-                <pre className="whitespace-pre-wrap break-words text-xs">
+                <pre className="whitespace-pre-wrap wrap-break-words text-xs">
                   {error.message}
                   {error.stack && `\n\n${error.stack}`}
                 </pre>

@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import { CHANGELOG_DATA } from '@/lib/changelog-data';
 
 /* c8 ignore start */

@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import type { ReactNode } from 'react';
 
 import appCss from '@/styles/app.css?url';

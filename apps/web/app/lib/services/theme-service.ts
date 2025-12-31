@@ -27,7 +27,7 @@ export const getThemeServerFn = createServerFn().handler(async () => {
 
 /* c8 ignore next 7 */
 export const setThemeServerFn = createServerFn({ method: 'POST' })
-  .validator((data: unknown) => {
+  .inputValidator((data: unknown) => {
     return validateTheme(data);
   })
   .handler(async ({ data }) => {

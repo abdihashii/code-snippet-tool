@@ -8,215 +8,170 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as R404RouteImport } from './routes/404'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as SignupIndexRouteImport } from './routes/signup/index'
+import { Route as ChangelogIndexRouteImport } from './routes/changelog/index'
+import { Route as SSnippetIdRouteImport } from './routes/s/$snippet-id'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as R404Import } from './routes/404'
-import { Route as IndexImport } from './routes/index'
-import { Route as SignupIndexImport } from './routes/signup/index'
-import { Route as ChangelogIndexImport } from './routes/changelog/index'
-import { Route as SitemapxmlImport } from './routes/sitemap[.]xml'
-import { Route as SSnippetIdImport } from './routes/s/$snippet-id'
-
-// Create/Update Routes
-
-const R404Route = R404Import.update({
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
   id: '/404',
   path: '/404',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const SignupIndexRoute = SignupIndexImport.update({
+const SignupIndexRoute = SignupIndexRouteImport.update({
   id: '/signup/',
   path: '/signup/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ChangelogIndexRoute = ChangelogIndexImport.update({
+const ChangelogIndexRoute = ChangelogIndexRouteImport.update({
   id: '/changelog/',
   path: '/changelog/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const SitemapxmlRoute = SitemapxmlImport.update({
-  id: '/sitemap[/]xml',
-  path: '/sitemap[/]xml',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SSnippetIdRoute = SSnippetIdImport.update({
+const SSnippetIdRoute = SSnippetIdRouteImport.update({
   id: '/s/$snippet-id',
   path: '/s/$snippet-id',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/404': {
-      id: '/404'
-      path: '/404'
-      fullPath: '/404'
-      preLoaderRoute: typeof R404Import
-      parentRoute: typeof rootRoute
-    }
-    '/s/$snippet-id': {
-      id: '/s/$snippet-id'
-      path: '/s/$snippet-id'
-      fullPath: '/s/$snippet-id'
-      preLoaderRoute: typeof SSnippetIdImport
-      parentRoute: typeof rootRoute
-    }
-    '/sitemap[/]xml': {
-      id: '/sitemap[/]xml'
-      path: '/sitemap[/]xml'
-      fullPath: '/sitemap[/]xml'
-      preLoaderRoute: typeof SitemapxmlImport
-      parentRoute: typeof rootRoute
-    }
-    '/changelog/': {
-      id: '/changelog/'
-      path: '/changelog'
-      fullPath: '/changelog'
-      preLoaderRoute: typeof ChangelogIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/signup/': {
-      id: '/signup/'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupIndexImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/404': typeof R404Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
-  '/sitemap[/]xml': typeof SitemapxmlRoute
   '/changelog': typeof ChangelogIndexRoute
   '/signup': typeof SignupIndexRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/404': typeof R404Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
-  '/sitemap[/]xml': typeof SitemapxmlRoute
   '/changelog': typeof ChangelogIndexRoute
   '/signup': typeof SignupIndexRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/404': typeof R404Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
-  '/sitemap[/]xml': typeof SitemapxmlRoute
   '/changelog/': typeof ChangelogIndexRoute
   '/signup/': typeof SignupIndexRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/404'
+    | '/sitemap.xml'
     | '/s/$snippet-id'
-    | '/sitemap[/]xml'
     | '/changelog'
     | '/signup'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/404'
+    | '/sitemap.xml'
     | '/s/$snippet-id'
-    | '/sitemap[/]xml'
     | '/changelog'
     | '/signup'
   id:
     | '__root__'
     | '/'
     | '/404'
+    | '/sitemap.xml'
     | '/s/$snippet-id'
-    | '/sitemap[/]xml'
     | '/changelog/'
     | '/signup/'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   R404Route: typeof R404Route
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SSnippetIdRoute: typeof SSnippetIdRoute
-  SitemapxmlRoute: typeof SitemapxmlRoute
   ChangelogIndexRoute: typeof ChangelogIndexRoute
   SignupIndexRoute: typeof SignupIndexRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup/': {
+      id: '/signup/'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/changelog/': {
+      id: '/changelog/'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$snippet-id': {
+      id: '/s/$snippet-id'
+      path: '/s/$snippet-id'
+      fullPath: '/s/$snippet-id'
+      preLoaderRoute: typeof SSnippetIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R404Route: R404Route,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SSnippetIdRoute: SSnippetIdRoute,
-  SitemapxmlRoute: SitemapxmlRoute,
   ChangelogIndexRoute: ChangelogIndexRoute,
   SignupIndexRoute: SignupIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/404",
-        "/s/$snippet-id",
-        "/sitemap[/]xml",
-        "/changelog/",
-        "/signup/"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/404": {
-      "filePath": "404.tsx"
-    },
-    "/s/$snippet-id": {
-      "filePath": "s/$snippet-id.tsx"
-    },
-    "/sitemap[/]xml": {
-      "filePath": "sitemap[.]xml.ts"
-    },
-    "/changelog/": {
-      "filePath": "changelog/index.tsx"
-    },
-    "/signup/": {
-      "filePath": "signup/index.tsx"
-    }
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
   }
 }
-ROUTE_MANIFEST_END */
