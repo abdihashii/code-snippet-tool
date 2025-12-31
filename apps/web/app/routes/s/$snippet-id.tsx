@@ -39,6 +39,17 @@ import { formatExpiryTimestamp, formatTimestamp, hasExpiredByTime, hasReachedMax
 type LoaderResponse = ApiResponse<GetSnippetByIdResponse>;
 
 export const Route = createFileRoute('/s/$snippet-id')({
+  head: () => ({
+    meta: [
+      { title: 'View Snippet - Snippet Share' },
+      {
+        name: 'description',
+        content: 'View a securely shared code snippet with zero-knowledge encryption.',
+      },
+      // Prevent indexing of ephemeral, user-generated content
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
   component: RouteComponent,
   loader: async ({ params }) => {
     const snippetId = params['snippet-id'];
