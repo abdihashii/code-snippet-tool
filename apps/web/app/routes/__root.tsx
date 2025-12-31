@@ -57,24 +57,24 @@ export const Route = createRootRoute({
 
         // Open Graph Tags (for social sharing)
         {
-          name: 'og:title',
+          property: 'og:title',
           content: TITLE,
         },
         {
-          name: 'og:description',
+          property: 'og:description',
           content: DESCRIPTION,
         },
         {
-          name: 'og:type',
+          property: 'og:type',
           content: 'website',
         },
         {
-          name: 'og:url',
+          property: 'og:url',
           content: canonicalUrl,
         },
         {
-          name: 'og:image',
-          content: '/og-image.png',
+          property: 'og:image',
+          content: `${URL}/og-image.png`,
         },
 
         // Twitter Tags (for Twitter sharing)
