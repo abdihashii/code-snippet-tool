@@ -11,6 +11,21 @@ export interface ChangelogEntry {
 // Changelog Data - Add new releases here
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: '2026.01.01',
+    date: 'January 1, 2026',
+    description: 'Feedback & Trust Enhancements',
+    features: [
+      'Encryption progress indicator showing real-time status during snippet creation',
+      'Quick feedback widget (thumbs up/down) after creating a snippet',
+      'Detailed feedback form with star ratings accessible from footer',
+    ],
+    improvements: [
+      'Updated messaging to appeal to broader audience beyond developers',
+      'Enhanced success state with email sharing option',
+      'Success state now displays snippet expiration time and view limits',
+    ],
+  },
+  {
     version: '2025.10.16',
     date: 'October 16, 2025',
     description: 'Rate Limiting System Overhaul',
