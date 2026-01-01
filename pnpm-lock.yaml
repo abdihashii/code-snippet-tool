@@ -147,7 +147,7 @@ importers:
         version: 8.5.6
       posthog-js:
         specifier: ^1.249.4
-        version: 1.311.0
+        version: 1.313.0
       react:
         specifier: ^19.1.0
         version: 19.2.3
@@ -231,7 +231,7 @@ importers:
   packages/db:
     devDependencies:
       supabase:
-        specifier: ^2.22.12
+        specifier: ^2.70.5
         version: 2.70.5
 
   packages/eslint-config:
@@ -247,7 +247,7 @@ importers:
         version: link:../eslint-config
       zod:
         specifier: '*'
-        version: 3.25.76
+        version: 4.3.4
 
   packages/types:
     dependencies:
@@ -1280,8 +1280,8 @@ packages:
     resolution: {integrity: sha512-R8gLRTZeyp03ymzP/6Lil/28tGeGEzhx1q2k703KGWRAI1VdvPIXdG70VJc2pAMw3NA6JKL5hhFu1sJX0Mnn/A==}
     engines: {node: '>=6.0.0'}
 
-  '@jridgewell/source-map@0.3.6':
-    resolution: {integrity: sha512-1ZJTZebgqllO79ue2bm3rIGud/bOe0pP5BjSRCRxxYkEZS8STV7zN84UBbiYu7jy+eCKSnVIUgoWWE/tt+shMQ==}
+  '@jridgewell/source-map@0.3.11':
+    resolution: {integrity: sha512-ZMp1V8ZFcPG5dIWnQLr3NSI1MiCU7UETdS/A0G8V/XWHvJv3ZsFqutJn1Y5RPmAPX6F3BiE397OqveU/9NCuIA==}
 
   '@jridgewell/sourcemap-codec@1.5.0':
     resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
@@ -3913,8 +3913,8 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  posthog-js@1.311.0:
-    resolution: {integrity: sha512-P1dWYNFr1dlfa5sAOFj4uq2jJuGfNce3ctYl565t0Fm/i4ZJZq4D2hmKyTMjKu5f9wyZVlTeRdxdmTIGDjCegw==}
+  posthog-js@1.313.0:
+    resolution: {integrity: sha512-CL8RkC7m9BTZrix86w0fdnSCVqC/gxrfs6c4Wfkz/CldFD7f2912S2KqnWFmwRVDGIwm9IR82YhublQ88gdDKw==}
 
   preact@10.26.8:
     resolution: {integrity: sha512-1nMfdFjucm5hKvq0IClqZwK4FJkGXhRrQstOQ3P4vp8HxKrJEMFcY6RdBRVTdfQS/UlnX6gfbPuTvaqx/bDoeQ==}
@@ -4667,8 +4667,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.3.2:
-    resolution: {integrity: sha512-b8L8yn4rIVfiXyHAmnr52/ZEpDumlT0bmxiq3Ws1ybrinhflGpt12Hvv54kYnEsGPRs6o/Ka3/ppA2OWY21IVg==}
+  zod@4.3.4:
+    resolution: {integrity: sha512-Zw/uYiiyF6pUT1qmKbZziChgNPRu+ZRneAsMUDU6IwmXdWt5JwcUfy2bvLOCUtz5UniaN/Zx5aFttZYbYc7O/A==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -5283,7 +5283,7 @@ snapshots:
       '@eslint-react/eff': 1.53.1
       '@typescript-eslint/utils': 8.51.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       ts-pattern: 5.9.0
-      zod: 4.3.2
+      zod: 4.3.4
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -5295,7 +5295,7 @@ snapshots:
       '@eslint-react/kit': 1.53.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       '@typescript-eslint/utils': 8.51.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       ts-pattern: 5.9.0
-      zod: 4.3.2
+      zod: 4.3.4
     transitivePeerDependencies:
       - eslint
       - supports-color
@@ -5535,7 +5535,7 @@ snapshots:
 
   '@jridgewell/set-array@1.2.1': {}
 
-  '@jridgewell/source-map@0.3.6':
+  '@jridgewell/source-map@0.3.11':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
@@ -6687,7 +6687,6 @@ snapshots:
       magic-string: 0.30.17
     optionalDependencies:
       vite: 6.4.1(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.42.0)(tsx@4.21.0)(yaml@2.8.2)
-    optional: true
 
   '@vitest/pretty-format@3.2.4':
     dependencies:
@@ -6718,7 +6717,7 @@ snapshots:
       sirv: 3.0.1
       tinyglobby: 0.2.15
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.3)(@vitest/ui@3.2.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.42.0)(tsx@4.21.0)(yaml@2.8.2)
+      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@25.0.3)(@vitest/ui@3.2.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.42.0)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -8535,7 +8534,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  posthog-js@1.311.0:
+  posthog-js@1.313.0:
     dependencies:
       '@posthog/core': 1.9.0
       core-js: 3.42.0
@@ -8873,7 +8872,7 @@ snapshots:
 
   terser@5.42.0:
     dependencies:
-      '@jridgewell/source-map': 0.3.6
+      '@jridgewell/source-map': 0.3.11
       acorn: 8.15.0
       commander: 2.20.3
       source-map-support: 0.5.21
@@ -9073,7 +9072,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-    optional: true
 
   vite-tsconfig-paths@5.1.4(typescript@5.9.3)(vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.42.0)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
@@ -9119,7 +9117,6 @@ snapshots:
       terser: 5.42.0
       tsx: 4.21.0
       yaml: 2.8.2
-    optional: true
 
   vite@7.3.0(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.42.0)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
@@ -9227,7 +9224,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-    optional: true
 
   vue-eslint-parser@10.2.0(eslint@9.39.2(jiti@2.6.1)):
     dependencies:
@@ -9356,6 +9352,6 @@ snapshots:
 
   zod@3.25.76: {}
 
-  zod@4.3.2: {}
+  zod@4.3.4: {}
 
   zwitch@2.0.4: {}
