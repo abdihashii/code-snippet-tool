@@ -7,6 +7,7 @@ import { csrf } from 'hono/csrf';
 import type { CloudflareBindings } from '@/types/hono-bindings';
 
 import { auth } from '@/routes/auth-routes';
+import { feedback } from '@/routes/feedback-routes';
 import { snippets } from '@/routes/snippet-routes';
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
@@ -40,6 +41,7 @@ app.get('/ping', () => {
 
 app.route('/snippets', snippets);
 app.route('/auth', auth);
+app.route('/feedback', feedback);
 
 export default app;
 export { DurableObjectRateLimiter };
