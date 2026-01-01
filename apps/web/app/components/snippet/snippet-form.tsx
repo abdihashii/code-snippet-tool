@@ -179,7 +179,7 @@ function SnippetFormComponent({
                     <pre
                       aria-hidden="true"
                       className={cn(
-                        'absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground',
+                        'absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap wrap-break-words overflow-hidden pointer-events-none text-foreground',
                         isSubmitting ? 'bg-accent' : 'bg-background',
                       )}
                     >
@@ -272,7 +272,7 @@ function SnippetFormComponent({
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="link"
-                    className="flex items-center gap-2 !p-0 text-sm text-primary hover:cursor-pointer hover:text-primary/90"
+                    className="flex items-center gap-2 p-0! text-sm text-primary hover:cursor-pointer hover:text-primary/90"
                   >
                     {isOptionsOpen
                       ? (
