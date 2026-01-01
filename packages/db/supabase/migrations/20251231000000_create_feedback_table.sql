@@ -14,3 +14,14 @@ CREATE INDEX idx_feedback_created_at ON feedback(created_at DESC);
 
 -- Create index on type for filtering by feedback type
 CREATE INDEX idx_feedback_type ON feedback(type);
+
+-- Enable Row Level Security
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+
+-- Allow anyone to submit feedback (anonymous or authenticated)
+CREATE POLICY "Anyone can submit feedback"
+  ON feedback FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+-- Only service role can read feedback (for admin dashboard access)
