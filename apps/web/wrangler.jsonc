@@ -3,5 +3,9 @@
   "name": "snippet-share-web",
   "compatibility_date": "2025-10-11",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry"
+  "main": "@tanstack/react-start/server-entry",
+  "routes": [
+    { "pattern": "snippet-share.com", "custom_domain": true },
+    { "pattern": "www.snippet-share.com", "custom_domain": true }
+  ]
 }
