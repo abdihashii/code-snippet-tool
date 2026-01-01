@@ -1,6 +1,6 @@
 -- Create feedback table for collecting user feedback
 CREATE TABLE feedback (
-  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   type VARCHAR(10) NOT NULL CHECK (type IN ('quick', 'detailed')),
   rating INTEGER NOT NULL,
   comment TEXT,
