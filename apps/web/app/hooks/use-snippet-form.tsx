@@ -80,10 +80,15 @@ const PRETTIER_SUPPORT_MAP: Partial<Record<Language, PrettierConfig>> = {
   },
 };
 
+export interface SnippetCreatedResult {
+  link: string;
+  passwordWasSet: boolean;
+  expiresAfter: string;
+  maxViews: string;
+}
+
 interface UseSnippetFormProps {
-  onSnippetCreated?: (
-    result: { link: string; passwordWasSet: boolean }
-  ) => void;
+  onSnippetCreated?: (result: SnippetCreatedResult) => void;
   initialCode?: string;
   initialLanguage?: Language;
   initialTitle?: string;
@@ -117,6 +122,7 @@ export function useSnippetForm({
   const [selectedTab, setSelectedTab] = useState<'code' | 'text'>('code');
   const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo | null>(null);
   const [isRateLimited, setIsRateLimited] = useState<boolean>(false);
+  const [encryptionStep, setEncryptionStep] = useState<'idle' | 'encrypting' | 'uploading'>('idle');
 
   const { trackRateLimitHit, trackLinkCopied } = useProductAnalytics();
 
@@ -173,6 +179,7 @@ export function useSnippetForm({
     e.preventDefault();
 
     setIsSubmitting(true);
+    setEncryptionStep('encrypting');
     try {
       // Generate a unique, cryptographically strong random Data Encryption Key
       // (DEK)
@@ -313,6 +320,7 @@ export function useSnippetForm({
       }
 
       // Create the snippet by calling the createSnippet API.
+      setEncryptionStep('uploading');
       const createSnippetResponse = await createSnippet(payload);
 
       // Extract and update rate limit info from successful response
@@ -342,6 +350,8 @@ export function useSnippetForm({
       onSnippetCreated({
         link,
         passwordWasSet: isPasswordProtectionEnabled && !!snippetPassword,
+        expiresAfter,
+        maxViews,
       });
 
       // Display a success message to the user depending on whether a password
@@ -386,6 +396,7 @@ export function useSnippetForm({
       }
     } finally {
       setIsSubmitting(false);
+      setEncryptionStep('idle');
     }
   };
 
@@ -479,6 +490,7 @@ export function useSnippetForm({
     // Status
     isSubmitting,
     isPrettifying,
+    encryptionStep,
 
     // Constants
     SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES_FOR_FORM,

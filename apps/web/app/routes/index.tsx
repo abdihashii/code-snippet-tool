@@ -1,10 +1,11 @@
 import type { Language } from '@snippet-share/types';
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { CheckIcon, ChevronDownIcon, CopyIcon, LockIcon, ShieldIcon } from 'lucide-react';
+import { CheckIcon, ChevronDownIcon, ClockIcon, CopyIcon, EyeIcon, LockIcon, MailIcon, ShieldIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { FeedbackWidget } from '@/components/feedback/feedback-widget';
 import { AppLayout } from '@/components/layout/app-layout';
 import { SnippetForm } from '@/components/snippet/snippet-form';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +28,7 @@ export const Route = createFileRoute('/')({
           '@type': 'WebApplication',
           'name': 'Snippet Share',
           'url': 'https://snippet-share.com',
-          'description': 'Secure code sharing platform with zero-knowledge encryption, self-destructing snippets, and password protection.',
+          'description': 'Share sensitive content securely with end-to-end encryption, self-destructing messages, and password protection.',
           'applicationCategory': 'DeveloperApplication',
           'operatingSystem': 'Any',
           'offers': {
@@ -108,14 +109,16 @@ const PLACEHOLDER_TEXTS = [
 function Home() {
   const [faqOpen, setFaqOpen] = useState<string | null>(null);
   const [snippetLink, setSnippetLink] = useState('');
+  const [snippetMetadata, setSnippetMetadata] = useState<{ expiresAfter: string; maxViews: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const navigate = useNavigate();
   const { trackSnippetCreated } = useProductAnalytics();
 
-  const handleSnippetCreated = (result: { link: string; passwordWasSet: boolean }) => {
+  const handleSnippetCreated = (result: { link: string; passwordWasSet: boolean; expiresAfter: string; maxViews: string }) => {
     setSnippetLink(result.link);
+    setSnippetMetadata({ expiresAfter: result.expiresAfter, maxViews: result.maxViews });
     setShowSuccess(true);
     trackSnippetCreated({
       passwordProtected: result.passwordWasSet,
@@ -134,6 +137,30 @@ function Home() {
   const handleCreateAnother = () => {
     setShowSuccess(false);
     setSnippetLink('');
+    setSnippetMetadata(null);
+  };
+
+  // Helper to format expiration for display
+  const formatExpiration = (expiresAfter: string) => {
+    switch (expiresAfter) {
+      case '1h': return '1 hour';
+      case '24h': return '24 hours';
+      case '7d': return '7 days';
+      case 'never': return 'Never';
+      default: return expiresAfter;
+    }
+  };
+
+  // Helper to format max views for display
+  const formatMaxViews = (maxViews: string) => {
+    return maxViews === 'unlimited' ? 'Unlimited' : `${maxViews} view${maxViews === '1' ? '' : 's'}`;
+  };
+
+  // Generate mailto link for email sharing
+  const getEmailShareLink = () => {
+    const subject = encodeURIComponent('Secure snippet shared with you');
+    const body = encodeURIComponent(`I've shared a secure, encrypted snippet with you:\n\n${snippetLink}\n\nThis link contains encrypted content that only you can view.`);
+    return `mailto:?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -143,10 +170,10 @@ function Home() {
         {/* Minimalist header */}
         <div className="text-center mb-8 space-y-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
-            Share code snippets. Truly private.
+            Share sensitive content. Truly private.
           </h1>
           <p className="text-lg text-muted-foreground">
-            Encrypted in your browser before upload. We literally can't read your code.
+            End-to-end encrypted in your browser. We can't read it, even if we wanted to.
           </p>
 
           {/* Trust indicators without numbers */}
@@ -173,12 +200,14 @@ function Home() {
                 />
               )
             : (
-                <div className="rounded-lg border-2 shadow-xl bg-card p-6 space-y-4">
+                <div className="rounded-lg border-2 shadow-xl bg-card p-6 space-y-5">
+                  {/* Success header */}
                   <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
                     <CheckIcon className="h-5 w-5" />
-                    <span className="font-medium">Snippet created successfully!</span>
+                    <span className="font-medium">Snippet created & encrypted!</span>
                   </div>
 
+                  {/* Link input with copy */}
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
@@ -196,7 +225,48 @@ function Home() {
                     </Button>
                   </div>
 
-                  <div className="flex gap-2">
+                  {/* Share via email */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Share via:</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      asChild
+                    >
+                      <a href={getEmailShareLink()}>
+                        <MailIcon className="h-4 w-4 mr-1" />
+                        Email
+                      </a>
+                    </Button>
+                  </div>
+
+                  {/* Metadata display */}
+                  {snippetMetadata && (
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <ClockIcon className="h-4 w-4" />
+                        <span>
+                          Expires:
+                          {' '}
+                          {formatExpiration(snippetMetadata.expiresAfter)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <EyeIcon className="h-4 w-4" />
+                        <span>
+                          Views:
+                          {' '}
+                          {formatMaxViews(snippetMetadata.maxViews)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Feedback widget */}
+                  <FeedbackWidget page="home-success" />
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 pt-2">
                     <Button
                       onClick={handleCreateAnother}
                       variant="outline"
@@ -218,7 +288,7 @@ function Home() {
         {/* Single line trust statement */}
         {!showSuccess && (
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Expires when you want. Deleted forever after.
+            Code, configs, credentials, notes—encrypted before it leaves your device.
           </p>
         )}
       </section>

@@ -7,13 +7,15 @@ import {
   CopyIcon,
   EyeIcon,
   EyeOffIcon,
+  LockIcon,
   RefreshCwIcon,
-  ShieldIcon,
   Wand2Icon,
 } from 'lucide-react';
 import { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 import { toast } from 'sonner';
+
+import type { SnippetCreatedResult } from '@/hooks/use-snippet-form';
 
 import { FormErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
@@ -48,9 +50,7 @@ import { cn } from '@/lib/utils';
 import { CodeEditor } from './code-editor';
 
 interface SnippetFormProps {
-  onSnippetCreated: (
-    result: { link: string; passwordWasSet: boolean },
-  ) => void;
+  onSnippetCreated: (result: SnippetCreatedResult) => void;
   initialCode?: string;
   initialLanguage?: Language;
   initialTitle?: string;
@@ -82,6 +82,7 @@ function SnippetFormComponent({
     setMaxViews,
     isSubmitting,
     isPrettifying,
+    encryptionStep,
     canPrettifyCurrentLanguage,
     isPasswordProtectionEnabled,
     setIsPasswordProtectionEnabled,
@@ -448,10 +449,12 @@ function SnippetFormComponent({
               className="w-full sm:w-auto bg-primary hover:bg-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
               disabled={!code.trim() || isSubmitting}
             >
-              <ShieldIcon className="h-4 w-4" />
-              {isSubmitting
-                ? 'Creating Secure Snippet...'
-                : 'Create Secure Snippet'}
+              <LockIcon className={cn('h-4 w-4', encryptionStep === 'encrypting' && 'animate-pulse')} />
+              {encryptionStep === 'encrypting'
+                ? 'Encrypting locally...'
+                : encryptionStep === 'uploading'
+                  ? 'Uploading encrypted data...'
+                  : 'Create Secure Snippet'}
             </Button>
           </CardFooter>
         </form>

@@ -1,6 +1,8 @@
 import { Link } from '@tanstack/react-router';
+import { MessageSquareIcon } from 'lucide-react';
 import React from 'react';
 
+import { FeedbackDialog } from '@/components/feedback/feedback-dialog';
 import { Header } from '@/components/layout/header';
 import { APP_VERSION } from '@/lib/constants';
 
@@ -34,6 +36,18 @@ export function AppLayout({ children }: {
             v
             {APP_VERSION}
           </Link>
+          <span>|</span>
+          <FeedbackDialog
+            trigger={(
+              <button
+                type="button"
+                className="hover:cursor-pointer inline-flex items-center gap-1 hover:text-primary transition-colors underline-offset-4 hover:underline"
+              >
+                <MessageSquareIcon className="h-3 w-3" />
+                Feedback
+              </button>
+            )}
+          />
         </div>
       </footer>
     </main>
