@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SignupIndexRouteImport } from './routes/signup/index'
 import { Route as ChangelogIndexRouteImport } from './routes/changelog/index'
 import { Route as SSnippetIdRouteImport } from './routes/s/$snippet-id'
 
@@ -29,11 +28,6 @@ const R404Route = R404RouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupIndexRoute = SignupIndexRouteImport.update({
-  id: '/signup/',
-  path: '/signup/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangelogIndexRoute = ChangelogIndexRouteImport.update({
@@ -53,7 +47,6 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
   '/changelog': typeof ChangelogIndexRoute
-  '/signup': typeof SignupIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +54,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
   '/changelog': typeof ChangelogIndexRoute
-  '/signup': typeof SignupIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,25 +62,12 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
   '/changelog/': typeof ChangelogIndexRoute
-  '/signup/': typeof SignupIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/404'
-    | '/sitemap.xml'
-    | '/s/$snippet-id'
-    | '/changelog'
-    | '/signup'
+  fullPaths: '/' | '/404' | '/sitemap.xml' | '/s/$snippet-id' | '/changelog'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/404'
-    | '/sitemap.xml'
-    | '/s/$snippet-id'
-    | '/changelog'
-    | '/signup'
+  to: '/' | '/404' | '/sitemap.xml' | '/s/$snippet-id' | '/changelog'
   id:
     | '__root__'
     | '/'
@@ -96,7 +75,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/s/$snippet-id'
     | '/changelog/'
-    | '/signup/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +83,6 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SSnippetIdRoute: typeof SSnippetIdRoute
   ChangelogIndexRoute: typeof ChangelogIndexRoute
-  SignupIndexRoute: typeof SignupIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -131,13 +108,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/signup/': {
-      id: '/signup/'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/changelog/': {
       id: '/changelog/'
       path: '/changelog'
@@ -161,7 +131,6 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SSnippetIdRoute: SSnippetIdRoute,
   ChangelogIndexRoute: ChangelogIndexRoute,
-  SignupIndexRoute: SignupIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
