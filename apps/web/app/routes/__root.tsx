@@ -139,6 +139,11 @@ function RootComponent() {
                     // This enables capturing exceptions using Error Tracking
                     capture_exceptions: true,
                     debug: import.meta.env.MODE === 'development',
+                    // Privacy: mask all text inputs in session recordings
+                    // This protects snippet content, passwords, and user-entered data
+                    session_recording: {
+                      maskAllInputs: true,
+                    },
                   }}
                 >
                   <Outlet />
