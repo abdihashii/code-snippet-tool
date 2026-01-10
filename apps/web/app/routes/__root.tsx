@@ -142,6 +142,9 @@ function RootComponent() {
                     // Privacy: disable session recordings entirely
                     // We only track anonymous usage metrics, not user interactions
                     disable_session_recording: true,
+                    // Cookieless mode: no cookies or localStorage, GDPR-compliant
+                    // Anonymous ID resets each session, but we can use identify() for logged-in users
+                    persistence: 'memory',
                   }}
                 >
                   <Outlet />
