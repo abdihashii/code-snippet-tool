@@ -78,7 +78,15 @@ export const Route = createFileRoute('/')({
               'name': 'Can I password protect snippets?',
               'acceptedAnswer': {
                 '@type': 'Answer',
-                'text': 'Yes! You can add an additional password layer on top of the encryption. You can also set custom expiration times (1 hour to never), view limits, and use syntax highlighting for 50+ programming languages. All features are free - no premium tiers, no ads, no tracking.',
+                'text': 'Yes! You can add an additional password layer on top of the encryption. You can also set custom expiration times (1 hour to never), view limits, and use syntax highlighting for 50+ programming languages. All features are free - no premium tiers, no ads.',
+              },
+            },
+            {
+              '@type': 'Question',
+              'name': 'Do you track anything?',
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': 'We collect anonymous usage metrics (page views, feature usage) to improve the product. We never record your screen, keystrokes, or session activity. Most importantly, your snippet content is encrypted before it leaves your browser - we literally cannot read it, even in our analytics.',
               },
             },
           ],
@@ -356,7 +364,28 @@ function Home() {
                 Yes! You can add an additional password layer on top of the encryption.
                 You can also set custom expiration times (1 hour to never),
                 view limits, and use syntax highlighting for 50+ programming languages.
-                All features are free - no premium tiers, no ads, no tracking.
+                All features are free - no premium tiers, no ads.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible
+            open={faqOpen === 'analytics'}
+            onOpenChange={(open) => setFaqOpen(open ? 'analytics' : null)}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
+              <span className="font-medium">Do you track anything?</span>
+              <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                faqOpen === 'analytics' ? 'rotate-180' : ''
+              }`}
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4">
+              <p className="text-muted-foreground">
+                We collect anonymous usage metrics (page views, feature usage) to improve the product.
+                We never record your screen, keystrokes, or session activity.
+                Most importantly, your snippet content is encrypted before it leaves your browser -
+                we literally cannot read it, even in our analytics.
               </p>
             </CollapsibleContent>
           </Collapsible>
