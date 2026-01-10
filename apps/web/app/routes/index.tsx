@@ -94,7 +94,7 @@ export const Route = createFileRoute('/')({
               'name': 'Do you track anything?',
               'acceptedAnswer': {
                 '@type': 'Answer',
-                'text': 'We collect anonymous usage metrics (page views, feature usage) to improve the product. We don\'t use cookies or store anything in your browser - no cookie banner needed. We never record your screen, keystrokes, or session activity. Your snippet content is encrypted before it leaves your browser - we literally cannot read it, even in our analytics.',
+                'text': 'We collect anonymous usage metrics (page views, feature usage) to improve the product. We don\'t use cookies or store anything in your browser - GDPR-compliant by design, no consent banner needed. We never record your screen, keystrokes, or session activity. Your snippet content is encrypted before it leaves your browser - we literally cannot read it, even in our analytics.',
               },
             },
           ],
@@ -304,7 +304,7 @@ function Home() {
         {/* Single line trust statement */}
         {!showSuccess && (
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Code, configs, credentials, notes—encrypted before it leaves your device.
+            Code, configs, credentials, notes - encrypted before it leaves your device.
           </p>
         )}
       </section>
@@ -412,7 +412,7 @@ function Home() {
             <CollapsibleContent className="px-4 pb-4">
               <p className="text-muted-foreground">
                 We collect anonymous usage metrics (page views, feature usage) to improve the product.
-                We don't use cookies or store anything in your browser - no cookie banner needed.
+                We don't use cookies or store anything in your browser - GDPR-compliant by design, no consent banner needed.
                 We never record your screen, keystrokes, or session activity.
                 Your snippet content is encrypted before it leaves your browser -
                 we literally cannot read it, even in our analytics.
