@@ -67,6 +67,14 @@ export const Route = createFileRoute('/')({
             },
             {
               '@type': 'Question',
+              'name': 'Is my connection secure?',
+              'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': 'Yes. We enforce HTTPS on all connections - HTTP requests are automatically redirected. We also use HSTS (HTTP Strict Transport Security) which tells your browser to always use encrypted connections, preventing downgrade attacks. Your data is protected in transit and at rest.',
+              },
+            },
+            {
+              '@type': 'Question',
               'name': 'What happens to my code?',
               'acceptedAnswer': {
                 '@type': 'Answer',
@@ -323,6 +331,26 @@ function Home() {
                 The key is never sent to our servers - it stays in the URL fragment.
                 This means we literally cannot decrypt your code, even under legal compulsion.
                 It would take all the world's computers over 1,000 years to crack a single snippet.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Collapsible
+            open={faqOpen === 'connection'}
+            onOpenChange={(open) => setFaqOpen(open ? 'connection' : null)}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full text-left p-4 rounded-lg hover:bg-muted/50 transition-colors">
+              <span className="font-medium">Is my connection secure?</span>
+              <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                faqOpen === 'connection' ? 'rotate-180' : ''
+              }`}
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 pb-4">
+              <p className="text-muted-foreground">
+                Yes. We enforce HTTPS on all connections - HTTP requests are automatically redirected.
+                We also use HSTS (HTTP Strict Transport Security) which tells your browser to always use
+                encrypted connections, preventing downgrade attacks. Your data is protected in transit and at rest.
               </p>
             </CollapsibleContent>
           </Collapsible>
