@@ -8,7 +8,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "start": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "deploy": "vite build && wrangler deploy",
     "lint": "eslint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
