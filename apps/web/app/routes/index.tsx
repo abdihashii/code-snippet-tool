@@ -70,7 +70,7 @@ export const Route = createFileRoute('/')({
               'name': 'Is my connection secure?',
               'acceptedAnswer': {
                 '@type': 'Answer',
-                'text': 'Yes. We enforce HTTPS on all connections - HTTP requests are automatically redirected. We also use HSTS (HTTP Strict Transport Security) which tells your browser to always use encrypted connections, preventing downgrade attacks. Your data is protected in transit and at rest.',
+                'text': 'Yes. We enforce HTTPS on all connections - HTTP requests are automatically redirected. We also use HSTS (HTTP Strict Transport Security) which tells your browser to always use encrypted connections, preventing downgrade attacks. We also block AI training bots from crawling our site. Your data is protected in transit and at rest.',
               },
             },
             {
@@ -350,7 +350,8 @@ function Home() {
               <p className="text-muted-foreground">
                 Yes. We enforce HTTPS on all connections - HTTP requests are automatically redirected.
                 We also use HSTS (HTTP Strict Transport Security) which tells your browser to always use
-                encrypted connections, preventing downgrade attacks. Your data is protected in transit and at rest.
+                encrypted connections, preventing downgrade attacks. We also block AI training bots from
+                crawling our site. Your data is protected in transit and at rest.
               </p>
             </CollapsibleContent>
           </Collapsible>
