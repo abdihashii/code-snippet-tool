@@ -2,7 +2,6 @@
 
 import type { ReactNode } from 'react';
 
-import appCss from '@/styles/app.css?url';
 import {
   createRootRoute,
   HeadContent,
@@ -25,6 +24,7 @@ import {
   URL,
 } from '@/lib/constants';
 import { ThemeService } from '@/lib/services';
+import appCss from '@/styles/app.css?url';
 
 import { NotFound } from './404';
 
