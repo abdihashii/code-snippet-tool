@@ -382,6 +382,7 @@ function RouteComponent() {
                                       handlePasswordSubmit();
                                     }
                                   }}
+                                  className="ph-no-capture"
                                 />
                                 {decryptionError && (
                                   <p

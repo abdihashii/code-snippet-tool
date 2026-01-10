@@ -117,6 +117,7 @@ export function FeedbackDialog({ trigger, page = 'footer' }: FeedbackDialogProps
               onChange={(e) => setComment(e.target.value)}
               maxLength={1000}
               rows={3}
+              className="ph-no-capture"
             />
           </div>
 
@@ -131,6 +132,7 @@ export function FeedbackDialog({ trigger, page = 'footer' }: FeedbackDialogProps
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="ph-no-capture"
             />
           </div>
 
