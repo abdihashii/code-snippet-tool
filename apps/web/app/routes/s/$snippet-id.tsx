@@ -280,7 +280,7 @@ function RouteComponent() {
           <Card className="w-full shadow-md">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl text-foreground">
+                <CardTitle className="ph-no-capture text-xl text-foreground">
                   {title || 'Untitled Snippet'}
                 </CardTitle>
                 <div className="flex space-x-2">
@@ -314,7 +314,7 @@ function RouteComponent() {
                 </div>
               </div>
               {name && (
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="ph-no-capture text-sm text-muted-foreground mt-1">
                   Shared by:
                   {' '}
                   {name}

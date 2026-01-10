@@ -199,7 +199,7 @@ function CodeEditorComponent({
       <pre
         aria-hidden="true"
         className={cn(
-          'absolute inset-0 rounded-md px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground',
+          'ph-no-capture absolute inset-0 rounded-md px-3 py-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground',
           isReadOnly ? 'bg-accent' : 'bg-background',
         )}
       >
@@ -210,7 +210,7 @@ function CodeEditorComponent({
       </pre>
       <Textarea
         placeholder={placeholderTexts ? '' : placeholder} // Empty when cycling, static when not
-        className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="ph-no-capture relative z-10 bg-transparent text-transparent caret-foreground min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         value={code}
         onChange={(e) => {
           const newCode = e.target.value;

@@ -213,7 +213,7 @@ function Home() {
                       type="text"
                       value={snippetLink}
                       readOnly
-                      className="flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
+                      className="ph-no-capture flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
                     />
                     <Button
                       size="sm"
