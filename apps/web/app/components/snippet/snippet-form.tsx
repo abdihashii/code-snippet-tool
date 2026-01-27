@@ -179,7 +179,7 @@ function SnippetFormComponent({
                     <pre
                       aria-hidden="true"
                       className={cn(
-                        'absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap wrap-break-words overflow-hidden pointer-events-none text-foreground',
+                        'absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-all overflow-hidden pointer-events-none text-foreground',
                         isSubmitting ? 'bg-accent' : 'bg-background',
                       )}
                     >
@@ -191,7 +191,7 @@ function SnippetFormComponent({
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
                       disabled={isSubmitting}
-                      className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y"
+                      className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y break-all"
                     />
                   </div>
                 </TabsContent>
