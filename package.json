@@ -11,6 +11,7 @@
     "dev:api": "pnpm --filter @snippet-share/api dev",
     "db:start": "pnpm --filter @snippet-share/db start",
     "db:stop": "pnpm --filter @snippet-share/db stop",
+    "db:reset": "pnpm --filter @snippet-share/db reset",
     "build:types": "pnpm --filter @snippet-share/types build",
     "build:schemas": "pnpm --filter @snippet-share/schemas build",
     "build:web": "pnpm run build:types && pnpm run build:schemas && pnpm --filter @snippet-share/web build",

@@ -6,9 +6,9 @@
   "author": "Abdirahman Haji",
   "license": "MIT",
   "scripts": {
-    "db:start": "supabase start",
-    "db:stop": "supabase stop",
-    "db:reset": "supabase db reset",
+    "start": "supabase start",
+    "stop": "supabase stop",
+    "reset": "supabase db reset",
     "clean": "rm -rf node_modules",
     "lint": "eslint ."
   },
