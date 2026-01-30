@@ -98,8 +98,7 @@ function SnippetFormComponent({
     setSelectedTab,
 
     // Derived/Computed values for rendering (from useCodeHighlighting via useSnippetForm)
-    highlightedHtml,
-    codeClassName,
+    highlightCode,
 
     // Actions
     handleSubmit,
@@ -163,8 +162,7 @@ function SnippetFormComponent({
                   <CodeEditor
                     code={code}
                     onCodeChange={setCode}
-                    highlightedHtml={highlightedHtml}
-                    codeClassName={codeClassName}
+                    highlightCode={highlightCode}
                     MAX_CODE_LENGTH={MAX_CODE_LENGTH}
                     isReadOnly={isSubmitting}
                     language={language}
@@ -175,25 +173,14 @@ function SnippetFormComponent({
                   />
                 </TabsContent>
                 <TabsContent value="text">
-                  <div className="relative w-full">
-                    <pre
-                      aria-hidden="true"
-                      className={cn(
-                        'absolute inset-0 rounded-md px-3 py-2 min-h-[150px] font-mono text-sm whitespace-pre-wrap break-all overflow-hidden pointer-events-none text-foreground',
-                        isSubmitting ? 'bg-accent' : 'bg-background',
-                      )}
-                    >
-                      <code>{`${code}\n`}</code>
-                    </pre>
-                    <Textarea
-                      id="text-content"
-                      placeholder="Paste your text here..."
-                      value={code}
-                      onChange={(e) => setCode(e.target.value)}
-                      disabled={isSubmitting}
-                      className="relative z-10 bg-transparent text-transparent caret-foreground min-h-[150px] font-mono text-sm resize-y break-all"
-                    />
-                  </div>
+                  <Textarea
+                    id="text-content"
+                    placeholder="Paste your text here..."
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    disabled={isSubmitting}
+                    className="min-h-[300px] font-mono text-sm resize-y"
+                  />
                 </TabsContent>
               </Tabs>
 

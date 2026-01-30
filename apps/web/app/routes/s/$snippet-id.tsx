@@ -99,8 +99,7 @@ function RouteComponent() {
     language,
 
     // Derived/Computed values for rendering
-    highlightedHtml,
-    codeClassName,
+    highlightCode,
 
     // Constants
     MAX_CODE_LENGTH,
@@ -422,8 +421,7 @@ function RouteComponent() {
                               <CodeEditor
                                 code={code}
                                 onCodeChange={() => {}}
-                                highlightedHtml={highlightedHtml}
-                                codeClassName={codeClassName}
+                                highlightCode={highlightCode}
                                 MAX_CODE_LENGTH={MAX_CODE_LENGTH}
                                 isReadOnly={true}
                                 title={title ?? 'Untitled Snippet'}

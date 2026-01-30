@@ -3,6 +3,7 @@ import type { Language } from '@snippet-share/types';
 import { Check, ChevronsUpDown, CopyCheckIcon, CopyIcon, DownloadIcon } from 'lucide-react';
 import { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
+import Editor from 'react-simple-code-editor';
 
 import { CodeEditorErrorFallback } from '@/components/error-fallback';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
 import { usePlaceholderCycle } from '@/hooks/use-placeholder-cycle';
 import { useProductAnalytics } from '@/hooks/use-product-analytics';
 import { cn } from '@/lib/utils';
@@ -28,12 +28,11 @@ import { getFileExtensionForLanguage } from '@/lib/utils/language-utils';
 export interface CodeEditorProps {
   code: string;
   onCodeChange: (newCode: string) => void;
-  highlightedHtml: string;
-  codeClassName: string;
+  highlightCode: (code: string) => string;
   isReadOnly?: boolean;
   MAX_CODE_LENGTH: number;
   placeholder?: string;
-  placeholderTexts?: string[]; // Array of texts to cycle through
+  placeholderTexts?: string[];
   title?: string;
   language?: Language;
   onLanguageChange?: (language: Language) => void;
@@ -44,8 +43,7 @@ export interface CodeEditorProps {
 function CodeEditorComponent({
   code,
   onCodeChange,
-  highlightedHtml,
-  codeClassName,
+  highlightCode,
   isReadOnly = false,
   MAX_CODE_LENGTH,
   placeholder = 'Paste your code here...',
@@ -61,13 +59,11 @@ function CodeEditorComponent({
 
   const { trackCodeCopied, trackSnippetDownloaded } = useProductAnalytics();
 
-  // Use cycling placeholder if placeholderTexts is provided
   const { text: cyclingPlaceholder, isVisible } = usePlaceholderCycle(
     placeholderTexts || [],
-    Boolean(placeholderTexts && !code), // Only cycle when empty and placeholderTexts provided
+    Boolean(placeholderTexts && !code),
   );
 
-  // Determine which placeholder to use
   const effectivePlaceholder = placeholderTexts ? cyclingPlaceholder : placeholder;
 
   const handleCopy = async () => {
@@ -82,7 +78,6 @@ function CodeEditorComponent({
   };
 
   const handleDownload = () => {
-    // Sanitize title for safe filename by removing special characters and converting to lowercase
     const fileName = title ? `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}` : 'snippet';
     const fileExtension = language ? getFileExtensionForLanguage(language) : '.txt';
     const blob = new Blob([code], { type: 'text/plain' });
@@ -96,9 +91,19 @@ function CodeEditorComponent({
     URL.revokeObjectURL(url);
     trackSnippetDownloaded({ language: language || undefined });
   };
+
+  const handleCodeChange = (newCode: string) => {
+    if (newCode.length <= MAX_CODE_LENGTH) {
+      onCodeChange(newCode);
+    } else {
+      onCodeChange(newCode.substring(0, MAX_CODE_LENGTH));
+    }
+  };
+
   return (
     <div className="relative w-full">
-      <div className="absolute right-2 top-2 z-20 flex gap-2">
+      {/* Toolbar */}
+      <div className="flex items-center justify-end gap-2 mb-2">
         {isReadOnly && (
           <>
             <Button
@@ -135,7 +140,6 @@ function CodeEditorComponent({
           </>
         )}
 
-        {/* Language Selection dropdown (only visible in edit mode) */}
         {supportedLanguages && onLanguageChange && language && (
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -144,7 +148,7 @@ function CodeEditorComponent({
                 role="combobox"
                 aria-expanded={open}
                 disabled={isLanguageSelectDisabled || isReadOnly}
-                className="h-8 w-[200px] justify-between bg-background/90 text-xs shadow-sm hover:bg-background"
+                className="h-8 w-[200px] justify-between bg-background text-xs shadow-sm hover:bg-background/90"
               >
                 {language
                   ? (() => {
@@ -196,47 +200,43 @@ function CodeEditorComponent({
           </Popover>
         )}
       </div>
-      <pre
-        aria-hidden="true"
+
+      {/* Editor */}
+      <div
         className={cn(
-          'ph-no-capture absolute inset-0 rounded-md px-3 pt-12 pb-2 min-h-[300px] font-mono text-sm whitespace-pre-wrap break-words overflow-hidden pointer-events-none text-foreground',
+          'ph-no-capture relative rounded-md border border-input',
           isReadOnly ? 'bg-accent' : 'bg-background',
         )}
       >
-        <code
-          className={`language-${codeClassName}`}
-          dangerouslySetInnerHTML={{ __html: `${highlightedHtml}\n` }}
-        />
-      </pre>
-      <Textarea
-        placeholder={placeholderTexts ? '' : placeholder} // Empty when cycling, static when not
-        className="ph-no-capture relative z-10 bg-transparent text-transparent caret-foreground min-h-[300px] font-mono text-sm resize-y w-full rounded-md border border-input px-3 pt-12 pb-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        value={code}
-        onChange={(e) => {
-          const newCode = e.target.value;
-          if (newCode.length <= MAX_CODE_LENGTH) {
-            onCodeChange(newCode);
-          } else {
-            onCodeChange(newCode.substring(0, MAX_CODE_LENGTH));
-          }
-        }}
-        required
-        spellCheck="false"
-        disabled={isReadOnly}
-      />
-      {/* Custom cycling placeholder with fade animation */}
-      {placeholderTexts && !code && (
-        <div
-          className="absolute top-0 left-0 px-3 pt-12 pointer-events-none font-mono text-sm text-muted-foreground/50"
+        <Editor
+          value={code}
+          onValueChange={handleCodeChange}
+          highlight={highlightCode}
+          disabled={isReadOnly}
+          placeholder={effectivePlaceholder}
+          padding={12}
+          className="min-h-[300px]"
+          textareaClassName="focus:outline-none"
           style={{
-            transition: 'opacity 200ms ease-in-out',
-            opacity: isVisible ? 1 : 0,
-            minWidth: '100%',
+            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
+            fontSize: '0.875rem',
+            lineHeight: '1.5',
           }}
-        >
-          {effectivePlaceholder}
-        </div>
-      )}
+        />
+
+        {/* Cycling placeholder overlay */}
+        {placeholderTexts && !code && (
+          <div
+            className="absolute top-0 left-0 p-3 pointer-events-none font-mono text-sm text-muted-foreground/50"
+            style={{
+              transition: 'opacity 200ms ease-in-out',
+              opacity: isVisible ? 1 : 0,
+            }}
+          >
+            {effectivePlaceholder}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

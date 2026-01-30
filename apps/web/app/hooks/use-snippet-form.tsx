@@ -32,11 +32,11 @@ interface LanguageOption {
 }
 
 export const SUPPORTED_LANGUAGES_FOR_FORM: LanguageOption[]
-= SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING
-  .filter(({ value }) => value !== 'PLAINTEXT') // Exclude PLAINTEXT from dropdown (Text tab handles plain text)
-  .map(
-    ({ value, label, icon }) => ({ value, label, icon }),
-  );
+  = SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING
+    .filter(({ value }) => value !== 'PLAINTEXT') // Exclude PLAINTEXT from dropdown (Text tab handles plain text)
+    .map(
+      ({ value, label, icon }) => ({ value, label, icon }),
+    );
 
 interface PrettierConfig {
   parser: string;
@@ -116,7 +116,7 @@ export function useSnippetForm({
   ] = useState(false);
   const [snippetPassword, setSnippetPassword] = useState('');
   const [passwordStrengthAnalysis, setPasswordStrengthAnalysis]
-  = useState<PasswordStrengthAnalysis | null>(null);
+    = useState<PasswordStrengthAnalysis | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'code' | 'text'>('code');
@@ -137,9 +137,7 @@ export function useSnippetForm({
     }
   }, [selectedTab, language]);
 
-  const { highlightedHtml, codeClassName } = useCodeHighlighting(
-    { code, language },
-  );
+  const { highlightCode } = useCodeHighlighting({ language });
 
   // Effect to synchronize the internal code state if the initialCode prop
   // changes
@@ -470,8 +468,7 @@ export function useSnippetForm({
     setSelectedTab,
 
     // Derived/Computed values for rendering
-    highlightedHtml,
-    codeClassName,
+    highlightCode,
     canPrettifyCurrentLanguage,
     passwordStrengthAnalysis,
 

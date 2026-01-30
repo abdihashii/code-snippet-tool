@@ -79,12 +79,10 @@ const languageLoaders: Record<string, () => Promise<any>> = {
 };
 
 interface UseCodeHighlightingProps {
-  code: string;
   language: Language;
 }
 
 export function useCodeHighlighting({
-  code,
   language,
 }: UseCodeHighlightingProps) {
   const [loadedLanguages, setLoadedLanguages] = useState(
@@ -156,31 +154,10 @@ export function useCodeHighlighting({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, loadedLanguages]);
 
-  // Memoized value that sets the class name for the code element based on the
-  // language prop. This is used to ensure the correct language is used for
-  // highlighting.
-  const codeClassName = useMemo(() => {
-    // Special case for HTML to ensure it gets 'html' class if 'xml' is used by
-    // hljs
-    if (language === 'HTML') {
-      return 'html';
-    }
-    const langOption = SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING
-      .find((l) => l.value === language);
-    if (langOption?.hljsId && hljs.getLanguage(langOption.hljsId)) {
-      return langOption.hljsId;
-    }
-    // Fallback to actualLangForHljs if specific language option isn't found or
-    // loaded
-    return actualLangForHljs;
-    // loadedLanguages ensures re-evaluation
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, actualLangForHljs, loadedLanguages]);
+  // Function to highlight code - used by react-simple-code-editor
+  const highlightCode = useCallback((codeToHighlight: string): string => {
+    if (!codeToHighlight) return '';
 
-  // Memoized value that returns the highlighted HTML for the code. This is
-  // used to ensure the correct language is used for highlighting.
-  const highlightedHtml = useMemo(() => {
-    const codeToHighlight = code || '';
     if (hljs.getLanguage(actualLangForHljs)) {
       try {
         const rawHtml = hljs.highlight(codeToHighlight, {
@@ -193,21 +170,14 @@ export function useCodeHighlighting({
           `Highlight.js error during highlight for language '${actualLangForHljs}':`,
           error,
         );
-        // Fallback to unhighlighted code on error
         return DOMPurify.sanitize(codeToHighlight);
       }
     }
-    // Fallback to unhighlighted code if language not available
     return DOMPurify.sanitize(codeToHighlight);
-  }, [code, actualLangForHljs]);
+  }, [actualLangForHljs]);
 
   return {
-    // Derived/Computed values for rendering
-    actualLangForHljs,
-    codeClassName,
-    highlightedHtml,
-
-    // Constants
+    highlightCode,
     SUPPORTED_LANGUAGES: SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING,
   };
 }
