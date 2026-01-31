@@ -81,6 +81,25 @@ export function useProductAnalytics() {
     posthog.capture('rate_limit_hit', metadata);
   }, [posthog]);
 
+  /**
+   * Track when a CTA element is displayed to a snippet viewer
+   */
+  const trackCtaImpression = useCallback((metadata: {
+    location: 'card_footer' | 'code_toolbar' | 'post_action_toast';
+  }) => {
+    posthog.capture('cta_impression', metadata);
+  }, [posthog]);
+
+  /**
+   * Track when a snippet viewer clicks a CTA element
+   */
+  const trackCtaClicked = useCallback((metadata: {
+    location: 'card_footer' | 'code_toolbar' | 'post_action_toast';
+    type: 'create_snippet' | 'home';
+  }) => {
+    posthog.capture('cta_clicked', metadata);
+  }, [posthog]);
+
   return {
     trackSnippetCreated,
     trackSnippetViewed,
@@ -90,5 +109,7 @@ export function useProductAnalytics() {
     trackSnippetDownloaded,
     trackDecryptionFailed,
     trackRateLimitHit,
+    trackCtaImpression,
+    trackCtaClicked,
   };
 }
