@@ -11,9 +11,11 @@ import {
   EyeIcon,
   Loader2,
   LockIcon,
+  PlusIcon,
   ShieldIcon,
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/layout/app-layout';
 import { CodeEditor } from '@/components/snippet/code-editor';
@@ -71,6 +73,8 @@ function RouteComponent() {
     trackSnippetViewed,
     trackSnippetDecrypted,
     trackDecryptionFailed,
+    trackCtaImpression,
+    trackCtaClicked,
   } = useProductAnalytics();
 
   // Get the loader data as ApiResponse<GetSnippetByIdResponse>
@@ -200,6 +204,37 @@ function RouteComponent() {
     handleRegularDecryption,
     trackSnippetViewed,
   ]);
+
+  // Track CTA impression when snippet is successfully decrypted
+  const hasTrackedCtaImpression = useRef(false);
+  useEffect(() => {
+    if (decryptedContent && !hasTrackedCtaImpression.current) {
+      hasTrackedCtaImpression.current = true;
+      trackCtaImpression({ location: 'card_footer' });
+    }
+  }, [decryptedContent, trackCtaImpression]);
+
+  // Post-copy/download toast nudge (fires once, delayed)
+  const hasShownCtaToast = useRef(false);
+  const handlePostActionNudge = useCallback(() => {
+    if (hasShownCtaToast.current) return;
+    hasShownCtaToast.current = true;
+
+    setTimeout(() => {
+      trackCtaImpression({ location: 'post_action_toast' });
+      toast('Need to share code securely?', {
+        description: 'Create your own encrypted snippet in seconds.',
+        action: {
+          label: 'Create one',
+          onClick: () => {
+            trackCtaClicked({ location: 'post_action_toast', type: 'create_snippet' });
+            window.location.href = '/';
+          },
+        },
+        duration: 6000,
+      });
+    }, 3000);
+  }, [trackCtaImpression, trackCtaClicked]);
 
   // Now handle error cases after all hooks are called
   if (!loadedData.success) {
@@ -426,6 +461,21 @@ function RouteComponent() {
                                 isReadOnly={true}
                                 title={title ?? 'Untitled Snippet'}
                                 language={language}
+                                onCopy={handlePostActionNudge}
+                                onDownload={handlePostActionNudge}
+                                ctaButton={(
+                                  <Link to="/">
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="text-muted-foreground hover:text-primary hover:cursor-pointer"
+                                      onClick={() => trackCtaClicked({ location: 'code_toolbar', type: 'create_snippet' })}
+                                    >
+                                      <PlusIcon className="mr-1 h-3.5 w-3.5" />
+                                      Create your own
+                                    </Button>
+                                  </Link>
+                                )}
                               />
                             )
                           : (
@@ -438,18 +488,56 @@ function RouteComponent() {
                             )}
             </CardContent>
 
-            <CardFooter className="flex justify-center">
-              <Link to="/">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <ArrowLeftIcon className="h-4 w-4" />
-                  Home
-                </Button>
-              </Link>
-            </CardFooter>
+            {decryptedContent
+              ? (
+                  <CardFooter className="flex flex-col items-center gap-3 pt-6">
+                    <div className="w-full rounded-lg border border-border/50 bg-muted/30 px-6 py-5 text-center">
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Share your own code securely — encrypted before it leaves your browser.
+                      </p>
+                      <Link to="/">
+                        <Button
+                          className="bg-primary hover:bg-primary/90 hover:cursor-pointer"
+                          onClick={() => trackCtaClicked({ location: 'card_footer', type: 'create_snippet' })}
+                        >
+                          <PlusIcon className="h-4 w-4 mr-2" />
+                          Create a Snippet
+                        </Button>
+                      </Link>
+                      <p className="text-xs text-muted-foreground/60 mt-3">
+                        End-to-end encrypted
+                        {' · '}
+                        No signup required
+                        {' · '}
+                        Free
+                      </p>
+                    </div>
+                    <Link to="/">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-muted-foreground hover:text-foreground hover:cursor-pointer"
+                      >
+                        <ArrowLeftIcon className="h-3 w-3 mr-1" />
+                        Back to home
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                )
+              : (
+                  <CardFooter className="flex justify-center">
+                    <Link to="/">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        <ArrowLeftIcon className="h-4 w-4" />
+                        Home
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                )}
           </Card>
         </div>
       </div>

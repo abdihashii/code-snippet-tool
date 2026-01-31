@@ -38,6 +38,9 @@ export interface CodeEditorProps {
   onLanguageChange?: (language: Language) => void;
   supportedLanguages?: readonly { value: Language; label: string; icon?: React.ComponentType<any> }[];
   isLanguageSelectDisabled?: boolean;
+  ctaButton?: React.ReactNode;
+  onCopy?: () => void;
+  onDownload?: () => void;
 }
 
 function CodeEditorComponent({
@@ -53,6 +56,9 @@ function CodeEditorComponent({
   onLanguageChange,
   supportedLanguages,
   isLanguageSelectDisabled,
+  ctaButton,
+  onCopy,
+  onDownload,
 }: CodeEditorProps) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
@@ -72,6 +78,7 @@ function CodeEditorComponent({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       trackCodeCopied();
+      onCopy?.();
     } catch (err) {
       console.error('Failed to copy code: ', err);
     }
@@ -90,6 +97,7 @@ function CodeEditorComponent({
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     trackSnippetDownloaded({ language: language || undefined });
+    onDownload?.();
   };
 
   const handleCodeChange = (newCode: string) => {
@@ -137,6 +145,12 @@ function CodeEditorComponent({
               <DownloadIcon className="mr-1 h-4 w-4" />
               Download
             </Button>
+            {ctaButton && (
+              <>
+                <div className="h-4 w-px bg-border mx-1" />
+                {ctaButton}
+              </>
+            )}
           </>
         )}
 
