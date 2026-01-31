@@ -11,6 +11,13 @@ import { SnippetForm } from '@/components/snippet/snippet-form';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -216,88 +223,88 @@ function Home() {
                 />
               )
             : (
-                <div className="rounded-lg border-2 shadow-xl bg-card p-6 space-y-5">
-                  {/* Success header */}
-                  <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                    <CheckIcon className="h-5 w-5" />
-                    <span className="font-medium">Snippet created & encrypted!</span>
-                  </div>
-
-                  {/* Link input with copy */}
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={snippetLink}
-                      readOnly
-                      className="ph-no-capture flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleCopyLink}
-                    >
-                      {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
-                      <span className="ml-1">{copied ? 'Copied' : 'Copy'}</span>
-                    </Button>
-                  </div>
-
-                  {/* Share via email */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Share via:</span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      asChild
-                    >
-                      <a href={getEmailShareLink()}>
-                        <MailIcon className="h-4 w-4 mr-1" />
-                        Email
-                      </a>
-                    </Button>
-                  </div>
-
-                  {/* Metadata display */}
-                  {snippetMetadata && (
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <ClockIcon className="h-4 w-4" />
-                        <span>
-                          Expires:
-                          {' '}
-                          {formatExpiration(snippetMetadata.expiresAfter)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <EyeIcon className="h-4 w-4" />
-                        <span>
-                          Views:
-                          {' '}
-                          {formatMaxViews(snippetMetadata.maxViews)}
-                        </span>
-                      </div>
+                <Card className="w-full shadow-md">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2 text-xl text-green-700 dark:text-green-400">
+                        <CheckIcon className="h-5 w-5" />
+                        Snippet created & encrypted!
+                      </CardTitle>
+                      {snippetMetadata && (
+                        <div className="flex space-x-2">
+                          <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                            <ClockIcon className="h-3 w-3" />
+                            Expires:
+                            {' '}
+                            {formatExpiration(snippetMetadata.expiresAfter)}
+                          </Badge>
+                          <Badge variant="outline" className="flex items-center gap-1 text-xs">
+                            <EyeIcon className="h-3 w-3" />
+                            Views:
+                            {' '}
+                            {formatMaxViews(snippetMetadata.maxViews)}
+                          </Badge>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </CardHeader>
 
-                  {/* Feedback widget */}
-                  <FeedbackWidget page="home-success" />
+                  <CardContent className="space-y-4">
+                    {/* Link input with copy */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={snippetLink}
+                        readOnly
+                        className="ph-no-capture flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
+                      />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
+                        onClick={handleCopyLink}
+                      >
+                        {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
+                        <span className="ml-1">{copied ? 'Copied' : 'Copy'}</span>
+                      </Button>
+                    </div>
 
-                  {/* Action buttons */}
-                  <div className="flex gap-2 pt-2">
+                    {/* Share via email */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Share via:</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
+                        asChild
+                      >
+                        <a href={getEmailShareLink()}>
+                          <MailIcon className="h-4 w-4 mr-1" />
+                          Email
+                        </a>
+                      </Button>
+                    </div>
+
+                    {/* Feedback widget */}
+                    <FeedbackWidget page="home-success" />
+                  </CardContent>
+
+                  <CardFooter className="flex gap-2 pt-2">
                     <Button
                       onClick={handleCreateAnother}
                       variant="outline"
-                      className="flex-1"
+                      className="flex-1 hover:cursor-pointer"
                     >
                       Create Another
                     </Button>
                     <Button
                       onClick={() => navigate({ to: snippetLink.replace(window.location.origin, '') })}
-                      className="flex-1"
+                      className="flex-1 bg-primary hover:bg-primary/90 hover:cursor-pointer"
                     >
                       View Snippet
                     </Button>
-                  </div>
-                </div>
+                  </CardFooter>
+                </Card>
               )}
         </div>
 
