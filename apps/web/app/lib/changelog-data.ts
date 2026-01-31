@@ -10,6 +10,18 @@ export interface ChangelogEntry {
 // Changelog Data - Add new releases here
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: '2026.01.30',
+    date: 'January 30, 2026',
+    description: 'Snippet Experience Improvements',
+    features: [
+      'Added "Create your own snippet" button when viewing shared snippets',
+    ],
+    improvements: [
+      'Redesigned success screen with cleaner card layout showing expiration and view limits',
+      'Improved code syntax highlighting performance',
+    ],
+  },
+  {
     version: '2026.01.27',
     date: 'January 27, 2026',
     description: 'UI Polish',
