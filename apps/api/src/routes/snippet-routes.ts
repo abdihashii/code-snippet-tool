@@ -12,6 +12,7 @@ import { Buffer } from 'node:buffer';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
 
+import { isDevelopment } from '@/utils/env-utils';
 import { getSupabaseClient } from '@/utils/supabase-client';
 
 export const snippets = new Hono<{ Bindings: CloudflareBindings }>();
@@ -54,14 +55,20 @@ function postgresByteaStringToBuffer(
 // --- End of helper functions ---
 
 // Create a new snippet. Rate limit to 5 snippet creations per day per IP.
+// Skip rate limiting in development mode
 // TODO: Implement tiered rate limiting when user authentication is added:
 // - Anonymous users: 5/day
 // - Signed-up users: 25/day
 // - Premium users: 100/day
 snippets.post(
   '/',
-  (c, next) =>
-    rateLimiter<{ Bindings: CloudflareBindings }>({
+  (c, next) => {
+    // Skip rate limiting in development mode
+    if (isDevelopment(c.env.FRONTEND_URL)) {
+      return next();
+    }
+
+    return rateLimiter<{ Bindings: CloudflareBindings }>({
       windowMs: 24 * 60 * 60 * 1000, // 24 hours
       limit: 5,
       standardHeaders: 'draft-6',
@@ -70,7 +77,8 @@ snippets.post(
         || c.req.header('x-forwarded-for')
         || 'anonymous'}`,
       store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
-    })(c, next),
+    })(c, next);
+  },
   async (c) => {
     const {
       encrypted_content, // Comes in as a base64 encoded string
@@ -201,14 +209,20 @@ snippets.post(
 );
 
 // Get a snippet by ID. Rate limit to 50 snippet retrievals per minute per IP.
+// Skip rate limiting in development mode
 // TODO: Consider tiered rate limiting for snippet retrieval when user authentication is added:
 // - Anonymous users: 50/minute (current)
 // - Signed-up users: 100/minute
 // - Premium users: 500/minute or unlimited
 snippets.get(
   '/:id',
-  (c, next) =>
-    rateLimiter<{ Bindings: CloudflareBindings }>({
+  (c, next) => {
+    // Skip rate limiting in development mode
+    if (isDevelopment(c.env.FRONTEND_URL)) {
+      return next();
+    }
+
+    return rateLimiter<{ Bindings: CloudflareBindings }>({
       windowMs: 60 * 1000, // 1 minute
       limit: 50,
       standardHeaders: 'draft-6',
@@ -217,7 +231,8 @@ snippets.get(
         || c.req.header('x-forwarded-for')
         || 'anonymous'}`,
       store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
-    })(c, next),
+    })(c, next);
+  },
   async (c) => {
     const snippetId = c.req.param('id');
 

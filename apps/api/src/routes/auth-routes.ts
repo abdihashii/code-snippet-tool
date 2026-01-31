@@ -5,15 +5,22 @@ import { rateLimiter } from 'hono-rate-limiter';
 
 import type { CloudflareBindings } from '@/types/hono-bindings';
 
+import { isDevelopment } from '@/utils/env-utils';
 import { getSupabaseClient } from '@/utils/supabase-client';
 
 export const auth = new Hono<{ Bindings: CloudflareBindings }>();
 
 // Rate limit signup attempts to 3 per hour
+// Skip rate limiting in development mode
 auth.post(
   '/signup',
-  (c, next) =>
-    rateLimiter<{ Bindings: CloudflareBindings }>({
+  (c, next) => {
+    // Skip rate limiting in development mode
+    if (isDevelopment(c.env.FRONTEND_URL)) {
+      return next();
+    }
+
+    return rateLimiter<{ Bindings: CloudflareBindings }>({
       windowMs: 60 * 60 * 1000, // 1 hour
       limit: 3,
       standardHeaders: 'draft-6',
@@ -22,7 +29,8 @@ auth.post(
         || c.req.header('x-forwarded-for')
         || 'anonymous'}`,
       store: new DurableObjectStore({ namespace: c.env.RATE_LIMITER }),
-    })(c, next),
+    })(c, next);
+  },
   async (c) => {
   // Get the email and passwords from the request body
     const body = await c.req.json();
