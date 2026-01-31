@@ -1,4 +1,3 @@
-// Types
 export interface ChangelogEntry {
   version: string;
   date: string;
@@ -10,6 +9,16 @@ export interface ChangelogEntry {
 
 // Changelog Data - Add new releases here
 export const CHANGELOG_DATA: ChangelogEntry[] = [
+  {
+    version: '2026.01.10',
+    date: 'January 10, 2026',
+    description: 'Privacy Enhancement Update',
+    improvements: [
+      'Disabled session recordings - we only collect anonymous page view metrics now',
+      'Removed all tracking cookies - GDPR-compliant by design, no consent banner needed',
+      'Blocked AI training bots from crawling the site',
+    ],
+  },
   {
     version: '2026.01.01',
     date: 'January 1, 2026',
