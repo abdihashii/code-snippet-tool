@@ -10,6 +10,14 @@ export interface ChangelogEntry {
 // Changelog Data - Add new releases here
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: '2026.01.27',
+    date: 'January 27, 2026',
+    description: 'UI Polish',
+    improvements: [
+      'Improved code editor layout with better spacing and text wrapping',
+    ],
+  },
+  {
     version: '2026.01.10',
     date: 'January 10, 2026',
     description: 'Privacy Enhancement Update',
