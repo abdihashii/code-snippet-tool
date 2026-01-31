@@ -490,38 +490,16 @@ function RouteComponent() {
 
             {decryptedContent
               ? (
-                  <CardFooter className="flex flex-col items-center gap-3 pt-6">
-                    <div className="w-full rounded-lg border border-border/50 bg-muted/30 px-6 py-5 text-center">
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Share your own code securely — encrypted before it leaves your browser.
-                      </p>
-                      <Link to="/">
-                        <Button
-                          className="bg-primary hover:bg-primary/90 hover:cursor-pointer"
-                          onClick={() => trackCtaClicked({ location: 'card_footer', type: 'create_snippet' })}
-                        >
-                          <PlusIcon className="h-4 w-4 mr-2" />
-                          Create a Snippet
-                        </Button>
-                      </Link>
-                      <p className="text-xs text-muted-foreground/60 mt-3">
-                        End-to-end encrypted
-                        {' · '}
-                        No signup required
-                        {' · '}
-                        Free
-                      </p>
-                    </div>
-                    <Link to="/">
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className="text-muted-foreground hover:text-foreground hover:cursor-pointer"
-                      >
-                        <ArrowLeftIcon className="h-3 w-3 mr-1" />
-                        Back to home
+                  <CardFooter className="flex flex-col items-center gap-2 pt-6">
+                    <Link to="/" className="w-full" onClick={() => trackCtaClicked({ location: 'card_footer', type: 'create_snippet' })}>
+                      <Button className="w-full bg-primary hover:bg-primary/90 hover:cursor-pointer">
+                        <PlusIcon className="h-4 w-4 mr-2" />
+                        Create Your Own
                       </Button>
                     </Link>
+                    <p className="text-xs text-muted-foreground/50">
+                      Encrypted · No signup · Free
+                    </p>
                   </CardFooter>
                 )
               : (
