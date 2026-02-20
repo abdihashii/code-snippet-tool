@@ -17,6 +17,76 @@ Privacy-focused users don't find tools through Google. They find them through co
 ### Privacy Communities (High Priority)
 
 - [ ] **Hacker News** — Show HN launch post. Lead with the zero-knowledge architecture, not the feature list. HN cares about how things work, not what they do.
+
+  **Pre-launch preparation (required — do not skip):**
+
+  A brand-new HN account posting a Show HN gets flagged or ignored. HN has sophisticated anti-manipulation detection. Build credibility first.
+  - [x] Create account (`hajix007`) — username doesn't match product name (good, matching = spam signal)
+  - [x] Set up profile — about section with GitHub link, keep it short and technical
+  - [ ] **Build karma to ~20-50** — Spend 1-2 weeks commenting genuinely on posts about encryption, web dev, Cloudflare Workers, open-source tools, privacy. No self-promotion.
+  - [ ] Target launch: **Sunday March 1st or 8th, 2026** — Sundays 11:00-14:00 UTC have the highest breakout rate (11.75%) per analysis of 157k+ HN posts. This window catches European midday + early US morning with fewer competing submissions.
+
+  **Post structure (based on top-performing Show HN patterns):**
+  - Title: first-person framing ("I built X"), include technical differentiator ("zero-knowledge", "client-side encrypted"), no superlatives or marketing language. Hard limit: 80 characters.
+  - First comment: narrative prose (not bullet lists), lead with personal motivation ("I got tired of X"), explain the crypto architecture (URL fragment trick), honest comparison to Pastebin/Gist, end with specific feedback request ("audit the crypto implementation").
+  - Link the GitHub repo — HN prioritizes open-source projects they can inspect.
+
+  **After posting:**
+  - Respond to every comment within the first 4-6 hours.
+  - Never argue — find something to agree with in criticism before responding. The goal is convincing silent readers, not winning debates.
+  - If the post gets <30 upvotes, email hn@ycombinator.com to request the [second-chance pool](https://news.ycombinator.com/pool) — moderators will resurface it on the front page.
+
+  **Draft post (copy-paste on launch day):**
+
+  Title (75 chars):
+
+  ```
+  Show HN: I built a code sharing tool where the server can't read your code
+  ```
+
+  URL field: `https://snippet-share.com`
+
+  First comment (post immediately after submission):
+
+  ```
+  I got tired of pasting API keys and internal code into Pastebin and Slack,
+  knowing some server out there is storing my plaintext. So I built Snippet
+  Share — a code sharing tool where all encryption happens in your browser
+  before anything touches the network.
+
+  Here's how it works: when you create a snippet, your browser generates a
+  random 256-bit key and encrypts your code with AES-256-GCM using the Web
+  Crypto API. Only the encrypted blob gets sent to the server. The key goes
+  into the URL fragment (the part after #), which browsers never send to the
+  server per the HTTP spec. So a link looks like
+  snippet-share.com/s/abc123#key-here — and the server only ever sees abc123.
+
+  For password-protected snippets, there's a second layer: your password is
+  run through PBKDF2 to derive a key-encrypting-key that wraps the data key.
+  The server stores the encrypted key + KDF params but never the password or
+  the plaintext key. The URL stays clean and the password is shared
+  out-of-band.
+
+  The server stores PostgreSQL bytea blobs. Under a subpoena, there's nothing
+  meaningful to hand over.
+
+  No account needed, no tracking cookies, no ads. Just paste code and get a
+  link. It also has syntax highlighting for 19 languages, in-browser Prettier
+  formatting, expiration controls, and a "burn after reading" mode that
+  deletes the snippet after the first view.
+
+  Stack: React 19 + TanStack Start on Cloudflare Pages, Hono on Cloudflare
+  Workers, Supabase (Postgres). Rate limiting uses Durable Objects because
+  Workers KV can only do 1 write/sec and native rate limiting is limited to
+  10s/60s windows.
+
+  Source code: https://github.com/abdihashii/snippet-share
+
+  The decryption service is about 300 lines if anyone wants to audit the
+  crypto implementation. I'd especially appreciate feedback on the encryption
+  model and any edge cases I might be missing.
+  ```
+
 - [ ] **Reddit** — Post and engage authentically in communities where the audience already is:
   - r/privacy — core audience
   - r/privacytoolsIO — curated tool recommendations
