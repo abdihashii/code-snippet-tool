@@ -14,9 +14,9 @@ export interface ApiErrorResponse<TData = any> {
 }
 
 // Standardized API response pattern for all endpoints.
-export type ApiResponse<TData = any> =
-  | ApiSuccessResponse<TData>
-  | ApiErrorResponse<TData>;
+export type ApiResponse<TData = any>
+  = | ApiSuccessResponse<TData>
+    | ApiErrorResponse<TData>;
 
 // Rate limiting types
 export interface RateLimitInfo {
