@@ -37,6 +37,7 @@ interface LanguageOption {
 
 // Single source of truth for supported languages, primarily for hljsId here
 export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
+  { value: 'DOTENV', label: 'Dotenv', hljsId: 'ini', icon: SiDotenv },
   { value: 'JAVASCRIPT', label: 'JavaScript / JSX', hljsId: 'javascript', icon: SiJavascript },
   { value: 'TYPESCRIPT', label: 'TypeScript / TSX', hljsId: 'typescript', icon: SiTypescript },
   { value: 'PYTHON', label: 'Python', hljsId: 'python', icon: SiPython },
@@ -56,7 +57,6 @@ export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
   { value: 'RUST', label: 'Rust', hljsId: 'rust', icon: SiRust },
   { value: 'YAML', label: 'YAML', hljsId: 'yaml', icon: SiYaml },
   { value: 'TOML', label: 'TOML', hljsId: 'ini', icon: SiToml },
-  { value: 'DOTENV', label: 'Dotenv', hljsId: 'ini', icon: SiDotenv },
   { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext', icon: FileCodeIcon },
 ];
 

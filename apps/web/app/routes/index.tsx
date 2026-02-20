@@ -218,7 +218,7 @@ function Home() {
             ? (
                 <SnippetForm
                   onSnippetCreated={handleSnippetCreated}
-                  initialLanguage={'PLAINTEXT' as Language}
+                  initialLanguage={'DOTENV' as Language}
                   placeholderTexts={PLACEHOLDER_TEXTS}
                 />
               )
