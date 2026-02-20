@@ -16,4 +16,7 @@ export type Language =
   | 'RUBY'
   | 'GO'
   | 'C'
-  | 'CPP';
+  | 'CPP'
+  | 'DOTENV'
+  | 'YAML'
+  | 'TOML';
