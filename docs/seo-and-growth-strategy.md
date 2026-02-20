@@ -30,8 +30,8 @@ Privacy-focused users don't find tools through Google. They find them through co
 These are where privacy-conscious users actually discover tools:
 
 - [ ] **GitHub Awesome Lists** — Submit PRs to:
-  - [x] [awesome-privacy](https://github.com/pluja/awesome-privacy) — [issue #640](https://github.com/pluja/awesome-privacy/issues/640)
-  - [ ] [awesome-selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted) — has a Pastebins category, PrivateBin already listed
+  - [ ] [awesome-privacy](https://github.com/pluja/awesome-privacy) — [issue #640](https://github.com/pluja/awesome-privacy/issues/640)
+  - [ ] [awesome-selfhosted](https://github.com/awesome-selfhosted/awesome-selfhosted) — [PR #2040](https://github.com/awesome-selfhosted/awesome-selfhosted-data/pull/2040)
 - [ ] **PrivacyGuides.org** — Community-driven privacy tool recommendations
 - [ ] **PRISM Break** — Alternative tools for privacy
 - [ ] **AlternativeTo** — List as privacy-focused Pastebin/Gist alternative
