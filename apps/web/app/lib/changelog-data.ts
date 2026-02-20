@@ -10,6 +10,14 @@ export interface ChangelogEntry {
 // Changelog Data - Add new releases here
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: '2026.02.19',
+    date: 'February 19, 2026',
+    description: 'Config File Support',
+    features: [
+      'Added Dotenv, YAML, and TOML language support with syntax highlighting',
+    ],
+  },
+  {
     version: '2026.01.30',
     date: 'January 30, 2026',
     description: 'Snippet Experience Improvements',
