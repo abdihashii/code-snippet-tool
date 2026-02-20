@@ -77,6 +77,18 @@ describe('getFileExtensionForLanguage', () => {
     expect(getFileExtensionForLanguage('PLAINTEXT')).toBe('.txt');
   });
 
+  it('should return .env for DOTENV', () => {
+    expect(getFileExtensionForLanguage('DOTENV')).toBe('.env');
+  });
+
+  it('should return .yml for YAML', () => {
+    expect(getFileExtensionForLanguage('YAML')).toBe('.yml');
+  });
+
+  it('should return .toml for TOML', () => {
+    expect(getFileExtensionForLanguage('TOML')).toBe('.toml');
+  });
+
   it('should return .txt for unknown language as fallback', () => {
     // @ts-expect-error Testing fallback behavior with invalid language
     expect(getFileExtensionForLanguage('UNKNOWN')).toBe('.txt');
@@ -102,6 +114,9 @@ describe('getFileExtensionForLanguage', () => {
       'CPP',
       'JSON',
       'PLAINTEXT',
+      'DOTENV',
+      'YAML',
+      'TOML',
     ];
 
     const expectedExtensions = [
@@ -123,6 +138,9 @@ describe('getFileExtensionForLanguage', () => {
       '.cpp',
       '.json',
       '.txt',
+      '.env',
+      '.yml',
+      '.toml',
     ];
 
     supportedLanguages.forEach((lang, index) => {

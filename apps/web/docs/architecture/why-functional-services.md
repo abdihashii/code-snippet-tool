@@ -491,25 +491,21 @@ const manager = new DataManager(new LocalStorageStrategy());
 ### ✅ What to Keep (Current Approach)
 
 1. **Functional services with namespaced exports**
-
    - Clean organization
    - Better tree-shaking
    - Smaller bundles
 
 2. **`RateLimitError` as a class**
-
    - Custom errors should be classes
    - Follows JavaScript standards
 
 3. **Pure functions for core logic**
-
    - Crypto operations
    - Validation
    - Generation
    - Formatting
 
 4. **Zod schemas for validation**
-
    - Type-safe validation
    - Functional composition
 
