@@ -4,6 +4,7 @@ import {
   SiC,
   SiCplusplus,
   SiCss,
+  SiDotenv,
   SiGnubash,
   SiGo,
   SiHtml5,
@@ -16,7 +17,9 @@ import {
   SiRuby,
   SiRust,
   SiSharp,
+  SiToml,
   SiTypescript,
+  SiYaml,
 } from '@icons-pack/react-simple-icons';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
@@ -51,6 +54,9 @@ export const SUPPORTED_LANGUAGES_FOR_HIGHLIGHTING: LanguageOption[] = [
   { value: 'JSON', label: 'JSON', hljsId: 'json', icon: BracesIcon },
   { value: 'MARKDOWN', label: 'Markdown', hljsId: 'markdown', icon: SiMarkdown },
   { value: 'RUST', label: 'Rust', hljsId: 'rust', icon: SiRust },
+  { value: 'YAML', label: 'YAML', hljsId: 'yaml', icon: SiYaml },
+  { value: 'TOML', label: 'TOML', hljsId: 'ini', icon: SiToml },
+  { value: 'DOTENV', label: 'Dotenv', hljsId: 'ini', icon: SiDotenv },
   { value: 'PLAINTEXT', label: 'Plain Text', hljsId: 'plaintext', icon: FileCodeIcon },
 ];
 
@@ -76,6 +82,8 @@ const languageLoaders: Record<string, () => Promise<any>> = {
   markdown: () => import('highlight.js/lib/languages/markdown'),
   csharp: () => import('highlight.js/lib/languages/csharp'),
   rust: () => import('highlight.js/lib/languages/rust'),
+  yaml: () => import('highlight.js/lib/languages/yaml'),
+  ini: () => import('highlight.js/lib/languages/ini'), // shared by TOML and DOTENV
 };
 
 interface UseCodeHighlightingProps {
