@@ -33,6 +33,9 @@ export function getFileExtensionForLanguage(language: Language): string {
     CPP: '.cpp',
     JSON: '.json',
     PLAINTEXT: '.txt',
+    DOTENV: '.env',
+    YAML: '.yml',
+    TOML: '.toml',
   };
 
   return extensionMap[language] || '.txt';
