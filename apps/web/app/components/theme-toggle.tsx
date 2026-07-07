@@ -1,12 +1,16 @@
 import { Moon, Sun } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Kbd } from '@/components/ui/kbd';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useShortcut } from '@/hooks/use-shortcut';
 import { useTheme } from '@/hooks/use-theme';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+
+  useShortcut('mod+shift+l', toggleTheme);
 
   return (
     <Tooltip>
@@ -14,7 +18,8 @@ export function ThemeToggle() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          onClick={toggleTheme}
+          aria-keyshortcuts="Control+Shift+L Meta+Shift+L"
           className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
         >
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -24,7 +29,11 @@ export function ThemeToggle() {
       </TooltipTrigger>
       <TooltipContent side="bottom" sideOffset={8} className="flex items-center gap-2">
         <span>Toggle theme</span>
-        <Kbd>M</Kbd>
+        <KbdGroup>
+          <Kbd>Ctrl/⌘</Kbd>
+          <Kbd>⇧</Kbd>
+          <Kbd>L</Kbd>
+        </KbdGroup>
       </TooltipContent>
     </Tooltip>
   );
