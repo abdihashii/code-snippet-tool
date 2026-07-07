@@ -1,5 +1,6 @@
 interface ShortcutEvent {
   altKey: boolean;
+  code?: string;
   ctrlKey: boolean;
   key: string;
   metaKey: boolean;
@@ -71,11 +72,21 @@ export function matchesShortcut(
   const needsMeta = shortcut.metaKey || (shortcut.modKey && applePlatform);
   const needsCtrl = shortcut.ctrlKey || (shortcut.modKey && !applePlatform);
 
-  return event.key.toLowerCase() === shortcut.key
+  return matchesKey(event, shortcut.key)
     && event.altKey === shortcut.altKey
     && event.ctrlKey === needsCtrl
     && event.metaKey === needsMeta
     && event.shiftKey === shortcut.shiftKey;
+}
+
+function matchesKey(event: ShortcutEvent, key: string) {
+  if (event.key.toLowerCase() === key) return true;
+
+  const code = key.length === 1 && /^[a-z\d]$/.test(key)
+    ? `${/[a-z]/.test(key) ? 'key' : 'digit'}${key}`
+    : undefined;
+
+  return event.code?.toLowerCase() === code;
 }
 
 export function isEditableTarget(target: EventTarget | null) {

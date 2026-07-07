@@ -10,7 +10,7 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
 
-  useShortcut('mod+shift+l', toggleTheme);
+  useShortcut('alt+t', toggleTheme);
 
   return (
     <Tooltip>
@@ -19,7 +19,7 @@ export function ThemeToggle() {
           variant="outline"
           size="icon"
           onClick={toggleTheme}
-          aria-keyshortcuts="Control+Shift+L Meta+Shift+L"
+          aria-keyshortcuts="Alt+T"
           className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
         >
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -30,9 +30,8 @@ export function ThemeToggle() {
       <TooltipContent side="bottom" sideOffset={8} className="flex items-center gap-2">
         <span>Toggle theme</span>
         <KbdGroup>
-          <Kbd>Ctrl/⌘</Kbd>
-          <Kbd>⇧</Kbd>
-          <Kbd>L</Kbd>
+          <Kbd>Alt/⌥</Kbd>
+          <Kbd>T</Kbd>
         </KbdGroup>
       </TooltipContent>
     </Tooltip>

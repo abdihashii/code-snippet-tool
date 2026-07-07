@@ -25,6 +25,12 @@ describe('shortcut-utils', () => {
     expect(matchesShortcut(event({ ctrlKey: true, shiftKey: true }), shortcut, false)).toBe(true);
   });
 
+  it('matches option shortcuts when macOS changes the typed key', () => {
+    const shortcut = parseShortcut('alt+t');
+
+    expect(matchesShortcut(event({ altKey: true, code: 'KeyT', key: '†' }), shortcut)).toBe(true);
+  });
+
   it('rejects extra modifiers', () => {
     const shortcut = parseShortcut('mod+shift+l');
 
