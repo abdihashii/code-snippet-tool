@@ -5,7 +5,7 @@ const SYMBOL_CHARS = '!@#$%^&*(),.?":{}|<>=_-';
 
 // All characters that can be used to generate a password.
 const ALL_CHARS
-= LOWERCASE_CHARS + UPPERCASE_CHARS + NUMBER_CHARS + SYMBOL_CHARS;
+  = LOWERCASE_CHARS + UPPERCASE_CHARS + NUMBER_CHARS + SYMBOL_CHARS;
 
 /**
  * Generates a cryptographically secure random number within a range.

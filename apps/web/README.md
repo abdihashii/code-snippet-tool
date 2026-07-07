@@ -112,14 +112,12 @@ apps/web/
 ### Client-Side Encryption Flow
 
 1. **Snippet Creation**:
-
    - Generate random 256-bit Data Encryption Key (DEK)
    - Encrypt content with AES-256-GCM using DEK
    - Include DEK in shareable URL fragment
    - Send only encrypted content + metadata to server
 
 2. **Password Protection** (Optional):
-
    - Derive Key Encryption Key (KEK) from password using PBKDF2
    - Encrypt DEK with KEK using AES-256-GCM
    - Store encrypted DEK on server, never the password or plaintext DEK
