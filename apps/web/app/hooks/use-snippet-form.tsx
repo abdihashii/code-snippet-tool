@@ -244,7 +244,7 @@ export function useSnippetForm({
       // need to generate a unique salt and derive a Key Encryption Key
       // (KEK) from the password and the salt.
       if (isPasswordProtectionEnabled && snippetPassword) {
-        // Premium Password-Protected Flow
+        // Password-Protected Flow
         // Generate a unique 16-byte salt (kdf_salt)
         const kdfSalt = crypto.getRandomValues(new Uint8Array(16));
 
