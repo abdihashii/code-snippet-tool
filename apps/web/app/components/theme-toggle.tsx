@@ -31,6 +31,7 @@ export function ThemeToggle() {
         <span>Toggle theme</span>
         <KbdGroup>
           <Kbd>Alt/⌥</Kbd>
+          +
           <Kbd>T</Kbd>
         </KbdGroup>
       </TooltipContent>
