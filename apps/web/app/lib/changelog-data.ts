@@ -10,6 +10,18 @@ export interface ChangelogEntry {
 // Changelog Data - Add new releases here
 export const CHANGELOG_DATA: ChangelogEntry[] = [
   {
+    version: '2026.07.07',
+    date: 'July 7, 2026',
+    description: 'Keyboard Shortcut Support',
+    features: [
+      'Added reuseable keyboard shortcut support for app-wide commands',
+      'Added Alt/⌥ + T theme shortcut'
+    ],
+    improvements: [
+      'Shortcut handling ignores editable fields and handles macOS Option key behavior'
+    ],
+  },
+  {
     version: '2026.02.19',
     date: 'February 19, 2026',
     description: 'Config File Support',
