@@ -312,7 +312,7 @@ function SnippetFormComponent({
                         className="hover:cursor-pointer"
                       />
                       <Label htmlFor="enablePassword" className="cursor-pointer">
-                        Enable Password Protection (Premium Feature)
+                        Enable Password Protection
                       </Label>
                     </div>
 
