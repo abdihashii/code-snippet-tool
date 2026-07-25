@@ -15,10 +15,10 @@ export const CHANGELOG_DATA: ChangelogEntry[] = [
     description: 'Keyboard Shortcut Support',
     features: [
       'Added reuseable keyboard shortcut support for app-wide commands',
-      'Added Alt/⌥ + T theme shortcut'
+      'Added Alt/⌥ + T theme shortcut',
     ],
     improvements: [
-      'Shortcut handling ignores editable fields and handles macOS Option key behavior'
+      'Shortcut handling ignores editable fields and handles macOS Option key behavior',
     ],
   },
   {
