@@ -9,15 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R404RouteImport } from './routes/404'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ChangelogIndexRouteImport } from './routes/changelog/index'
 import { Route as SSnippetIdRouteImport } from './routes/s/$snippet-id'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const R404Route = R404RouteImport.update({
@@ -25,9 +25,9 @@ const R404Route = R404RouteImport.update({
   path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangelogIndexRoute = ChangelogIndexRouteImport.update({
@@ -46,7 +46,7 @@ export interface FileRoutesByFullPath {
   '/404': typeof R404Route
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/s/$snippet-id': typeof SSnippetIdRoute
-  '/changelog': typeof ChangelogIndexRoute
+  '/changelog/': typeof ChangelogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -65,7 +65,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/404' | '/sitemap.xml' | '/s/$snippet-id' | '/changelog'
+  fullPaths: '/' | '/404' | '/sitemap.xml' | '/s/$snippet-id' | '/changelog/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/404' | '/sitemap.xml' | '/s/$snippet-id' | '/changelog'
   id:
@@ -87,11 +87,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/404': {
@@ -101,17 +101,17 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/changelog/': {
       id: '/changelog/'
       path: '/changelog'
-      fullPath: '/changelog'
+      fullPath: '/changelog/'
       preLoaderRoute: typeof ChangelogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

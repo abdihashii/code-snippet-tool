@@ -54,7 +54,7 @@
     "unenv": "^1.10.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.17.1",
+    "@cloudflare/vite-plugin": "^1.47.0",
     "@snippet-share/eslint-config": "workspace:*",
     "@tanstack/eslint-plugin-router": "^1.141.0",
     "@tanstack/router-plugin": "^1.145.2",
