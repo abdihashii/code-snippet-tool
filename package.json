@@ -8,6 +8,7 @@
   "keywords": [],
   "scripts": {
     "dev:web": "pnpm --filter @snippet-share/web dev",
+    "storybook:web": "pnpm --filter @snippet-share/web storybook",
     "dev:api": "pnpm --filter @snippet-share/api dev",
     "db:start": "pnpm --filter @snippet-share/db start",
     "db:stop": "pnpm --filter @snippet-share/db stop",
