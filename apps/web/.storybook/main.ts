@@ -13,9 +13,9 @@ const config: StorybookConfig = {
       .flat(Infinity)
       .filter(
         (p) =>
-          p?.name &&
-          !p.name.startsWith('vite-plugin-cloudflare') &&
-          !p.name.startsWith('tanstack')
+          p?.name
+          && !p.name.startsWith('vite-plugin-cloudflare')
+          && !p.name.startsWith('tanstack'),
       );
     return config;
   },

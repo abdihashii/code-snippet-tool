@@ -1,5 +1,7 @@
 import type { Preview } from '@storybook/react-vite';
+
 import { withThemeByClassName } from '@storybook/addon-themes';
+
 import '../app/styles/app.css';
 
 const preview: Preview = {
