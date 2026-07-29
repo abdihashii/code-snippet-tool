@@ -94,11 +94,11 @@ const FEATURES = [
 export function ComparisonTable({ className }: ComparisonTableProps) {
   const renderFeatureValue = (value: boolean | 'premium' | string) => {
     if (value === true) {
-      return <CheckIcon className="h-5 w-5 text-green-600" />;
+      return <CheckIcon className="h-5 w-5 text-success" />;
     } else if (value === 'premium') {
       return <Badge variant="outline" className="text-xs">Premium</Badge>;
     } else {
-      return <XIcon className="h-5 w-5 text-gray-300" />;
+      return <XIcon className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
