@@ -27,6 +27,8 @@
   --accent-foreground: oklch(0.6 0.147 189.295);
   --destructive: oklch(0.577 0.245 27.325);
   --success: oklch(0.646 0.222 142.495);
+  --success-surface: oklch(0.646 0.222 142.495 / 10%);
+  --success-text: oklch(0.4 0.12 145);
   --warning: oklch(0.828 0.189 84.429);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
@@ -66,6 +68,8 @@
   --accent-foreground: oklch(0.7 0.147 189.295);
   --destructive: oklch(0.704 0.191 22.216);
   --success: oklch(0.696 0.17 162.48);
+  --success-surface: oklch(0.646 0.222 142.495 / 18%);
+  --success-text: oklch(0.82 0.17 145);
   --warning: oklch(0.828 0.189 84.429);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
@@ -106,6 +110,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-success-text: var(--success-text);
   --color-warning: var(--warning);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -129,16 +135,27 @@
    Typography
    ============================================ */
 @theme {
+  --text-micro: 0.6875rem;
+  --text-micro--font-weight: 500;
   --text-caption: 0.8125rem;
   --text-caption--font-weight: 500;
   --text-body: 0.9375rem;
   --text-body--line-height: 1.6;
+  --text-wordmark: 1.0625rem;
+  --text-wordmark--font-weight: 600;
   --text-card-title: 1.1875rem;
   --text-card-title--font-weight: 600;
+  --text-lockup: 1.75rem;
+  --text-lockup--font-weight: 600;
   --text-hero: 2.125rem;
   --text-hero--font-weight: 700;
   --text-hero--letter-spacing: -0.02em;
   --text-code: 0.875rem;
+}
+
+/* Icons that sit inline with text are sized from its type token. */
+@theme inline {
+  --spacing-micro: var(--text-micro);
 }
 
 /* ============================================

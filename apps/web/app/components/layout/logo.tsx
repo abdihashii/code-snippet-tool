@@ -1,12 +1,12 @@
 interface LogoProps {
-  /** header = 17px (app shell), lockup = 28px (full brand lockup) */
+  /** header = wordmark in the app shell, lockup = full brand lockup */
   size?: 'header' | 'lockup';
 }
 
 export function Logo({ size = 'header' }: LogoProps) {
   return (
     <span
-      className={`font-mono font-semibold text-foreground ${size === 'lockup' ? 'text-[28px]' : 'text-[17px]'}`}
+      className={`font-mono text-foreground ${size === 'lockup' ? 'text-lockup' : 'text-wordmark'}`}
     >
       snippet
       <span className="text-primary">://</span>
