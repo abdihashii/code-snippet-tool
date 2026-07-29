@@ -6,8 +6,8 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 h-16 border-b border-border bg-background">
-      <div className="flex h-full items-center justify-between px-5">
+    <header className="sticky top-0 z-50 h-16 border-b border-border bg-card/90 backdrop-blur-[6px]">
+      <div className="flex h-full items-center justify-between px-7">
         <div className="flex items-center gap-3.5">
           <Link to="/" aria-label="Home">
             <Logo />
