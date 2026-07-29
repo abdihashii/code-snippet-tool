@@ -141,8 +141,12 @@
   --text-caption--font-weight: 500;
   --text-body: 0.9375rem;
   --text-body--line-height: 1.6;
+  --text-wordmark: 1.0625rem;
+  --text-wordmark--font-weight: 600;
   --text-card-title: 1.1875rem;
   --text-card-title--font-weight: 600;
+  --text-lockup: 1.75rem;
+  --text-lockup--font-weight: 600;
   --text-hero: 2.125rem;
   --text-hero--font-weight: 700;
   --text-hero--letter-spacing: -0.02em;
