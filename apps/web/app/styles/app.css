@@ -135,6 +135,8 @@
    Typography
    ============================================ */
 @theme {
+  --text-micro: 0.6875rem;
+  --text-micro--font-weight: 500;
   --text-caption: 0.8125rem;
   --text-caption--font-weight: 500;
   --text-body: 0.9375rem;
@@ -145,6 +147,11 @@
   --text-hero--font-weight: 700;
   --text-hero--letter-spacing: -0.02em;
   --text-code: 0.875rem;
+}
+
+/* Icons that sit inline with text are sized from its type token. */
+@theme inline {
+  --spacing-micro: var(--text-micro);
 }
 
 /* ============================================

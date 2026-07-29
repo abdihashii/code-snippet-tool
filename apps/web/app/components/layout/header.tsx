@@ -18,8 +18,8 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <span className="hidden sm:inline-flex items-center gap-1.25 rounded-full bg-primary/8 px-2.5 py-1.25 font-mono text-[11.5px] font-semibold text-primary">
-            <LockIcon className="size-2.75" strokeWidth={2.5} />
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-sm bg-success-surface py-1.25 pl-2 pr-2.5 font-mono text-micro text-success-text">
+            <LockIcon className="size-micro" strokeWidth={2.5} />
             client-side encrypted
           </span>
           <ThemeToggle />
