@@ -241,7 +241,7 @@ function CodeEditorComponent({
         {/* Cycling placeholder overlay */}
         {placeholderTexts && !code && (
           <div
-            className="absolute top-0 left-0 p-3 pointer-events-none font-mono text-sm text-muted-foreground/50"
+            className="absolute top-0 left-0 p-3 pointer-events-none font-mono text-code text-muted-foreground/50"
             style={{
               transition: 'opacity 200ms ease-in-out',
               opacity: isVisible ? 1 : 0,

@@ -53,7 +53,7 @@ export function LinkDisplay(
               <Input
                 value={link}
                 readOnly
-                className="pr-10 font-mono text-sm bg-muted"
+                className="pr-10 font-mono text-code bg-muted"
               />
               <Button
                 type="button"
