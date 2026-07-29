@@ -226,7 +226,7 @@ function Home() {
                 <Card className="w-full shadow-md">
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-xl text-green-700 dark:text-green-400">
+                      <CardTitle className="flex items-center gap-2 text-xl text-success">
                         <CheckIcon className="h-5 w-5" />
                         Snippet created & encrypted!
                       </CardTitle>
