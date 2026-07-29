@@ -134,9 +134,14 @@
    ============================================ */
 @theme {
   --text-caption: 0.8125rem;
+  --text-caption--font-weight: 500;
   --text-body: 0.9375rem;
+  --text-body--line-height: 1.6;
   --text-card-title: 1.1875rem;
+  --text-card-title--font-weight: 600;
   --text-hero: 2.125rem;
+  --text-hero--font-weight: 700;
+  --text-hero--letter-spacing: -0.02em;
 }
 
 /* ============================================
