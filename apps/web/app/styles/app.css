@@ -90,10 +90,6 @@
    Bridges CSS vars above to Tailwind utilities.
    ============================================ */
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -143,6 +139,20 @@
   --text-hero--font-weight: 700;
   --text-hero--letter-spacing: -0.02em;
   --text-code: 0.875rem;
+}
+
+/* ============================================
+   Radius & Elevation
+   ============================================ */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@theme {
+  --shadow-md: 0 1px 3px oklch(0 0 0 / 0.1), 0 1px 2px oklch(0 0 0 / 0.06);
 }
 
 /* ============================================
