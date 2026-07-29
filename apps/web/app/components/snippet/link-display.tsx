@@ -75,8 +75,8 @@ export function LinkDisplay(
               )}
           </div>
 
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/20">
-            <p className="text-sm text-amber-800 dark:text-amber-200">
+          <div className="rounded-md border border-warning bg-warning/10 p-4">
+            <p className="text-sm text-foreground">
               <strong>Important:</strong>
               {' '}
               Share this link with your recipient(s). This link is secret and will not be
