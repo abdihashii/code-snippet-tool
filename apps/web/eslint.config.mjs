@@ -2,7 +2,7 @@ import createConfig from '@snippet-share/eslint-config/create-config';
 import pluginRouter from '@tanstack/eslint-plugin-router';
 
 export default createConfig({
-  ignores: ['dist', 'app/components/ui/**', '**/*.gen.ts'],
+  ignores: ['dist', 'storybook-static', 'app/components/ui/**', '**/*.gen.ts'],
   plugins: {
     '@tanstack/router': pluginRouter,
   },

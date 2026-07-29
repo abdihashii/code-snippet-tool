@@ -36,7 +36,7 @@ export function LinkDisplay(
   };
 
   return (
-    <div className="animate-fadeIn">
+    <div className="animate-fade-scale">
       <Card className="w-full shadow-md">
         <CardHeader className="pb-4">
           <CardTitle
