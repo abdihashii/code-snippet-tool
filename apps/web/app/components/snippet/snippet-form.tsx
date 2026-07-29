@@ -179,7 +179,7 @@ function SnippetFormComponent({
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     disabled={isSubmitting}
-                    className="min-h-75 font-mono text-sm resize-y"
+                    className="min-h-75 font-mono text-code resize-y"
                   />
                 </TabsContent>
               </Tabs>

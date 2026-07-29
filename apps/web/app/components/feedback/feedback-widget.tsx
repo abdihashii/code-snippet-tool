@@ -55,7 +55,7 @@ export function FeedbackWidget({ page, className }: FeedbackWidgetProps) {
         variant="ghost"
         onClick={() => handleFeedback(1)}
         disabled={isSubmitting}
-        className="h-8 px-2 hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-900/30 dark:hover:text-green-400"
+        className="h-8 px-2 hover:bg-success/10 hover:text-success"
       >
         <ThumbsUpIcon className="h-4 w-4" />
       </Button>
@@ -64,7 +64,7 @@ export function FeedbackWidget({ page, className }: FeedbackWidgetProps) {
         variant="ghost"
         onClick={() => handleFeedback(0)}
         disabled={isSubmitting}
-        className="h-8 px-2 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+        className="h-8 px-2 hover:bg-destructive/10 hover:text-destructive"
       >
         <ThumbsDownIcon className="h-4 w-4" />
       </Button>

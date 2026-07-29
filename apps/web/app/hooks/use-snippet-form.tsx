@@ -430,15 +430,15 @@ export function useSnippetForm({
     switch (strength) {
       case PasswordStrengthLevel.TooShort:
       case PasswordStrengthLevel.Weak:
-        return 'text-red-500';
+        return 'text-destructive';
       case PasswordStrengthLevel.Medium:
-        return 'text-yellow-500';
+        return 'text-warning';
       case PasswordStrengthLevel.Strong:
-        return 'text-green-500';
+        return 'text-success';
       case PasswordStrengthLevel.VeryStrong:
-        return 'text-emerald-600'; // Or a stronger green
+        return 'text-success';
       default:
-        return 'text-slate-500';
+        return 'text-muted-foreground';
     }
   }
 

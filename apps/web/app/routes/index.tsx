@@ -226,7 +226,7 @@ function Home() {
                 <Card className="w-full shadow-md">
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-xl text-green-700 dark:text-green-400">
+                      <CardTitle className="flex items-center gap-2 text-xl text-success">
                         <CheckIcon className="h-5 w-5" />
                         Snippet created & encrypted!
                       </CardTitle>
@@ -256,7 +256,7 @@ function Home() {
                         type="text"
                         value={snippetLink}
                         readOnly
-                        className="ph-no-capture flex-1 px-3 py-2 text-sm font-mono bg-background border rounded-md"
+                        className="ph-no-capture flex-1 px-3 py-2 text-code font-mono bg-background border rounded-md"
                       />
                       <Button
                         size="sm"

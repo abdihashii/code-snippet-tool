@@ -75,7 +75,7 @@ function ReleaseCard({ entry }: { entry: ChangelogEntry }) {
           icon={WrenchIcon}
           title="Improvements"
           items={entry.improvements}
-          iconColor="text-blue-500"
+          iconColor="text-success"
         />
       )}
 
@@ -84,7 +84,7 @@ function ReleaseCard({ entry }: { entry: ChangelogEntry }) {
           icon={BugIcon}
           title="Bug Fixes"
           items={entry.bugFixes}
-          iconColor="text-orange-500"
+          iconColor="text-warning"
         />
       )}
     </Card>

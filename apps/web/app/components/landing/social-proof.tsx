@@ -61,8 +61,8 @@ export function SocialProof({ className }: SocialProofProps) {
       {/* Live activity ticker */}
       <div className="flex items-center justify-center gap-2 text-sm">
         <div className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
         </div>
         <span className="text-muted-foreground">
           <span className="font-medium text-foreground">{activeUsers}</span>
@@ -92,7 +92,7 @@ export function SocialProof({ className }: SocialProofProps) {
         <Card>
           <CardContent className="p-4 text-center space-y-1">
             <div className="flex justify-center mb-2">
-              <ShieldCheckIcon className="h-5 w-5 text-green-600" />
+              <ShieldCheckIcon className="h-5 w-5 text-success" />
             </div>
             <div className="text-2xl font-bold">100%</div>
             <p className="text-xs text-muted-foreground">Encrypted</p>
@@ -131,7 +131,7 @@ export function SocialProof({ className }: SocialProofProps) {
 
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm">
-              <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+              <div className="h-1.5 w-1.5 rounded-full bg-success"></div>
               <span className="text-muted-foreground">Someone just shared a</span>
               <Badge variant="outline" className="text-xs">{recentLanguage}</Badge>
               <span className="text-muted-foreground">snippet</span>
