@@ -96,7 +96,7 @@ export function FeedbackDialog({ trigger, page = 'footer' }: FeedbackDialogProps
                     className={cn(
                       'h-6 w-6 transition-colors',
                       (hoveredRating || rating) >= star
-                        ? 'fill-yellow-400 text-yellow-400'
+                        ? 'fill-warning text-warning'
                         : 'text-muted-foreground',
                     )}
                   />
