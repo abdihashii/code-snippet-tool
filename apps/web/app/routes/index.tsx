@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { FeedbackWidget } from '@/components/feedback/feedback-widget';
 import { AppLayout } from '@/components/layout/app-layout';
+import { PageContainer } from '@/components/layout/page-container';
 import { SnippetForm } from '@/components/snippet/snippet-form';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -189,7 +190,7 @@ function Home() {
   return (
     <AppLayout>
       {/* Hero Section with Integrated Demo */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+      <PageContainer width="page" className="py-12 lg:py-16">
         {/* Minimalist header */}
         <div className="text-center mb-8 space-y-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
@@ -314,10 +315,10 @@ function Home() {
             Code, configs, credentials, notes - encrypted before it leaves your device.
           </p>
         )}
-      </section>
+      </PageContainer>
 
       {/* Minimal FAQ Section */}
-      <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t">
+      <PageContainer width="narrow" className="py-8 border-t">
         <h2 className="text-xl font-semibold text-center mb-6">Questions?</h2>
 
         <div className="space-y-4">
@@ -427,7 +428,7 @@ function Home() {
             </CollapsibleContent>
           </Collapsible>
         </div>
-      </section>
+      </PageContainer>
     </AppLayout>
   );
 }

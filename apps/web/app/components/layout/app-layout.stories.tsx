@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { withRouter, withTheme } from '../../../.storybook/decorators';
 import { AppLayout } from './app-layout';
+import { PageContainer } from './page-container';
 
 const meta: Meta<typeof AppLayout> = {
   component: AppLayout,
@@ -22,9 +23,9 @@ type Story = StoryObj<typeof AppLayout>;
 export const Default: Story = {
   args: {
     children: (
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <PageContainer className="py-12">
         <p className="text-body text-foreground">Page content.</p>
-      </section>
+      </PageContainer>
     ),
   },
 };
@@ -36,13 +37,13 @@ export const Default: Story = {
 export const Scrolling: Story = {
   args: {
     children: (
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-4">
+      <PageContainer className="py-12 space-y-4">
         {Array.from({ length: 40 }, (_, i) => (
           <p key={i} className="text-body text-foreground">
             {`Line ${i + 1} — scroll this content beneath the header to check the frosted surface.`}
           </p>
         ))}
-      </section>
+      </PageContainer>
     ),
   },
 };

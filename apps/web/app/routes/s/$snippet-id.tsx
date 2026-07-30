@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { AppLayout } from '@/components/layout/app-layout';
+import { PageContainer } from '@/components/layout/page-container';
 import { CodeEditor } from '@/components/snippet/code-editor';
 import {
   SnippetExpiredMessage,
@@ -309,7 +310,7 @@ function RouteComponent() {
 
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8">
+      <PageContainer width="reader" className="py-8">
         <div className="transition-all duration-300 ease-in-out">
           <Card className="w-full shadow-md">
             <CardHeader className="pb-2">
@@ -518,7 +519,7 @@ function RouteComponent() {
                 )}
           </Card>
         </div>
-      </div>
+      </PageContainer>
     </AppLayout>
   );
 }
