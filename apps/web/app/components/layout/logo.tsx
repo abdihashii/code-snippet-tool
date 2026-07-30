@@ -13,8 +13,9 @@ const TONE = {
 };
 
 export function Logo({ size = 'header' }: LogoProps) {
+  // The mark never breaks across lines: the DS keeps `://` intact at every size.
   return (
-    <span className={`font-mono ${TONE[size]}`}>
+    <span className={`whitespace-nowrap font-mono ${TONE[size]}`}>
       snippet
       <span className="text-primary">://</span>
       share

@@ -18,7 +18,8 @@ type Story = StoryObj<typeof Footer>;
 /**
  * Check in both themes: the border-top reads against the page, the wordmark
  * lockup sits hard left and the links hard right at 28px gutters, and Changelog
- * and Feedback underline on hover. Below 640px the tagline and the copyright
- * both hide, as they do in the header, leaving the row on one line.
+ * and Feedback underline on hover. Below 640px the tagline, Changelog and Feedback
+ * all hide, as the tagline and badge do in the header, leaving the mark and the
+ * copyright alone on one line down to 320px.
  */
 export const Default: Story = {};

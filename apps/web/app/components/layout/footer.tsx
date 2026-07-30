@@ -8,6 +8,8 @@ import { Logo } from '@/components/layout/logo';
 const LINK = 'text-caption text-primary-text underline-offset-4 hover:underline';
 
 export function Footer() {
+  // Below the shell's one breakpoint only the mark and the copyright survive, which
+  // keeps the row on one line at 320px without stacking or shrinking the gutters.
   return (
     <footer className="flex items-center justify-between border-t border-border p-7">
       {/* Same lockup as the header: wordmark, divider, tagline at matching gaps. */}
@@ -21,7 +23,7 @@ export function Footer() {
       </div>
 
       <div className="flex items-center gap-5">
-        <Link to="/changelog" className={LINK}>
+        <Link to="/changelog" className={`hidden sm:block ${LINK}`}>
           Changelog
         </Link>
 
@@ -29,7 +31,7 @@ export function Footer() {
           trigger={(
             <button
               type="button"
-              className={`inline-flex cursor-pointer items-center gap-1.5 ${LINK}`}
+              className={`hidden cursor-pointer items-center gap-1.5 sm:inline-flex ${LINK}`}
             >
               <MessageSquareIcon className="size-caption" strokeWidth={2} />
               Feedback
@@ -38,7 +40,7 @@ export function Footer() {
         />
 
         {/* Brand sits in the same row, so the notice carries only the year. */}
-        <span className="hidden sm:block text-caption text-muted-foreground">
+        <span className="text-caption text-muted-foreground">
           ©
           {' '}
           {new Date().getFullYear()}
