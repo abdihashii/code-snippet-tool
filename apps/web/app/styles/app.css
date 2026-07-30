@@ -170,7 +170,7 @@
   --container-page: 900px; /* Home */
   --container-reader: 760px; /* View, Changelog */
   --container-narrow: 640px; /* Home FAQ */
-  --container-focus: 420px; /* Gate, Expired, 404 */
+  --container-focus: 420px; /* 404; Gate and Expired once they use the shell */
 }
 
 /* ============================================

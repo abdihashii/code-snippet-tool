@@ -3,9 +3,9 @@ import React from 'react';
 import { cn } from '@/lib/utils/class-name-utils';
 
 interface PageContainerProps {
-  /** DS column: page 900, reader 760, narrow 640, focus 420. */
+  /** DS column: page 900, reader 760, narrow 640, focus 420. Prop only: a `max-w-*` in `className` won't override it. */
   width?: 'page' | 'reader' | 'narrow' | 'focus';
-  /** Centres in the remaining shell height, for single-card states. */
+  /** Centres in the shell's content slot. Needs a flex-column parent to grow into. */
   centered?: boolean;
   className?: string;
   children: React.ReactNode;
@@ -24,9 +24,8 @@ export function PageContainer({
   className,
   children,
 }: PageContainerProps) {
-  // The gutter matches the shell's p-7, so content starts at the wordmark's x.
-  // Call sites own vertical spacing only; the column itself lives here so the
-  // five routes can't drift apart again.
+  // px-7 matches the shell, so below the column width content lines up with the
+  // wordmark. Call sites own vertical spacing only.
   return (
     <div
       className={cn(
