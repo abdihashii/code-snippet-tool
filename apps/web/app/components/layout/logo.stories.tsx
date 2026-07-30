@@ -8,7 +8,7 @@ const meta: Meta<typeof Logo> = {
   argTypes: {
     size: {
       control: 'select',
-      options: ['header', 'lockup'],
+      options: ['header', 'lockup', 'footer'],
     },
   },
 };
@@ -25,5 +25,12 @@ export const Default: Story = {
 export const Lockup: Story = {
   args: {
     size: 'lockup',
+  },
+};
+
+/** Footer row: caption-sized and muted, with the brand teal kept on `://`. */
+export const Footer: Story = {
+  args: {
+    size: 'footer',
   },
 };
