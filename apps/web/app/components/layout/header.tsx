@@ -12,7 +12,7 @@ export function Header() {
           <Link to="/" aria-label="Home">
             <Logo />
           </Link>
-          <span className="hidden sm:block border-l border-border pl-3.5 text-caption text-muted-foreground">
+          <span className="hidden sm:block border-l border-border pl-3.5 font-mono text-caption text-muted-foreground">
             Share code snippets securely
           </span>
         </div>

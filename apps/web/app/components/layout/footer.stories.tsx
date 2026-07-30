@@ -15,4 +15,10 @@ const meta: Meta<typeof Footer> = {
 export default meta;
 type Story = StoryObj<typeof Footer>;
 
+/**
+ * Check in both themes: the border-top reads against the page, the wordmark
+ * lockup sits hard left and the links hard right at 28px gutters, and Changelog
+ * and Feedback underline on hover. Below 640px the tagline and the copyright
+ * both hide, as they do in the header, leaving the row on one line.
+ */
 export const Default: Story = {};
