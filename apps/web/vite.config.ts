@@ -18,6 +18,8 @@ export default defineConfig({
       router: {
         routesDirectory: './routes',
         generatedRouteTree: './routeTree.gen.ts',
+        // Stories sit next to their route; without this they become routes.
+        routeFileIgnorePattern: '\\.stories\\.tsx$',
       },
     }),
     viteReact(),
