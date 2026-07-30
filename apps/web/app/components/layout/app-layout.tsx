@@ -12,7 +12,8 @@ export function AppLayout({ children }: {
     >
       <Header />
 
-      <div className="flex-1">
+      {/* Column direction so a centered PageContainer can claim the height. */}
+      <div className="flex flex-1 flex-col">
         {children}
       </div>
 
