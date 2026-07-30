@@ -4,6 +4,7 @@ import { BugIcon, SparklesIcon, WrenchIcon } from 'lucide-react';
 import type { ChangelogEntry } from '@/lib/changelog-data';
 
 import { AppLayout } from '@/components/layout/app-layout';
+import { PageContainer } from '@/components/layout/page-container';
 import { Card } from '@/components/ui/card';
 import { CHANGELOG_DATA } from '@/lib/changelog-data';
 
@@ -94,7 +95,7 @@ function ReleaseCard({ entry }: { entry: ChangelogEntry }) {
 function Changelog() {
   return (
     <AppLayout>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
+      <PageContainer width="reader">
         {/* Header */}
         <div className="pt-12 pb-8 border-b">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
@@ -115,7 +116,7 @@ function Changelog() {
             More updates coming soon...
           </div>
         </div>
-      </div>
+      </PageContainer>
     </AppLayout>
   );
 }
