@@ -174,9 +174,8 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body>
-        <main>
-          {children}
-        </main>
+        {/* AppLayout owns the <main>. */}
+        {children}
         <Scripts />
       </body>
     </html>

@@ -14,10 +14,10 @@ export function NotFound() {
     <AppLayout>
       <PageContainer width="focus" centered>
         <div className="text-center space-y-6">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+          <h1 className="text-card-title tracking-tight">
             404 - Page Not Found
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-body text-muted-foreground">
             The page you are looking for does not exist.
           </p>
           <div className="flex justify-center pt-4">

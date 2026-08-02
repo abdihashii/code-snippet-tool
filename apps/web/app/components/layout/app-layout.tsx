@@ -7,17 +7,17 @@ export function AppLayout({ children }: {
   children: React.ReactNode;
 }) {
   return (
-    <main
+    <div
       className="flex min-h-screen flex-col bg-background"
     >
       <Header />
 
-      {/* Column direction so a centered PageContainer can claim the height. */}
-      <div className="flex flex-1 flex-col">
+      {/* Column so a centered PageContainer can fill the height. */}
+      <main className="flex flex-1 flex-col">
         {children}
-      </div>
+      </main>
 
       <Footer />
-    </main>
+    </div>
   );
 }
