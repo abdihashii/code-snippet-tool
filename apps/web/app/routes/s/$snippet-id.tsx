@@ -249,45 +249,43 @@ function RouteComponent() {
       || errorTitle === 'Snippet not found or access denied'
     ) {
       return (
-        <main
-          className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-background"
-        >
-          <div className="w-full max-w-xl mx-auto">
+        <AppLayout>
+          <PageContainer width="focus" centered>
             <SnippetExpiredMessage
               title={errorTitle}
               message={errorMessage}
               showGoHomeButton={true}
             />
-          </div>
-        </main>
+          </PageContainer>
+        </AppLayout>
       );
     }
 
     // For other, unexpected errors
     return (
-      <main
-        className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 md:p-8 bg-background"
-      >
-        <div className="w-full max-w-xl mx-auto text-center">
-          <ShieldIcon className="h-12 w-12 mx-auto mb-4 text-destructive" />
-          <h1 className="text-2xl font-semibold text-foreground mb-2">
-            {loadedData.error}
-          </h1>
-          <p className="text-muted-foreground mb-6">
-            {loadedData.message}
-          </p>
-          <Link to="/">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 flex items-center gap-2 mx-auto"
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-              Home
-            </Button>
-          </Link>
-        </div>
-      </main>
+      <AppLayout>
+        <PageContainer width="focus" centered>
+          <div className="text-center">
+            <ShieldIcon className="h-12 w-12 mx-auto mb-4 text-destructive" />
+            <h1 className="text-2xl font-semibold text-foreground mb-2">
+              {loadedData.error}
+            </h1>
+            <p className="text-muted-foreground mb-6">
+              {loadedData.message}
+            </p>
+            <Link to="/">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 flex items-center gap-2 mx-auto"
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+          </div>
+        </PageContainer>
+      </AppLayout>
     );
   }
 
