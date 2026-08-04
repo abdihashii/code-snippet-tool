@@ -7,8 +7,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils/class-name-utils';
 
 const buttonVariants = cva(
-  // Font size lives on each size, not here: tailwind-merge does not dedupe
-  // `text-sm` against the `text-caption` token, so both would survive.
+  // Font size lives on each size, not here. The DS gives `sm` its own 13px step.
   'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*=\'size-\'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:cursor-pointer',
   {
     variants: {
