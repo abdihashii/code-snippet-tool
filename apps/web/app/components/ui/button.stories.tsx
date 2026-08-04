@@ -128,13 +128,20 @@ export const WithIcon: Story = {
   ),
 };
 
-/** Half opacity, not-allowed cursor. The cursor needs pointer events, so the base keeps them. */
+/**
+ * Half opacity, not-allowed cursor. The cursor needs pointer events, so the base keeps
+ * them. Hover every button here: none may change background or color.
+ */
 export const Disabled: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-2.5">
       <Button disabled>Default</Button>
+      <Button variant="destructive" disabled>Destructive</Button>
       <Button variant="outline" disabled>Outline</Button>
       <Button variant="primary-outline" disabled>Primary outline</Button>
+      <Button variant="secondary" disabled>Secondary</Button>
+      <Button variant="ghost" disabled>Ghost</Button>
+      <Button variant="link" disabled>Link</Button>
     </div>
   ),
 };
