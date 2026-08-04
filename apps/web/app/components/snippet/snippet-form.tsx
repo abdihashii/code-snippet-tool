@@ -192,11 +192,10 @@ function SnippetFormComponent({
                       <div>
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="primary-outline"
                           size="sm"
                           onClick={prettifyCode}
                           disabled={isPrettifying || (!code.trim()) || !canPrettifyCurrentLanguage}
-                          className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer flex items-center justify-center gap-2"
                         >
                           <Wand2Icon className="h-4 w-4" />
                           {isPrettifying ? 'Prettifying...' : 'Prettify Code'}
@@ -259,7 +258,7 @@ function SnippetFormComponent({
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="link"
-                    className="flex items-center gap-2 p-0! text-sm text-primary hover:cursor-pointer hover:text-primary/90"
+                    className="flex items-center gap-2 p-0! text-sm text-primary no-underline hover:cursor-pointer hover:text-primary/90"
                   >
                     {isOptionsOpen
                       ? (
@@ -323,10 +322,10 @@ function SnippetFormComponent({
                           <Label htmlFor="snippet-password">Password</Label>
                           <Button
                             type="button"
-                            variant="outline"
+                            variant="primary-outline"
                             size="sm"
                             onClick={handleGeneratePassword}
-                            className="flex h-auto items-center gap-1 border border-primary px-2 py-1 text-xs text-primary hover:border-primary/90 hover:text-primary/90 hover:cursor-pointer"
+                            className="h-auto gap-1 px-2 py-1 text-xs"
                           >
                             <RefreshCwIcon className="h-3 w-3" />
                             Generate
