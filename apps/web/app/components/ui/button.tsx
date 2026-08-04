@@ -13,17 +13,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
+        'default':
           'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
-        destructive:
+        'destructive':
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
-        outline:
+        'outline':
           'border bg-background text-foreground hover:bg-secondary dark:bg-transparent dark:border-input',
-        secondary:
+        // --primary is border-only. It fails AA as text, so text uses --primary-text.
+        'primary-outline':
+          'border border-primary bg-transparent text-primary-text hover:bg-secondary',
+        'secondary':
           'bg-secondary text-secondary-foreground hover:bg-secondary-hover',
-        ghost:
+        'ghost':
           'text-foreground hover:bg-secondary',
-        link: 'text-primary underline underline-offset-4 hover:text-primary/80',
+        'link': 'text-primary underline underline-offset-4 hover:text-primary/80',
       },
       size: {
         default: 'h-9 px-4 text-sm',

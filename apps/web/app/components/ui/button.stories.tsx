@@ -8,7 +8,7 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      options: ['default', 'destructive', 'outline', 'primary-outline', 'secondary', 'ghost', 'link'],
     },
     size: {
       control: 'select',
@@ -42,6 +42,15 @@ export const Outline: Story = {
   args: {
     children: 'Outline',
     variant: 'outline',
+  },
+};
+
+/** The DS renders this at `size="sm"`. */
+export const PrimaryOutline: Story = {
+  args: {
+    children: 'Prettify Code',
+    variant: 'primary-outline',
+    size: 'sm',
   },
 };
 
