@@ -41,7 +41,7 @@ This is a monorepo containing:
 
 ### Tech Stack
 
-- **Frontend**: React, TanStack React Start (with SSR), Vinxi, Tailwind CSS, shadcn/ui
+- **Frontend**: React, TanStack React Start (with SSR), Vinxi, Tailwind CSS, Radix UI
 - **Backend**: Hono, Cloudflare Workers
 - **Database**: PostgreSQL via Supabase
 - **Encryption**: Web Crypto API (AES-256-GCM)

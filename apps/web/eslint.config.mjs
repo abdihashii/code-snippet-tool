@@ -2,7 +2,7 @@ import createConfig from '@snippet-share/eslint-config/create-config';
 import pluginRouter from '@tanstack/eslint-plugin-router';
 
 export default createConfig({
-  // Stock shadcn primitives stay unlinted. Re-include each as it is rebuilt.
+  // Primitives not yet rebuilt to the DS stay unlinted. Re-include each as it lands.
   ignores: [
     'dist',
     'storybook-static',
