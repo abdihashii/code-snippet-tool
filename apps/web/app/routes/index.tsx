@@ -261,8 +261,7 @@ function Home() {
                       />
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
+                        variant="primary-outline"
                         onClick={handleCopyLink}
                       >
                         {copied ? <CheckIcon className="h-4 w-4" /> : <CopyIcon className="h-4 w-4" />}
@@ -275,8 +274,7 @@ function Home() {
                       <span className="text-sm text-muted-foreground">Share via:</span>
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
+                        variant="primary-outline"
                         asChild
                       >
                         <a href={getEmailShareLink()}>

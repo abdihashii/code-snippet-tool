@@ -117,8 +117,7 @@ function CodeEditorComponent({
             <Button
               type="button"
               size="sm"
-              variant="outline"
-              className="shadow-sm border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
+              variant="primary-outline"
               onClick={handleCopy}
             >
               {copied
@@ -138,8 +137,7 @@ function CodeEditorComponent({
             <Button
               type="button"
               size="sm"
-              variant="outline"
-              className="shadow-sm border-primary text-primary hover:text-primary/90 hover:border-primary/90 hover:cursor-pointer"
+              variant="primary-outline"
               onClick={handleDownload}
             >
               <DownloadIcon className="mr-1 h-4 w-4" />

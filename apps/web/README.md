@@ -31,7 +31,7 @@ The Snippet Share web app is the frontend for the secure code snippet sharing pl
 - **Router**: TanStack Router v1.120+ (file-based routing)
 - **Build Tool**: Vinxi (Vite-based full-stack framework)
 - **Styling**: Tailwind CSS v4+ with custom design system
-- **Components**: Radix UI primitives + shadcn/ui components
+- **Components**: Own primitives built on Radix UI
 - **Icons**: Lucide React
 - **Themes**: next-themes for dark/light mode
 - **Encryption**: Web Crypto API (AES-256-GCM, PBKDF2)
@@ -143,7 +143,7 @@ apps/web/
 ### Design System
 
 - **Tailwind CSS**: Utility-first CSS framework with custom design tokens
-- **shadcn/ui**: High-quality React components built on Radix UI
+- **Own primitives**: Built on Radix UI, styled to the design system
 - **Responsive design**: Mobile-first approach with breakpoint optimization
 - **Dark/light themes**: Automatic system preference detection
 - **Accessibility**: WCAG-compliant with keyboard navigation support
@@ -324,7 +324,7 @@ pnpm deploy               # Deploy to Cloudflare Pages
 ### Development Guidelines
 
 1. **TypeScript**: Use strict mode with proper typing
-2. **Components**: Follow shadcn/ui patterns for consistency
+2. **Components**: Match the design system, not upstream defaults
 3. **Testing**: Add tests for business logic and utilities
 4. **Accessibility**: Ensure WCAG compliance
 5. **Performance**: Optimize for mobile and slow connections

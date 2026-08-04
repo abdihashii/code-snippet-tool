@@ -235,7 +235,7 @@ const decrypted = await crypto.subtle.decrypt(
 
 ## Tech Stack
 
-- **Frontend**: React 19, TanStack React Start (SSR), Vinxi, Tailwind CSS, shadcn/ui
+- **Frontend**: React 19, TanStack React Start (SSR), Vinxi, Tailwind CSS, Radix UI
 - **Backend**: Hono, Cloudflare Workers
 - **Database**: PostgreSQL (Supabase)
 - **Encryption**: Web Crypto API (AES-256-GCM, PBKDF2)
