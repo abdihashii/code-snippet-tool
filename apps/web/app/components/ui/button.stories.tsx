@@ -45,10 +45,25 @@ export const Outline: Story = {
   },
 };
 
+/** Text is `--secondary-foreground`, which the DS resolves to `--foreground` in both themes. */
+export const Secondary: Story = {
+  args: {
+    children: 'Secondary',
+    variant: 'secondary',
+  },
+};
+
 export const Ghost: Story = {
   args: {
     children: 'Ghost',
     variant: 'ghost',
+  },
+};
+
+export const Link: Story = {
+  args: {
+    children: 'Link',
+    variant: 'link',
   },
 };
 
