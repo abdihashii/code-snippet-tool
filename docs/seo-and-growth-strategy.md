@@ -75,7 +75,7 @@ Privacy-focused users don't find tools through Google. They find them through co
   formatting, expiration controls, and a "burn after reading" mode that
   deletes the snippet after the first view.
 
-  Stack: React 19 + TanStack Start on Cloudflare Pages, Hono on Cloudflare
+  Stack: React 19 + TanStack Start on Cloudflare Workers, Hono on Cloudflare
   Workers, Supabase (Postgres). Rate limiting uses Durable Objects because
   Workers KV can only do 1 write/sec and native rate limiting is limited to
   10s/60s windows.

@@ -41,11 +41,11 @@ This is a monorepo containing:
 
 ### Tech Stack
 
-- **Frontend**: React, TanStack React Start (with SSR), Vinxi, Tailwind CSS, Radix UI
+- **Frontend**: React, TanStack React Start (with SSR), Vite + @cloudflare/vite-plugin, Tailwind CSS, Radix UI
 - **Backend**: Hono, Cloudflare Workers
 - **Database**: PostgreSQL via Supabase
 - **Encryption**: Web Crypto API (AES-256-GCM)
-- **Deployment**: Cloudflare Pages (frontend), Cloudflare Workers (API)
+- **Deployment**: Cloudflare Workers (frontend static assets + SSR, and API)
 - **Package Manager**: pnpm (workspace)
 
 ## 🚀 Getting Started
@@ -120,7 +120,7 @@ pnpm run build:schemas
 # Build web app (automatically builds shared packages first)
 pnpm run build:web
 
-# Deploy to Cloudflare Pages
+# Deploy to Cloudflare Workers
 pnpm run deploy:web
 ```
 

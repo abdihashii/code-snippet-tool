@@ -8,7 +8,7 @@ Snippet Share is a zero-knowledge code snippet sharing platform where all encryp
 
 ## Monorepo Structure
 
-- `apps/web/` - Frontend React application using TanStack React Start (SSR) with Vinxi
+- `apps/web/` - Frontend React application using TanStack React Start (SSR) with Vite + @cloudflare/vite-plugin
 - `apps/api/` - Backend API using Hono framework deployed to Cloudflare Workers
 - `packages/types/` - Shared TypeScript type definitions
 - `packages/schemas/` - Shared Zod schemas for validation
@@ -73,7 +73,7 @@ pnpm dev:api  # Start API at http://localhost:8787
 **Important**: Only deploy if explicitly requested by the user.
 
 ```bash
-pnpm --filter @snippet-share/web deploy  # Deploy to Cloudflare Pages
+pnpm --filter @snippet-share/web deploy  # Deploy to Cloudflare Workers
 pnpm --filter @snippet-share/api deploy  # Deploy to Cloudflare Workers
 ```
 
@@ -235,14 +235,14 @@ const decrypted = await crypto.subtle.decrypt(
 
 ## Tech Stack
 
-- **Frontend**: React 19, TanStack React Start (SSR), Vinxi, Tailwind CSS, Radix UI
+- **Frontend**: React 19, TanStack React Start (SSR), Vite + @cloudflare/vite-plugin, Tailwind CSS, Radix UI
 - **Backend**: Hono, Cloudflare Workers
 - **Database**: PostgreSQL (Supabase)
 - **Encryption**: Web Crypto API (AES-256-GCM, PBKDF2)
 - **Testing**: Vitest with coverage
 - **Linting**: ESLint 9 (flat config)
 - **Package Manager**: pnpm 10+ with workspaces
-- **Deployment**: Cloudflare Pages (frontend), Cloudflare Workers (API)
+- **Deployment**: Cloudflare Workers (frontend static assets + SSR, and API)
 
 ## Important Files & Patterns
 
@@ -261,7 +261,8 @@ const decrypted = await crypto.subtle.decrypt(
 
 ### Configuration
 
-- [apps/web/app.config.ts](apps/web/app.config.ts) - TanStack React Start config (Cloudflare Pages preset)
+- [apps/web/vite.config.ts](apps/web/vite.config.ts) - Vite config: TanStack Start + @cloudflare/vite-plugin (Worker + static assets)
+- [apps/web/wrangler.jsonc](apps/web/wrangler.jsonc) - Worker config (name, custom domains)
 - [apps/web/vitest.config.ts](apps/web/vitest.config.ts) - Test configuration
 - [tsconfig.json](tsconfig.json) - Root TypeScript configuration
 

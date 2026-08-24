@@ -29,14 +29,14 @@ The Snippet Share web app is the frontend for the secure code snippet sharing pl
 
 - **Framework**: React 19 with TanStack Start (full-stack React framework)
 - **Router**: TanStack Router v1.120+ (file-based routing)
-- **Build Tool**: Vinxi (Vite-based full-stack framework)
+- **Build Tool**: Vite with @cloudflare/vite-plugin (Workers Static Assets)
 - **Styling**: Tailwind CSS v4+ with custom design system
 - **Components**: Own primitives built on Radix UI
 - **Icons**: Lucide React
 - **Themes**: next-themes for dark/light mode
 - **Encryption**: Web Crypto API (AES-256-GCM, PBKDF2)
 - **Testing**: Vitest with V8 coverage
-- **Deployment**: Cloudflare Pages
+- **Deployment**: Cloudflare Workers (static assets via @cloudflare/vite-plugin)
 
 ## 🚀 Getting Started
 
@@ -67,7 +67,7 @@ The Snippet Share web app is the frontend for the secure code snippet sharing pl
    VITE_PUBLIC_POSTHOG_API_HOST=https://app.posthog.com
    ```
 
-   **Important**: `.env` files are only used for local development. For Cloudflare Pages deployment, environment variables must be set in `wrangler.toml` (see [Deployment](#deployment) section).
+   **Important**: `.env` files are only used for local development. Vite inlines `VITE_*` variables into the bundle at build time, so production values are injected by the deploy script (see [Deployment](#deployment) section). Wrangler `[vars]` are runtime-only and never reach browser code.
 
 ### Development
 
@@ -216,73 +216,23 @@ pnpm test:watch
 
 ## 🚀 Deployment
 
-### Cloudflare Pages
+### Cloudflare Workers
 
-The web app is configured for deployment to Cloudflare Pages with Workers compatibility.
+The web app deploys as the Cloudflare Worker `snippet-share-web`, serving `snippet-share.com` and `www.snippet-share.com`. Static assets and SSR are bundled by Vite with [`@cloudflare/vite-plugin`](https://developers.cloudflare.com/workers/vite-plugin/) (Workers Static Assets); Worker config lives in `wrangler.jsonc`.
 
-#### Deployment Steps
-
-1. **Build the application**
-
-   ```bash
-   pnpm build
-   ```
-
-2. **Deploy to Cloudflare Pages**
-   ```bash
-   pnpm deploy
-   ```
-
-#### Configuration
-
-**Cloudflare Pages Settings** (`wrangler.toml`):
-
-- **Build Output**: `./dist`
-- **Node.js Compatibility**: Enabled
-- **Environment Variables**: Set in `wrangler.toml` (NOT in Cloudflare dashboard)
-
-**Environment Variables Configuration**:
-
-⚠️ **Important**: When using `wrangler.toml` with `pages_build_output_dir`, environment variables MUST be defined in the `[vars]` section of the file. The Cloudflare dashboard becomes read-only for these settings. `.env` files are NOT used by Cloudflare Pages.
-
-Add environment variables to `wrangler.toml`:
-
-```toml
-[vars]
-VITE_API_URL = "https://snippet-share-api.your-account.workers.dev"
-VITE_PUBLIC_POSTHOG_KEY = "your-production-posthog-key"
-VITE_PUBLIC_POSTHOG_API_HOST = "https://app.posthog.com"
-```
-
-**Environment-specific configuration** (optional):
-
-```toml
-# Default vars for all environments
-[vars]
-VITE_API_URL = "https://snippet-share-api.your-account.workers.dev"
-
-# Override for preview deployments only
-[env.preview.vars]
-VITE_API_URL = "https://preview-api.your-account.workers.dev"
-
-# Override for production only
-[env.production.vars]
-VITE_API_URL = "https://api.your-domain.com"
-```
-
-**Applying changes**:
-
-After updating `wrangler.toml`, you must rebuild and redeploy:
+#### Deployment
 
 ```bash
-# Build the app with new environment variables
-pnpm build
-
-# Deploy to Cloudflare Pages
-pnpm run deploy
+# From repo root
+pnpm deploy:web
 ```
 
-Note: If using GitHub integration, commit and push - Cloudflare Pages will automatically rebuild and redeploy with the new variables.
+The deploy script (`apps/web/package.json`) builds with `VITE_API_URL=https://api.snippet-share.com` exported, verifies the production API URL made it into the built bundles, then runs `wrangler deploy`.
+
+**Environment variables come in two kinds here, don't mix them up:**
+
+- **Build-time (`VITE_*`)**: inlined into the JS bundle by `vite build`. Production values come from the deploy script; local values from `.env` (copy `.env.example`).
+- **Runtime (Wrangler `[vars]`)**: only visible to the Worker's server code via `env`/`process.env` ([docs](https://developers.cloudflare.com/workers/configuration/environment-variables/)). They never reach the browser, so `VITE_API_URL` must NOT be set there.
 
 ### Performance Optimizations
 
@@ -316,7 +266,7 @@ pnpm typecheck            # TypeScript checking
 pnpm clean                # Clean build artifacts
 
 # Deployment
-pnpm deploy               # Deploy to Cloudflare Pages
+pnpm deploy               # Deploy to Cloudflare Workers
 ```
 
 ## 🤝 Contributing
@@ -342,7 +292,7 @@ pnpm deploy               # Deploy to Cloudflare Pages
 - [API Documentation](../api/README.md)
 - [Product Requirements](../../docs/PRD.md)
 - [TanStack Start Documentation](https://tanstack.com/start)
-- [Cloudflare Pages Documentation](https://developers.cloudflare.com/pages/)
+- [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/) and the [Cloudflare Vite plugin](https://developers.cloudflare.com/workers/vite-plugin/)
 
 ## 🔗 Live Demo
 
